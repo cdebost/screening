@@ -34,11 +34,11 @@ var path = require('path'),
     simpleRequest = require("request");
 
 module.exports = function(agentPool, testcaseRunner, scriptsProvider, batchesProvider) {
-    var app = express.createServer();
+    var app = express();
 
-    app.mounted(function(otherApp) {
+    /*app.mounted(function(otherApp) {
         console.info("[agents] express app was mounted.");
-    });
+    });*/
 
     // TODO: Move this to an appropriate location (Node Module?)
     var stringToBoolean = function(string) {
@@ -65,7 +65,6 @@ module.exports = function(agentPool, testcaseRunner, scriptsProvider, batchesPro
      */
     app.get('/', routingConfig.provides('json', '*/*'), function(req, res) {
         //sys.puts(sys.inspect(agents)); // inspect the agents object
-        console.log('GET agents');
         var agentsRes = [];
 
         var includeBusy = !req.query['include_busy'] ? true : stringToBoolean(req.query['include_busy']);
@@ -77,8 +76,6 @@ module.exports = function(agentPool, testcaseRunner, scriptsProvider, batchesPro
     });
 
     app.get("/:id", routingConfig.provides('json', '*/*'), function(req, res, next) {
-        console.log('GET agentId: ' + req.params.id);
-
         var agent = agentPool.getAgentById(req.params.id);
 
         if (!agent) {
@@ -363,8 +360,6 @@ module.exports = function(agentPool, testcaseRunner, scriptsProvider, batchesPro
     });
 
     app.delete("/:id", routingConfig.provides('json', '*/*'), function(req, res, next) {
-        console.log('REMOVE agent with id: ' + req.params.id);
-
         var agent = agentPool.getAgentById(req.params.id);
 
         if (!agent) {

@@ -33,11 +33,11 @@ var routingConfig = require("./routing-config.js"),
     express = require("express");
 
 module.exports = function(batchesProvider) {
-    var app = express.createServer();
+    var app = express();
 
-    app.mounted(function(otherApp) {
+    /*app.mounted(function(otherApp) {
         console.info("[batches] express app was mounted.");
-    });
+    });*/
 
     /**
      * GETs all the available batches

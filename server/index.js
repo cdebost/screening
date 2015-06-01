@@ -35,7 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 var PORT = 8081;
 
-var path = require("path");
+///-------------------------------------------
+/// Shell Usage
+///-------------------------------------------
 var optimist = require('optimist');
 var argv = optimist
     .usage('Usage: $0')
@@ -58,28 +60,31 @@ if(argv.production) {
 if(argv.port) {
     PORT = argv.port;
 }
+///-------------------------------------------
 
-var express = require('express');
-var app = express.createServer();
+var express = require("express"),
+	http = require("http"),
+	path = require("path");
+
+
+var app = express();
+var server = http.createServer(app);
+
 var screening = require('./server.js');
-screening.configureServer();
+screening.createServer();
+app.use("/screening", screening.app);
+
+if (process.env.NODE_ENV = "development") {
+	var MONTAGE_PATH = path.join(__dirname, "../../node_modules/montage");
+
+	app.use("/node_modules/montage", express.static(MONTAGE_PATH));
+	app.use("/node_modules/montage", express.directory(MONTAGE_PATH));
+}
+
 var socketApi = require("./lib/sockets.js");
+socketApi.setupSocketIO(server, screening.agentPool, screening.SCREENING_VERSION);
 
-app.configure(function() {
-    app.use("/screening", screening.app);
-
-    // Socket.io Initialization
-    socketApi.init(app, screening.agentPool, screening.SCREENING_VERSION);
-});
-
-app.configure('development', function() {
-    var MONTAGE_PATH = path.join(__dirname, "../../node_modules/montage");
-
-    app.use("/node_modules/montage", express.static(MONTAGE_PATH));
-    app.use("/node_modules/montage", express.directory(MONTAGE_PATH));
-});
-
-app.listen(PORT);
+server.listen(PORT);
 console.log("Environment: Node.js -", process.version, "Platform -", process.platform);
 console.log("Screening Server running on port " + PORT + " [" + process.env.NODE_ENV + "]");
 console.log("Screening Control Room: http://localhost:" + PORT + "/screening/control-room/index.html");

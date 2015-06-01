@@ -52,20 +52,18 @@ Session.prototype = {
             body: JSON.stringify({desiredCapabilities: desiredCapabilities})
         }
 
-        var _self = this;
+        var self = this;
         return when(POST(req), function(results) {
-            if (results.statusCode == '302' || results.statusCode == '303') {
-                var sessionUrl = _self.sessionUrl = (results.headers.location.indexOf("http") == 0) ?
-                    results.headers.location :
-                    _self.options.url + results.headers.location;
-                return when(GET({url: _self.sessionUrl}), function(response) {
+            if (results.status == '0') {
+                var sessionUrl = self.sessionUrl = self.options.url + "/session/" + results.sessionId;
+                return when(GET({url: self.sessionUrl}), function(response) {
                     // Validate that the session was created on the desired browser
                     if (desiredCapabilities.browserName !== response.value.browserName) {
                         throw Error("The desired browser [" + desiredCapabilities.browserName +
                             "] is not the same as the session browser [" + response.value.browserName + "]");
                     }
 
-                    _self.session = response;
+                    self.session = response;
                     return response;
                 });
             }
@@ -84,7 +82,6 @@ Session.prototype = {
         });
     },
     executeScript: function(script, args){
-        //print("executescript session: ", JSON.stringify(this.session));
         if (!this.session.value.javascriptEnabled){
             console.log("Javascript is not available in the active platform/browser driver");
         }else{

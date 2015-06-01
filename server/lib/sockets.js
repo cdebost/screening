@@ -28,47 +28,48 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
+var sio = require("socket.io");
 
 var fs = require('fs');
 
-exports.init = function init(app, agentPool, SCREENING_VERSION) {
-    var io = null;
 
-    io = require("socket.io").listen(app, {resource: "/screening/socket.io"});
+exports.setupSocketIO = function(httpServer, agentPool, screeningVersion) {
+	var io = require('socket.io').listen(httpServer);
+	//var io = sio(httpServer);
 
-    io.configure(function() {
-        io.set("log level", 1);
+	/*(function() {
         io.set("heartbeat timeout", 5);
         io.set("heartbeat interval", 7);
-        io.set("close timeout", 10);
-    });
+    })();*/
 
     // TODO: this function should be removed in favor of using the rest-api
     function listAvailableTests() {
         return fs.readdirSync(__dirname + "/../sample_tests/");
     }
 
-    io.sockets.on("connection", function (socket) {
-        socket.on("initDriver", function(callback) {
-            if(socket.manager.rooms["/drivers"] == null ||
+	io.sockets.on("connection", function(socket) {
+		console.log("Client Connected");
+
+		socket.on("initDriver", function(callback) {
+			/*if(socket.manager.rooms["/drivers"] == null ||
                 socket.manager.rooms["/drivers"].indexOf(socket.id) == -1) {
                 socket.join("drivers");
-            }
+            }*/
+            socket.join("drivers");
 
-            socket.on("disconnect", function (data) {
-                // TODO: Do we need to do anything here? I don't think so
-            });
-            callback(SCREENING_VERSION, agentPool.getAgents(), listAvailableTests());
-        });
 
-        socket.on("initRecorder", function(id) {
+			socket.on("disconnect", function() {
+				console.log("Client disconnected");
+			})
+			callback(screeningVersion, agentPool.getAgents()/*, listAvailableTests()*/);
+		});
+
+		socket.on("initRecorder", function(id) {
             var agent = agentPool.getAgentById(id);
             agent.recorderReady(socket);
         });
-    });
+	});
 
-    // attaching our socket.io port here for control-room communication
-    agentPool.io = io;
-
-    return io;
+	// attaching our socket.io port here for control-room communication
+	agentPool.io = io;
 }

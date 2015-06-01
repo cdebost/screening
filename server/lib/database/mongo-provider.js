@@ -57,7 +57,8 @@ MongoDbProvider.prototype = Object.create(Object, {
 
     _db: {
         value: null,
-        enumerable:false
+        enumerable: false,
+        writable: true
     },
 
     db: {

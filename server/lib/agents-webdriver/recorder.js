@@ -70,7 +70,8 @@ var propertyWhitelist = [
 var EventUtility = Object.create(Object, {
     _listening: {
         enumerable: false,
-        value: false
+        value: false,
+        writable: true
     },
 
     listening: {
@@ -87,31 +88,37 @@ var EventUtility = Object.create(Object, {
     },
 
     _lastEvent: {
-        value: null
+        value: null,
+        writable: true
     },
 
     _attachedWindow: {
         enumerable: false,
-        value: null
+        value: null,
+        writable: true
     },
 
     _attachedIframe: {
         enumerable: false,
-        value: null
+        value: null,
+        writable: true
     },
 
     _eventListener: {
         enumerable: false,
-        value: null
+        value: null,
+        writable: true
     },
 
     _navigateListener: {
         enumerable: false,
-        value: null
+        value: null,
+        writable: true
     },
 
     socket: {
-        value: null
+        value: null,
+        writable: true
     },
 
     /**
@@ -293,11 +300,11 @@ var EventUtility = Object.create(Object, {
 
             // Loop through the keys on the event object and copy over any that may be of interest to us
             for(key in nativeEvent) {
-               var value = nativeEvent[key];
-               if (typeof value === "function") {
-                   // Don't serialize event methods
-                   continue;
-               }
+                var value = nativeEvent[key];
+                if (typeof value === "function") {
+                    // Don't serialize event methods
+                    continue;
+                }
 
                if(propertyWhitelist.indexOf(key) != -1) {
                    // Exclude elements that contain null, false, 0, or empty string values.
@@ -360,7 +367,7 @@ var EventUtility = Object.create(Object, {
         value: function(element, event) {
             if(event.pageX == undefined && event.pageY == undefined) { return null; }
 
-            if(webkitConvertPointFromPageToNode) {
+            if(typeof webkitConvertPointFromPageToNode !== "undefined") {
                 var offset = webkitConvertPointFromPageToNode(element, new WebKitPoint(event.pageX,event.pageY));
                 return [offset.x, offset.y];
             } else {
@@ -467,19 +474,19 @@ var eventUtil = Object.create(EventUtility);
 console.log("Connecting to " + server.domain + ":" + server.port);
 
 // Include socket.io and setup the socket connection
-injectScript(server.domain + ":" + server.port + "/screening/socket.io/socket.io.js", function() {
-    var socket = io.connect(server.domain + ":" + server.port, { resource: "screening/socket.io" });
+injectScript(server.domain + ":" + server.port + "/socket.io/socket.io.js", function() {
+    var socket = io.connect(server.domain + ":" + server.port, { resource: "/socket.io" });
     eventUtil.socket = socket; // Meh, this isn't the most elegant solution...
     socket.emit("initRecorder", agentId); // Tell the server that we're available for recording
 
     // Implicitly start recording immediately
-    //eventUtil.startListening(window);
+    eventUtil.startListening(window);
 
     // Start listening to events fired by the page in the iFrame and relay those events to the server
     // NOTE: With webdriver this should never happen
     socket.on("startRecord", function () {
         console.log("Recording Starting");
-        eventUtil.startListening(window);
+        //eventUtil.startListening(window);
     });
 
     // Stop listening to events

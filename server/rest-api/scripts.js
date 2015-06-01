@@ -33,15 +33,18 @@ var express = require('express');
 var routingConfig = require("./routing-config.js");
 var spawn = require('child_process').spawn;
 var wrench = require('wrench');
+var path = require('path');
+var archiver = require('archiver');
 
 module.exports = function(scriptsProvider) {
-    var app = express.createServer();
+    var app = express();
 
-    app.mounted(function(otherApp) {
+    // TODO: Broken since upgrading to express 3.x
+    /*app.mounted(function(otherApp) {
         console.info("[scripts] express app was mounted.");
-    });
+    });*/
 
-    var SCRIPTS_PATH = __dirname + "/../sample_tests/";
+    var SCRIPTS_PATH = path.join(__dirname, "..", "sample_tests");
 
     /**
      * GET all the scripts found in the server
@@ -105,12 +108,6 @@ module.exports = function(scriptsProvider) {
      *
      */
     app.get("/archive", function(req, res, next) {
-        // Create a temp directory
-        var prefix = SCRIPTS_PATH.substr(0, SCRIPTS_PATH.length - 1);
-        var destDir = prefix + "_archive_" + Math.floor(Math.random() * 10000);
-
-        fs.mkdirSync(destDir, 0755);
-
         scriptsProvider.findAll(function(err, scripts) {
             if (err) return next(new Error(err));
 
@@ -119,41 +116,23 @@ module.exports = function(scriptsProvider) {
                 return next(new Error("There are no scripts to archive."));
             }
 
-            // Dump all the currently displayed scripts into temp
+            // Cross-platform solution
+            var archive = archiver("zip");
+
+            res.writeHead(200, {
+                "Content-Type": "application/zip",
+                "Content-disposition": "attachment; filename=scripts.zip"
+            });
+
+            archive.on("error", function(err) {
+                throw err;
+            });
+
+            archive.pipe(res);
             scripts.forEach(function(script) {
-                var newFileName = destDir + "/" + script.name;
-                var fd = fs.openSync(newFileName, 'w', 0755);
-                fs.writeSync(fd, script.code);
-                fs.closeSync(fd);
+                archive.append(String(script.code), {name: script.name + ".js"});
             });
-
-            // Create a zip from destDir
-            // Options -r recursive -j ignore directory info - redirect to stdout
-            var zip = spawn('zip', ['-rj', '-', destDir]);
-
-            res.contentType('zip');
-
-            // Keep writing stdout to res
-            zip.stdout.on('data', function (data) {
-                res.write(data);
-            });
-
-            zip.stderr.on('data', function (data) {
-                // Uncomment to see the files being added
-                // console.log('zip stderr: ' + data);
-            });
-
-            // End the response on zip exit
-            zip.on('exit', function (code) {
-                if (code !== 0) {
-                    res.statusCode = 500;
-                    console.log('zip process exited with code ' + code);
-                    return next(new Error('Error creating ZIP file, zip command exited with code: ' + code));
-                } else {
-                    wrench.rmdirSyncRecursive(destDir);
-                    res.end();
-                }
-            });
+            archive.finalize();
         });
     });
 

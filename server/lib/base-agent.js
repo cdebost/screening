@@ -40,31 +40,38 @@ var BaseAgent = exports.BaseAgent = Object.create(Object, {
     },
 
     id: {
-        value: null
+        value: null,
+        writable: true
     },
 
     friendlyName: {
-        value: null
+        value: null,
+        writable: true
     },
 
     isBusy: {
-        value: false
+        value: false,
+        writable: true
     },
 
     capabilities: {
-        value: null
+        value: null,
+        writable: true
     },
 
     type: {
-        value: null
+        value: null,
+        writable: true
     },
 
     address: {
-        value: null
+        value: null,
+        writable: true
     },
 
     runner: {
-        value: null
+        value: null,
+        writable: true
     },
 
     /**

@@ -28,44 +28,41 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var settings = require("./settings.js"),
-    express = require("express"),
-    fs = require("fs"),
-    path = require("path"),
-    argv = require("optimist").argv,
-    TestcaseRunner = require("./lib/testcase-runner.js").TestcaseRunner,
-    agentPool = require("./lib/agent-pool.js").agentPool,
-    agentTypes = require("./lib/agent-pool.js").agentTypes,
-    simpleRequest = require("request"),
-    MongoDbProvider = require("./lib/database/mongo-provider.js"),
+var path = require('path'),
+	express = require("express"),
+	fs = require("fs"),
+	simpleRequest = require("request"),
+	argv = require("optimist").argv,
+
+	settings = require("./settings.js"),
+
+	TestcaseRunner = require("./lib/testcase-runner.js").TestcaseRunner,
+	agentPool = require("./lib/agent-pool.js").agentPool,
+	agentTypes = require("./lib/agent-pool.js").agentTypes,
+
+	MongoDbProvider = require("./lib/database/mongo-provider.js"),
     TestcaseResultsProvider = require("./lib/database/testcase-results-provider.js"),
     BatchesProvider = require("./lib/database/batches-provider.js"),
     ScriptsProvider = require("./lib/database/scripts-provider.js");
 
+
+
 // Get the Screening Version from package.json
 var packageJsonContents = fs.readFileSync(__dirname + "/package.json", "utf8");
 var packageJson = JSON.parse(packageJsonContents);
-const SCREENING_VERSION = packageJson.version;
+const SCREENING_VERSION = exports.SCREENING_VERSION = packageJson.version;
 
-// Define the exports
-var app = exports.app = express.createServer();
+var app = exports.app = express();
 exports.agentPool = agentPool;
-exports.SCREENING_VERSION = SCREENING_VERSION;
 
-/**
- * Configures the Screening server, sets up the middleware wiring.
- * @param {MongoDbProvider} customMongoDbProvider optional MongoDbProvider used for unit testing
- */
-exports.configureServer = function(customMongoDbProvider) {
-    var mongoDbProvider = customMongoDbProvider || new MongoDbProvider(settings.mongoDB.host, settings.mongoDB.port);
+exports.createServer = function(customMongoDbProvider) {
+	var mongoDbProvider = customMongoDbProvider || new MongoDbProvider(settings.mongoDB.host, settings.mongoDB.port);
     mongoDbProvider.ensureIndexes();
     var testcaseResultsProvider = new TestcaseResultsProvider(mongoDbProvider.db);
     var scriptsProvider = new ScriptsProvider(mongoDbProvider.db);
     var batchesProvider = new BatchesProvider(mongoDbProvider.db);
 
     var testcaseRunner = new TestcaseRunner(agentPool, argv.debug, testcaseResultsProvider);
-    // instantiate the singleton of our testrunner
-    // runner will output more details by passing --debug
 
     var routingConfig = require("./rest-api/routing-config.js");
     var agentsApi = require("./rest-api/agents.js")(agentPool, testcaseRunner, scriptsProvider, batchesProvider);
@@ -73,30 +70,20 @@ exports.configureServer = function(customMongoDbProvider) {
     var testResultsApi = require("./rest-api/test-results.js")(testcaseResultsProvider);
     var batchesApi = require("./rest-api/batches.js")(batchesProvider);
 
-    const SCREENING_PATH = path.join(__dirname, "../public");
 
-    // Manually adding a new text/plain parser that will add the body verbatim to req.body
-    var bodyParser = express.bodyParser;
-    bodyParser.parse["application/javascript"] = bodyParser.parse["text/plain"] = function(req, options, callback) {
-        var buf = '';
-        req.setEncoding('utf8');
-        req.on('data', function(chunk) { buf += chunk; });
-        req.on('end', function(){
-            req.body = buf;
-            callback();
-        });
-    };
+	const SCREENING_PATH = path.join(__dirname, "../public");
 
-    app.configure(function() {
-        /* Express Middleware: ORDER MATTERS! */
-        app.use(bodyParser());
-        app.use(express.cookieParser());
-        app.use(express.session({ secret: "hellomoto" }));
-        app.use(app.router);
+	/* Express Middleware: ORDER MATTERS! */
+    app.use(express.json());
+    app.use(express.urlencoded());
+    app.use(express.multipart());
 
-        app.use("/", express.directory(SCREENING_PATH));
-        app.use("/", express.static(SCREENING_PATH));
-    });
+    app.use(express.cookieParser());
+    app.use(express.session({ secret: "hellomoto" }));
+    app.use(app.router);
+
+    app.use("/", express.directory(SCREENING_PATH));
+    app.use("/", express.static(SCREENING_PATH));
 
     // REST-API wiring
     routingConfig.apiKeyAuth(app);

@@ -45,7 +45,8 @@ ScriptsProvider.prototype = Object.create(MongoDbProvider.prototype, {
 
     _db: {
         value: null,
-        enumerable: false
+        enumerable: false,
+        writable: true
     },
 
     findByName: {

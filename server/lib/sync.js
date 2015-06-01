@@ -41,27 +41,33 @@ var Sync = exports.Sync = Object.create(Object, {
     },
 
     _resultStack: {
-        value: null
+        value: null,
+        writable: true
     },
 
     _resultOffset: {
-        value: 0
+        value: 0,
+        writable: true
     },
 
     _resultPending: {
-        value: false
+        value: false,
+        writable: true
     },
 
     _passCount: {
-        value: 0
+        value: 0,
+        writable: true
     },
 
     _syncCode: {
-        value: null
+        value: null,
+        writable: true
     },
 
     _defer: {
-        value: null
+        value: null,
+        writable: true
     },
 
     /**
@@ -142,7 +148,7 @@ var Sync = exports.Sync = Object.create(Object, {
 
             this._passCount++;
             try {
-                this._resultOffset = 0; // Rest the result stack pointer
+                this._resultOffset = 0; // Reset the result stack pointer
                 result = this._syncCode(this); // Execute the code
                 // And now we expect it to fail...
                 // ..

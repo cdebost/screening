@@ -68,7 +68,8 @@ var WebDriverAgent = exports.WebDriverAgent = Object.create(BaseAgent, {
     },
 
     url: {
-        value: null
+        value: null,
+        writable: true
     },
 
     endTest: {
@@ -113,7 +114,7 @@ var WebDriverAgent = exports.WebDriverAgent = Object.create(BaseAgent, {
                         // Inject the recording script into the page
                         Q.when(session.executeScript(recordingScript, [rootUrl, self.id]), function() {
                             console.log("Waiting for recording socket connection");
-                            // When the socket is instantiated it recorderReady will be called.
+                            // When the socket is instantiated recorderReady will be called.
                         }, function(err) {
                             console.log("Record Script Failed", err.value.message);
                         });

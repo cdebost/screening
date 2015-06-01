@@ -43,11 +43,15 @@ TestcaseResultsProvider.prototype = Object.create(MongoDbProvider.prototype, {
         enumerable: false
     },
 
-    _collectionName: { value: "testcaseResults" },
+    _collectionName: {
+        value: "testcaseResults",
+        writable: true
+    },
 
     _db: {
         value: null,
-        enumerable: false
+        enumerable: false,
+        writable: true
     },
 
     findByDateRange: {

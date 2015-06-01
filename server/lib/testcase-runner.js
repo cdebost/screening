@@ -175,7 +175,7 @@ TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, opt
                 writeResultsAndShowNotification();
             }
         } else {
-            // Execute the test, using our code synchronization system
+            // The session succeeded. Execute the test, using our code synchronization system
             when(self._executeTestInVm(testScript.code, result, agentConstructor, scriptObject, sync), function() {
                 // kill the webdriver session
                 session.quit().then(function() {

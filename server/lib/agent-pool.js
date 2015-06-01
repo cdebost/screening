@@ -46,7 +46,8 @@ var AgentPool = Object.create(Object, {
     },
 
     agents: {
-        value: null
+        value: null,
+        writable: true
     },
 
     /**
@@ -56,7 +57,8 @@ var AgentPool = Object.create(Object, {
      * startup code would get really awkward.
      */
     io: {
-        value: null
+        value: null,
+        writable: true
     },
 
     /**
@@ -84,9 +86,11 @@ var AgentPool = Object.create(Object, {
                 this.agents[agent.friendlyName] = agent;
                 // removing a webdriver agent when it is not available anymore
                 var heartbeatInterval = setInterval(function(){
+                    self.io.sockets.in("drivers").emit("heartBeat");
                     agent.isAvailable(function(success){
                         if(!success) {
                             clearInterval(heartbeatInterval);
+                            console.log('Agent ' + agent.id + ' is no longer available. Removing.');
                             self.removeAgent(agent.id);
                         }
                     });
