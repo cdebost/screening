@@ -33,96 +33,30 @@ POSSIBILITY OF SUCH DAMAGE.
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" type="text/css" href="script-list-view.css">
+
         <script type="text/montage-serialization">
         {
+            "owner": {
+                "properties": {
+                    "element": {"#": "scriptListView"},
+
+                    "scriptUploader": {"@": "scriptUploader"},
+                    "scriptList": {"@": "scriptList"}
+                }
+            },
+
             "scriptSourceView": {
-                "module": "control-room/ui/script-source-view.reel",
-                "name": "ScriptSourceView",
+                "prototype": "ui/script-source-view.reel",
                 "properties": {
                     "element": {"#": "scriptSource"}
                 },
                 "bindings": {
-                    "scriptSource": {
-                        "boundObject": {"@": "scriptList"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "scriptSource": {"<-": "@scriptList:iteration.object"}
                 }
             },
 
-            "scriptList": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
-                "properties": {
-                    "element": {"#": "scriptList"},
-                    "isSelectionEnabled": true
-                },
-                "bindings": {
-                    "contentController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "scriptController",
-                        "oneway": true
-                    }
-                }
-            },
-
-            "actioneventlistener1": {
-                "module": "montage/core/event/action-event-listener",
-                "name": "ActionEventListener",
-                "properties": {
-                    "handler": {"@": "owner"},
-                    "action": "createNewScript"
-                }
-            },
-            "button1": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
-                "properties": {
-                    "element": {"#": "newScript"}
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "actioneventlistener1"},
-                        "capture": false
-                    }
-                ]
-            },
-            "actioneventlistener2": {
-                "module": "montage/core/event/action-event-listener",
-                "name": "ActionEventListener",
-                "properties": {
-                    "handler": {"@": "owner"},
-                    "action": "downloadAllScripts"
-                }
-            },
-            "downloadAll": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
-                "properties": {
-                    "element": {"#": "downloadAll"}
-                },
-                "bindings": {
-                    "disabled": {"<-": "@owner.isScriptListEmpty"}
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "actioneventlistener2"},
-                        "capture": false
-                    }
-                ]
-            },
-            "scriptuploader1": {
-                "module": "control-room/ui/script-uploader.reel",
-                "name": "ScriptUploader",
-                "properties": {
-                    "element": {"#": "scriptUploader"}
-                }
-            },
-            "scriptsearch1": {
-                "module": "control-room/ui/script-search.reel",
-                "name": "ScriptSearch",
+            "scriptsearch": {
+                "prototype": "ui/script-search.reel",
                 "properties": {
                     "element": {"#": "scriptSearch"}
                 },
@@ -134,32 +68,72 @@ POSSIBILITY OF SUCH DAMAGE.
                     }
                 ]
             },
-            "owner": {
-                "module": "control-room/ui/script-list-view.reel",
-                "name": "ScriptListView",
+
+            "scriptList": {
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
-                    "element": {"#": "scriptListView"},
-                    "scriptUploader": {"@": "scriptuploader1"},
-                    "scriptList": {"@": "scriptList"}
+                    "element": {"#": "scriptList"},
+                    "isSelectionEnabled": true
+                },
+                "bindings": {
+                    "contentController": {"<-": "@owner.scriptController"}
                 }
+            },
+
+            "scriptUploader": {
+                "prototype": "ui/script-uploader.reel",
+                "properties": {
+                    "element": {"#": "scriptUploader"}
+                }
+            },
+
+            "newScriptButton": {
+                "prototype": "digit/ui/button.reel",
+                "properties": {
+                    "element": {"#": "newScriptButton"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "downloadAllButton": {
+                "prototype": "digit/ui/button.reel",
+                "properties": {
+                    "element": {"#": "downloadAllButton"}
+                },
+                "bindings": {
+                    "disabled": {"<-": "@owner.isScriptListEmpty"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
+                    }
+                ]
             }
         }
         </script>
     </head>
     <body>
-        <div id="scriptListView" data-montage-id="scriptListView" class="scriptListView">
-            <div id="menuBar" data-montage-id="menuBar" class="menuBar">
+        <div data-montage-id="scriptListView" class="scriptListView">
+            <div data-montage-id="menuBar" class="menuBar">
                 <div class="logo">Screening</div>
-                <div id="menuButtons" data-montage-id="menuButtons" class="menuButtons">
-                    <button id="newScript" data-montage-id="newScript" class="blue">New</button>
-                    <button id="downloadAll" data-montage-id="downloadAll" class="">Download All</button>
+                <div data-montage-id="menuButtons" class="menuButtons">
+                    <button data-montage-id="newScriptButton" class="blue">New</button>
+                    <button data-montage-id="downloadAllButton">Download All</button>
                 </div>
             </div>
-            <div id="scriptSearch" data-montage-id="scriptSearch"></div>
-            <ul id="scriptList" data-montage-id="scriptList" class="scriptList flexFill">
-                <li><div id="scriptSource" data-montage-id="scriptSource" tabindex="0"></div></li>
+            <div data-montage-id="scriptSearch"></div>
+            <ul data-montage-id="scriptList" class="scriptList flexFill">
+                <li><div data-montage-id="scriptSource" tabindex="0"></div></li>
             </ul>
-            <div id="scriptUploader" data-montage-id="scriptUploader">Drag Script Here To Upload</div>
+            <div data-montage-id="scriptUploader">Drag Script Here To Upload</div>
         </div>
     </body>
 </html>

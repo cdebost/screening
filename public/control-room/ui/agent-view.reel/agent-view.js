@@ -28,11 +28,10 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var Montage = require("montage/core/core").Montage;
 var Component = require ("montage/ui/component").Component;
-var ScriptSource = require("control-room/script-source").ScriptSource;
+var ScriptSource = require("core/script-source").ScriptSource;
 
-exports.AgentView = Montage.create(Component, {
+exports.AgentView = Component.specialize({
     _agent: {
         value: null
     },
@@ -69,7 +68,7 @@ exports.AgentView = Montage.create(Component, {
         value: ""
     },
 
-    prepareForDraw: {
+    templateDidLoad: {
         value: function() {
             var self = this;
             var clickListener = function(){
@@ -83,15 +82,17 @@ exports.AgentView = Montage.create(Component, {
             };
             this.agentDelete.addEventListener("click", clickListener, false);
 
-            // Set up the host string
-            var address = this.agent.info.address;
-            if(address.match(/^http:/)) {
-                this.agentHostString = address.substring(7); // Cut out "http://"
-            } else {
-                this.agentHostString = address;
-            }
+            if (this.agent) {
+                //Set up the host string
+                var address = this.agent.info.address;
+                if(address.match(/^http:/)) {
+                    this.agentHostString = address.substring(7); // Cut out "http://"
+                } else {
+                    this.agentHostString = address;
+                }
 
-            this.agentHostElement.title = this.agentHostString;
+                this.agentHostElement.title = this.agentHostString;
+            }
         }
     },
 

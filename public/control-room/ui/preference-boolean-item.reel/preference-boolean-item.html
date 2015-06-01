@@ -35,22 +35,22 @@ POSSIBILITY OF SUCH DAMAGE.
         <link rel="stylesheet" type="text/css" href="preference-boolean-item.css">
         <script type="text/montage-serialization">
         {
-            "dynamictext1": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+            "owner": {
+                "properties": {
+                    "element": {"#": "preferenceBooleanItem"}
+                }
+            },
+            "nameText": {
+                "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "name"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "preferenceObject.name",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.preferenceObject.name"}
                 }
             },
-            "toggle1": {
-                "prototype": "montage/ui/toggle-button.reel",
+            "valueToggle": {
+                "prototype": "matte/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "value"},
                     "pressedClass": "active",
@@ -58,26 +58,15 @@ POSSIBILITY OF SUCH DAMAGE.
                     "unpressedLabel": "Off"
                 },
                 "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "preferenceObject.value",
-                        "oneway": false
-                    }
-                }
-            },
-            "owner": {
-                "module": "control-room/ui/preference-boolean-item.reel",
-                "name": "PreferenceBooleanItem",
-                "properties": {
-                    "element": {"#": "preferenceBooleanItem"}
+                    "pressed": {"<->": "@owner.preferenceObject.value"}
                 }
             }
         }
         </script>
     </head>
     <body>
-        <div id="preferenceBooleanItem" data-montage-id="preferenceBooleanItem" class="preferenceBooleanItem">
-            <label id="name" data-montage-id="name"></label><button class="btn" id="value" data-montage-id="value" type="checkbox">On</button>
+        <div data-montage-id="preferenceBooleanItem" class="preferenceBooleanItem">
+            <label data-montage-id="name"></label><button class="btn" data-montage-id="value" type="checkbox">On</button>
         </div>
     </body>
 </html>

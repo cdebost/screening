@@ -30,12 +30,18 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component,
-    PreferenceManager = require("control-room/preference-manager").PreferenceManager,
-    Confirm = require("montage/ui/popup/confirm.reel").Confirm,
-    Popup = require ("montage/ui/popup/popup.reel").Popup,
-    Alert = require ("montage/ui/popup/alert.reel").Alert;
+    PreferenceManager = require("core/preference-manager").PreferenceManager,
+    Confirm = require("matte/ui/popup/confirm.reel").Confirm,
+    Popup = require ("matte/ui/popup/popup.reel").Popup,
+    Alert = require ("matte/ui/popup/alert.reel").Alert;
 
-exports.ScriptDetailView = Montage.create(Component, {
+exports.ScriptDetailView = Component.specialize({
+    constructor: {
+        value: function ScriptDetailView() {
+            this.super();
+        }
+    },
+
     selectedAgent: {
         value: null
     },
@@ -111,7 +117,8 @@ exports.ScriptDetailView = Montage.create(Component, {
 
     _scriptSource: {
         enumerable: false,
-        value: null
+        value: null,
+        writable: true
     },
 
     scriptSource: {
@@ -198,13 +205,13 @@ exports.ScriptDetailView = Montage.create(Component, {
         value:null
     },
 
-    didCreate: {
+    templateDidLoad: {
         value: function() {
             var self = this;
 
-            self.addPropertyChangeListener("scriptSource", function (event) {
+            this.addPathChangeListener("scriptSource", function (event) {
                 if (self.scriptSource) {
-                    // Only enable recording is the selected browser is Chrome
+                    // Only enable recording if the selected browser is Chrome
                     if (self.selectedAgent && self.selectedAgent.info.capabilities.browserName === "chrome") {
                         self.recordButton.disabled = false;
                     }
@@ -214,12 +221,6 @@ exports.ScriptDetailView = Montage.create(Component, {
                     self.downloadButton.disabled = false;
                 }
             });
-        }
-    },
-
-    prepareForDraw: {
-        value: function() {
-            var self = this;
 
             if (this.scriptSource) {
             }
@@ -233,19 +234,34 @@ exports.ScriptDetailView = Montage.create(Component, {
             };
             this._codeMirror = CodeMirror.fromTextArea(this.scriptCode.element, options);
 
-            this.scriptNameField.addPropertyChangeListener("value", function(event) {
-                if (self.scriptSource.name !== self.scriptNameField.value) {
-                    self.needsSave = true;
+            var nameValueChangeListener = function(event) {
+                if (arguments.callee.firstTime) {
+                    arguments.callee.firstTime = false;
                 }
-            }, false);
-
-            this.scriptTags.addPropertyChangeListener("value", function(event) {
-                if (self.scriptSource.displayTags !== self.scriptTags.value) {
-                    self.needsSave = true;
+                else {
+                    if (self.scriptSource.name !== self.scriptNameField.value) {
+                        self.needsSave = true;
+                    }
                 }
-            }, false);
+            };
+            //TODO: Find a better way to do this
+            nameValueChangeListener.firstTime = true;
+            this.scriptNameField.addPathChangeListener("value", nameValueChangeListener, false);
 
-            this.element.addEventListener("keydown", this);
+            var tagValueChangeListener = function(event) {
+                if (arguments.callee.firstTime) {
+                    arguments.callee.firstTime = false;
+                }
+                else {
+                    if (self.scriptSource.displayTags !== self.scriptTags.value) {
+                        self.needsSave = true;
+                    }
+                }
+            };
+            tagValueChangeListener.firstTime = true;
+            this.scriptTags.addPathChangeListener("value", tagValueChangeListener, false);
+
+            document.addEventListener("keydown", this);
             this.urlPrompt.addEventListener("message.ok", function(event) {
                 self.urlPromptOk();
             });
@@ -358,7 +374,6 @@ exports.ScriptDetailView = Montage.create(Component, {
                 req.open("DELETE", "/screening/api/v1/scripts/" + self.scriptSource.id + "?api_key=5150", true);
                 self.needsSave = false;
                 req.onload = function(event) {
-                    console.log('deleting the script source response:' + event);
                     self._dispatchDeleted();
                 };
                 req.send(null);
@@ -369,10 +384,16 @@ exports.ScriptDetailView = Montage.create(Component, {
         }
     },
 
+    //TODO: Not currently used (should we use action event listeners or JS listeners for buttons?)
+    handleDownloadButtonAction: {
+        value: function(event) {
+            this.downloadScriptSource();
+        }
+    },
+
     downloadScriptSource: {
         value: function() {
-            var self = this;
-            window.location.href = "/screening/api/v1/scripts/" + self.scriptSource.id + "/download?api_key=5150";
+            window.location.href = "/screening/api/v1/scripts/" + this.scriptSource.id + "/download?api_key=5150";
         }
     },
 
@@ -381,6 +402,7 @@ exports.ScriptDetailView = Montage.create(Component, {
             // update the code
             var id = this.scriptSource.id;
             this.scriptSource.name = this.scriptNameField.value;
+            this.scriptSource.displayTags = this.scriptTags.value;
             this.scriptSource.code = this._codeMirror.getValue();
 
             var self = this;
@@ -558,7 +580,6 @@ exports.ScriptDetailView = Montage.create(Component, {
 
     unsavedChangesConfirm: {
         value: function(cbOk, cbCancel) {
-            var self = this;
             cbCancel = cbCancel || function() {};
             Confirm.show("Your script has unsaved changes. Continuing will discard any unsaved changes. Do you wish to continue?", cbOk, cbCancel);
         }
@@ -569,18 +590,21 @@ exports.ScriptDetailView = Montage.create(Component, {
          * Clear the script name, tags and content.
          */
         value: function() {
-            var self = this;
+            if (!this.scriptNameField) {
+                // The component has not been fully loaded
+                return;
+            }
 
-            self.scriptNameField.value = "";
-            self.scriptTags.value = "";
-            self._codeMirror.setValue("");
+            this.scriptNameField.value = "";
+            this.scriptTags.value = "";
+            this._codeMirror.setValue(" ");
 
             // Disable the Record, Run, etc buttons
-            self.recordButton.disabled = true;
-            self.runButton.disabled = true;
-            self.saveButton.disabled = true;
-            self.deleteButton.disabled = true;
-            self.downloadButton.disabled = true;
+            this.recordButton.disabled = true;
+            this.runButton.disabled = true;
+            this.saveButton.disabled = true;
+            this.deleteButton.disabled = true;
+            this.downloadButton.disabled = true;
         }
     }
 });

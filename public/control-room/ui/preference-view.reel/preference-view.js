@@ -28,17 +28,21 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var Montage = require("montage/core/core").Montage;
 var Component = require ("montage/ui/component").Component;
-var PreferenceManager = require("control-room/preference-manager").PreferenceManager;
+var PreferenceManager = require("core/preference-manager").PreferenceManager;
 
-exports.PreferenceView = Montage.create(Component, {
+exports.PreferenceView = Component.specialize({
+    constructor: {
+        value: function PreferenceView() {
+            this.super();
+        }
+    },
 
     _storageIssue: {
         value: false
     },
 
-    preferences: { // TODO rename this to be be somethign better, it's not a list really.
+    preferences: { // TODO: rename this to be be something better, it's not a list really.
         value: [],
         distinct: true
     },
@@ -47,7 +51,7 @@ exports.PreferenceView = Montage.create(Component, {
         value: null
     },
 
-    prepareForDraw: {
+    templateDidLoad: {
         value: function() {
             try {
                 localStorage['screening.test.local.storage.availability'] = 'test';

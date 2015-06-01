@@ -28,11 +28,15 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var Montage = require("montage/core/core").Montage;
 var Component = require ("montage/ui/component").Component;
-var MutableEvent = require("montage/core/event/mutable-event").MutableEvent;
 
-exports.ScriptSourceView = Montage.create(Component, {
+exports.ScriptSourceView = Component.specialize({
+    constructor: {
+        value: function ScriptSourceView() {
+            this.super();
+        }
+    },
+
     _scriptSource: {
         enumerable: false,
         value: null

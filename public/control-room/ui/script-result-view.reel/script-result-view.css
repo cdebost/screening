@@ -122,23 +122,32 @@ tr.exception {
     color: hsl(41, 100%, 41%);
 }
 
+.resultsCol {
+    padding: 0;
+}
 
-td.pass {
+span.pass, span.fail, span.exception, span.start, span.end {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+}
+
+td > span.pass {
     color:#FFF;
     background-color: hsl(114, 97%, 35%);
 }
 
-td.fail {
+td > span.fail {
     color:#FFF;
     background-color: hsl(0, 95%, 41%);
 }
 
-td.exception {
+td > span.exception {
     color:#FFF;
     background-color: hsl(41, 100%, 41%);
 }
 
-td.start, td.end {
+td > span.start, td > span.end {
     color:#FFF;
     background-color:#AAA;
 }

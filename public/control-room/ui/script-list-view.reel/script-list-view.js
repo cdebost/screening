@@ -28,12 +28,26 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var Montage = require("montage/core/core").Montage;
-var Component = require("montage/ui/component").Component;
-var ScriptSource = require("control-room/script-source").ScriptSource;
-var Keyboard = require("common/keyboard").Keyboard;
 
-exports.ScriptListView = Montage.create(Component, {
+/**
+ * @module ui/script-list-view.reel
+ * @requires montage/ui/component
+ */
+var Component = require("montage/ui/component").Component,
+    ScriptSource = require("core/script-source").ScriptSource,
+    Keyboard = require("core/keyboard").Keyboard;
+
+/**
+ * @class ScriptListView
+ * @extends Component
+ */
+exports.ScriptListView = Component.specialize({
+    constructor: {
+        value: function ScriptListView() {
+            this.super();
+        }
+    },
+
     scriptController: {
         value: null
     },
@@ -59,34 +73,16 @@ exports.ScriptListView = Montage.create(Component, {
         }
     },
 
-    prepareForDraw: {
+    templateDidLoad: {
         value: function() {
-            var self = this;
-            self.queryScriptSources();
-            self.scriptUploader.addEventListener('uploadEvent', this, false);
-
-            self.element.addEventListener("keyup", function(evt) {
-                if(evt.keyCode === Keyboard.keyNames["ENTER"]) { // Enter Key Code
-                    self.scriptController.selectedObjects = [document.activeElement.controller.scriptSource]
-                }
-            });
-
-            self.element.addEventListener("keydown", function(evt){
-                if(evt.keyCode === Keyboard.keyNames["UP"]) {
-                    document.activeElement.parentElement.previousElementSibling.firstElementChild.focus();
-                }
-
-                if(evt.keyCode === Keyboard.keyNames["DOWN"]) {
-                    document.activeElement.parentElement.nextElementSibling.firstElementChild.focus();
-                }
-            });
+            this.queryScriptSources();
+            this.scriptUploader.addEventListener('uploadEvent', this, false);
         }
     },
 
     handleRefreshScriptList: {
         value: function(event) {
-            var self = this;
-            self.queryScriptSources(null, event.searchScope, event.searchString);
+            this.queryScriptSources(null, event.searchScope, event.searchString);
         }
     },
 
@@ -99,7 +95,7 @@ exports.ScriptListView = Montage.create(Component, {
     queryScriptSources: {
         value: function(scriptName, searchScope, searchString) {
             var self = this;
-            //console.log(searchScope);
+
             var url = "/screening/api/v1/scripts?api_key=5150";
 
             if (searchString && searchString.trim()) {
@@ -175,18 +171,25 @@ exports.ScriptListView = Montage.create(Component, {
                 var createdScript = JSON.parse(this.responseText);
 
                 // Create a proper ScriptSource object and then populate it with the response
-                var scriptSource = ScriptSource.create();
+                var scriptSource = new ScriptSource();
                 scriptSource.fromServer(createdScript);
 
-                self.scriptController.addObjects(scriptSource);
+                self.scriptController.add(scriptSource);
                 self.needsDraw = true;
             };
             req.send(null);
         }
     },
 
+    deleteScript: {
+        value: function() {
+            this.scriptController.delete(this.scriptController.selection[0]);
+            this.needsDraw = true;
+        }
+    },
+
     // Button Methods
-    createNewScript: {
+    handleNewScriptButtonAction: {
         value: function() {
             if (this.delegate && this.delegate.canAddNewItem) {
                 this.delegate.canAddNewItem(this._createNewScript.bind(this));
@@ -196,8 +199,9 @@ exports.ScriptListView = Montage.create(Component, {
         }
     },
 
-    downloadAllScripts: {
+    handleDownloadAllButtonAction: {
         value: function() {
+            //TODO: Not working
             window.location.href = "/screening/api/v1/scripts/archive?api_key=5150";
         }
     }

@@ -6,49 +6,40 @@
         <script type="text/montage-serialization">
             {
                 "owner": {
-                    "module": "control-room/ui/agent-webdriver-dialog.reel",
-                    "name": "AgentWebdriverDialog",
                     "properties": {
                         "element": {"#": "webdriverDialog"},
+
                         "browserName": {"@": "browserName"},
                         "crxFile": {"@": "crxFile"}
                     }
-                 },
+                },
 
                 "url": {
-                    "module": "montage/ui/input-text.reel",
-                    "name": "InputText",
+                    "prototype": "matte/ui/input-text.reel",
                     "properties": {
                         "element": {"#": "url"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "url",
-                            "oneway": false
-                        }
+                        "value": {"<->": "@owner.url"}
                     }
                 },
 
                 "browserName": {
-                    "module": "montage/ui/select.reel",
-                    "name": "Select",
+                    "prototype": "matte/ui/select.reel",
                     "properties": {
                         "element": {"#": "browserName"}
                     }
                 },
 
                 "crxFile": {
-                    "prototype": "montage/ui/dynamic-element.reel",
+                    "prototype": "matte/ui/dynamic-element.reel",
                     "properties": {
-                        "identifier": "crxFile",
                         "element": {"#": "crxFile"}
                     }
                 },
 
                 "ok": {
-                    "module": "montage/ui/button.reel",
-                    "name": "Button",
+                    "prototype": "digit/ui/button.reel",
                     "properties": {
                         "identifier": "Ok",
                         "element": {"#": "ok"}
@@ -62,8 +53,7 @@
                 },
                 
                 "cancel": {
-                    "module": "montage/ui/button.reel",
-                    "name": "Button",
+                    "prototype": "digit/ui/button.reel",
                     "properties": {
                         "identifier": "Cancel",
                         "element": {"#": "cancel"}
@@ -80,28 +70,28 @@
     </head>
 
     <body>
-        <div id="webdriverDialog" data-montage-id="webdriverDialog" class="webdriverDialog">
-            <div id="content">
-                <fieldset id="agentUrl">
+        <div data-montage-id="webdriverDialog" class="webdriverDialog">
+            <div>
+                <fieldset>
                     <label for="url">URL</label>
-                    <input type="text" id="url" data-montage-id="url"/>
+                    <input type="text" data-montage-id="url"/>
                 </fieldset>
-                <fieldset id="agentBrowserName">
+                <fieldset>
                     <label for="browserName">Browser</label>
-                    <select id="browserName" data-montage-id="browserName">
+                    <select data-montage-id="browserName">
                         <option value="chrome">Chrome</option>
                         <option value="firefox">Firefox</option>
                         <option value="opera">Opera</option>
                         <option value="internet explorer">Internet Explorer</option>
                     </select>
                 </fieldset>
-                <fieldset id="chromeExtension">
+                <fieldset>
                     <label for="crxFile">Chrome Extension (Optional)</label>
-                    <input type="file" id="crxFile" data-montage-id="crxFile" accept="application/x-chrome-extension" />
+                    <input type="file" data-montage-id="crxFile" accept="application/x-chrome-extension" />
                 </fieldset>
-                <fieldset id="buttons" class="buttons">
-                    <button id="cancel" data-montage-id="cancel">Cancel</button>
-                    <button id="ok" data-montage-id="ok" class="blue">OK</button>
+                <fieldset class="buttons">
+                    <button data-montage-id="cancel">Cancel</button>
+                    <button data-montage-id="ok" class="blue">OK</button>
                 </fieldset>
             </div>
         </div>

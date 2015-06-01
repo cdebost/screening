@@ -28,10 +28,9 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var Montage = require("montage/core/core").Montage;
 var Component = require("montage/ui/component").Component;
 
-var TextPrompt = exports.TextPrompt = Montage.create(Component, {
+var TextPrompt = exports.TextPrompt = Component.specialize({
     hasTemplate: {value: true},
 
     headerEl: {
@@ -78,9 +77,9 @@ var TextPrompt = exports.TextPrompt = Montage.create(Component, {
         }
     },
 
-    prepareForDraw: {
+    templateDidLoad: {
         value: function() {
-            this.element.addEventListener("keyup", this, false);
+            this.addEventListener("keyup", this, false);
         }
     },
 
@@ -113,5 +112,4 @@ var TextPrompt = exports.TextPrompt = Montage.create(Component, {
             this._popup.hide();
         }
     }
-
 });

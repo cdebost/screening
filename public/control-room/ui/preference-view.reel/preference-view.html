@@ -35,108 +35,82 @@ POSSIBILITY OF SUCH DAMAGE.
         <link rel="stylesheet" type="text/css" href="preference-view.css">
         <script type="text/montage-serialization">
         {
-            "preferencetextitem1": {
-                "module": "control-room/ui/preference-text-item.reel",
-                "name": "PreferenceTextItem",
+            "owner": {
                 "properties": {
+                    "element": {"#": "preferenceView"},
+                    "preferenceRepetition": {"@" : "preferenceRepetition"}
+                }
+            },
+            
+            "preferenceText": {
+                "prototype": "ui/preference-text-item.reel",
+                "properties": {
+                    "element": {"#": "preferenceText"}
+                },
+                "bindings": {
+                    "preferenceObject": {"<-": "@preferenceRepetition:iteration.object"}
+                }
+            },
+            "preferenceBooleanItem": {
+                "prototype": "ui/preference-boolean-item.reel",
+                "properties": {
+                    "element": {"#": "preferenceBooleanItem"}
+                },
+                "bindings": {
+                    "preferenceObject": {"<-": "@preferenceRepetition:iteration.object"}
+                }
+            },
+            "preferenceSelectItem": {
+                "prototype": "ui/preference-select-item.reel",
+                "properties": {
+                    "element": {"#": "preferenceSelectItem"}
+                },
+                "bindings": {
+                    "preferenceObject": {"<-": "@preferenceRepetition:iteration.object"}
+                }
+            },
 
-                },
-                "bindings": {
-                    "preferenceObject": {
-                        "boundObject": {"@": "preferenceRepetition"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
-                }
-            },
-            "preferencebooleanitem1": {
-                "module": "control-room/ui/preference-boolean-item.reel",
-                "name": "PreferenceBooleanItem",
+            "preferenceItemSubstitution": {
+                "prototype": "montage/ui/substitution.reel",
                 "properties": {
-
+                    "element": {"#": "preferenceItem"}
                 },
                 "bindings": {
-                    "preferenceObject": {
-                        "boundObject": {"@": "preferenceRepetition"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "switchValue": {"<-": "@preferenceRepetition:iteration.object.type"}
                 }
             },
-            "preferenceselectitem1": {
-                "module": "control-room/ui/preference-select-item.reel",
-                "name": "PreferenceSelectItem",
-                "properties": {
-
-                },
-                "bindings": {
-                    "preferenceObject": {
-                        "boundObject": {"@": "preferenceRepetition"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
-                }
-            },
-            "substitution1": {
-                "module": "montage/ui/substitution.reel",
-                "name": "Substitution",
-                "properties": {
-                    "element": {"#": "preferenceItem"},
-                    "switchComponents": {
-                        "text": {"@": "preferencetextitem1"},
-                        "boolean": {"@": "preferencebooleanitem1"},
-                        "select": {"@": "preferenceselectitem1"}
-                    }
-                },
-                "bindings": {
-                    "switchValue": {
-                        "boundObject": {"@": "preferenceRepetition"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.type",
-                        "oneway": true
-                    }
-                }
-            },
+            
             "preferencesController": {
-                "name": "ArrayController",
-                "module": "montage/ui/controller/array-controller",
+                "prototype": "montage/core/range-controller",
                 "properties": {
                     "selectObjectsOnAddition": true,
                     "automaticallyOrganizeObjects": true
                 },
                 "bindings": {
-                    "content": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "preferences",
-                        "oneway": true
-                    }
+                    "content": {"<-": "@owner.preferences"}
                 }
             },
             "preferenceRepetition": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "preference-repetition"},
                     "isSelectionEnabled": false,
                     "axis": "vertical",
                     "contentController": {"@": "preferencesController"}
                 }
-            },
-            "owner": {
-                "module": "control-room/ui/preference-view.reel",
-                "name": "PreferenceView",
-                "properties": {
-                    "element": {"#": "preferenceView"},
-                    "preferenceRepetition": {"@" : "preferenceRepetition"}
-                }
             }
         }
         </script>
     </head>
     <body>
-        <div id="preferenceView" data-montage-id="preferenceView" class="preferenceView">
+        <div data-montage-id="preferenceView" class="preferenceView">
             <h1>Preferences</h1>
-            <ul id="preference-repetition" data-montage-id="preference-repetition">
-                <li id="preferenceItem" data-montage-id="preferenceItem"></li>
+            <ul data-montage-id="preference-repetition">
+                <li data-montage-id="preferenceItem">
+                    <div data-arg="text" data-montage-id="preferenceText"></div>
+                    <div data-arg="boolean" data-montage-id="preferenceBooleanItem"></div>
+                    <div data-arg="select" data-montage-id="preferenceSelectItem"></div>
+                </li>
             </ul>
         </div>
     </body>

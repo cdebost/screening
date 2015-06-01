@@ -30,66 +30,58 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> -->
 <!DOCTYPE HTML>
 <html>
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <link rel="stylesheet" type="text/css" href="script-search.css">
-        <script type="text/montage-serialization">
-        {
-            "owner": {
-                "module": "control-room/ui/script-search.reel",
-                "name": "ScriptSearch",
-                "properties": {
-                    "element": {"#": "scriptSearch"},
-                    "scriptSearchBox": {"@": "scriptSearchBox"},
-                    "scriptSearchCombo": {"@": "scriptSearchCombo"}
-                }
-            },
-            "scriptSearchCombo": {
-                "module": "montage/ui/select.reel",
-                "name": "Select",
-                "properties": {
-                    "element": {"#": "searchScope"}
-                }
-            },
-            "scriptSearchBox": {
-                "module": "montage/ui/input-text.reel",
-                "name": "InputText",
-                "properties": {
-                    "element": {"#": "scriptSearchBox"}
-                }
-            },
-            "searchButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
-                "properties": {
-                    "element": {"#": "searchButton"}
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "searchActionEventListener"}
-                    }
-                ]
-            },
-            "searchActionEventListener": {
-                "module": "montage/core/event/action-event-listener",
-                "name": "ActionEventListener",
-                "properties": {
-                    "handler": {"@": "owner"},
-                    "action": "searchAction"
-                }
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="script-search.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "scriptSearch"},
+                
+                "scriptSearchBox": {"@": "scriptSearchBox"},
+                "scriptSearchCombo": {"@": "scriptSearchCombo"}
             }
+        },
+
+        "scriptSearchCombo": {
+            "prototype": "digit/ui/select.reel",
+            "properties": {
+                "element": {"#": "searchScope"},
+                "content": [
+                    {"label": "name"},
+                    {"label": "tags"}
+                ]
+            }
+        },
+        "scriptSearchBox": {
+            "prototype": "matte/ui/input-text.reel",
+            "properties": {
+                "element": {"#": "scriptSearchBox"}
+            }
+        },
+        "searchButton": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "searchButton"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
         }
-        </script>
-    </head>
-    <body>
-    <div id="scriptSearch" data-montage-id="scriptSearch" class="scriptSearch">
-        <select id="searchScope" data-montage-id="searchScope" class="searchScope">
-            <option value="name">Name</option>
-            <option value="tags">Tags</option>
-        </select>
-        <input type="search" id="scriptSearchBox" data-montage-id="scriptSearchBox" class="scriptSearchBox" placeholder="Enter a name or tag">
-        <button id="searchButton" data-montage-id="searchButton" class="button icon search primary big searchButton">Search</button>
+    }
+    </script> 
+
+    
+</head>
+<body>
+    <div data-montage-id="scriptSearch" class="scriptSearch">
+        <select data-montage-id="searchScope" class="searchScope"></select>
+        <input type="search" data-montage-id="scriptSearchBox" class="scriptSearchBox" placeholder="Enter a name or tag">
+        <button data-montage-id="searchButton" class="button icon search primary big searchButton">Search</button>
     </div>
-    </body>
+</body>
 </html>

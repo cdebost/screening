@@ -35,52 +35,42 @@ POSSIBILITY OF SUCH DAMAGE.
         <link rel="stylesheet" type="text/css" href="agent-view.css">
         <script type="text/montage-serialization">
         {
-            "dynamictext1": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+            "owner": {
+                "properties": {
+                    "element": {"#": "agentView"},
+
+                    "agentIcon": {"#": "agentIcon"},
+                    "agentDelete": {"#": "agentDelete"},
+                    "agentHostElement": {"#": "agentHost"}
+                }
+            },
+            "agentNameText": {
+                "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "agentName"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "agent.info.friendlyName",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.agent.info.friendlyName"}
                 }
             },
             "agentHostText": {
-                "prototype": "montage/ui/dynamic-text.reel",
+                "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "agentHost"}
                 },
                 "bindings": {
-                    "value" : {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "agentHostString",
-                        "oneway": true
-                    }
-                }
-            },
-            "owner": {
-                "module": "control-room/ui/agent-view.reel",
-                "name": "AgentView",
-                "properties": {
-                    "element": {"#": "agentView"},
-                    "agentIcon": {"#": "agentIcon"},
-                    "agentDelete": {"#": "agentDelete"},
-                    "agentHostElement": {"#": "agentHost"}
+                    "value": {"<-": "@owner.agentHostString"}
                 }
             }
         }
         </script>
     </head>
     <body>
-        <div id="agentView" data-montage-id="agentView" class="agentView">
-            <button id="agentDelete" data-montage-id="agentDelete" title="Remove Agent" class="agentDelete">×</button>
-            <div id="agentIcon" data-montage-id="agentIcon" class="agentIcon"></div>
-            <div id="agentName" data-montage-id="agentName" class="agentName"></div>
-            <div id="agentHost" data-montage-id="agentHost" class="agentHost"></div>
+        <div data-montage-id="agentView" class="agentView">
+            <button data-montage-id="agentDelete" title="Remove Agent" class="agentDelete">×</button>
+            <div data-montage-id="agentIcon" class="agentIcon"></div>
+            <div data-montage-id="agentName" class="agentName"></div>
+            <div data-montage-id="agentHost" class="agentHost"></div>
         </div>
     </body>
 </html>

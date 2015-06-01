@@ -58,7 +58,7 @@ var Preferences = [
     }
 ];
 
-exports.PreferenceManager = Montage.create(Montage, {
+exports.PreferenceManager = Object.create(Object, {
     PREFERENCE_PREFIX: {
         value: "Screening.Preferences."
     },
@@ -66,8 +66,8 @@ exports.PreferenceManager = Montage.create(Montage, {
     getPreferences : {
         value: function() {
             var preferences = [];
-            var i;
-            for(i = 0; i < Preferences.length; ++i) {
+
+            for(var i = 0; i < Preferences.length; ++i) {
                 var pref = Preferences[i];
                 var key = this.PREFERENCE_PREFIX + pref.shortName;
 
@@ -78,14 +78,32 @@ exports.PreferenceManager = Montage.create(Montage, {
                     val = pref.defaultValue;
                 }
 
-                var prefObj = Montage.create(Montage, {
-                    "type": { value: pref.type},
-                    "name": { value: pref.name},
-                    "key": { value: key},
-                    "shortName": { value: pref.shortName},
-                    "options": { value: pref.options},
-                    "_value": { value: val},
-                    "value": {
+                var prefObj = Object.create(Object, {
+                    type: {
+                        value: pref.type,
+                        writable: true
+                    },
+                    name: {
+                        value: pref.name,
+                        writable: true
+                    },
+                    key: { 
+                        value: key,
+                        writable: true
+                    },
+                    shortName: {
+                        value: pref.shortName,
+                        writable: true
+                    },
+                    options: {
+                        value: pref.options,
+                        writable: true
+                    },
+                    _value: {
+                        value: val,
+                        writable: true
+                    },
+                    value: {
                         get: function(){
                             if(this.type == "boolean") {
                                 return this._value == "true";
@@ -108,7 +126,7 @@ exports.PreferenceManager = Montage.create(Montage, {
         }
     },
 
-    // TODOz: depricated, try to remove
+    // TODO: deprecated, try to remove
     savePreferences: {
         value: function(prefs) {
             // TODO: there is no way this is working right now.

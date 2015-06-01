@@ -1,178 +1,120 @@
-<!-- <copyright>
-Copyright (c) 2012, Motorola Mobility LLC.
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
-
-* Neither the name of Motorola Mobility LLC nor the names of its
-  contributors may be used to endorse or promote products derived from this
-  software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-</copyright> -->
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <link rel="stylesheet" href="main.css" type="text/css" media="all" title="no title" charset="utf-8" />
-        <link rel="stylesheet" type="text/css" href="../css/button.css" />
-        <link rel="stylesheet" type="text/css" href="../css/montage.css" />
-        
-        
-        <script type="text/montage-serialization">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Main</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css" media="all" title="no title" charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="../../assets/style/button.css" />
+    <link rel="stylesheet" type="text/css" href="../../assets/style/montage.css" />
+
+    <script type="text/montage-serialization">
         {
-            "scriptcontrollerdelegate1": {
-                "module": "control-room/main.reel",
-                "name": "ScriptControllerDelegate"
-            },
-            "scriptlistview1": {
-                "module": "control-room/ui/script-list-view.reel",
-                "name": "ScriptListView",
+            "owner": {
                 "properties": {
-                    "delegate": {"@": "scriptcontrollerdelegate1"}
+                    "element": {"#": "main"},
+
+                    "scriptList": {"@": "scriptListView"},
+                    "emptyDetail": {"#": "emptyDetail"},
+                    "scriptDetail": {"@": "scriptDetailView"},
+                    "agents": {"@": "agentsRangeController"},
+                    "scripts": {"@": "scriptsArrayController"}
                 }
             },
-            "arraycontroller1": {
-                "module": "montage/ui/controller/array-controller",
-                "name": "ArrayController",
+            
+            "scriptcontrollerdelegate1": {
+                "prototype": "core/script-controller-delegate"
+            },
+            
+
+            "scriptListView": {
+                "prototype": "ui/script-list-view.reel",
+                "properties": {
+                    "element": {"#": "scriptList"},
+
+                    "delegate": {"@": "scriptcontrollerdelegate1"}
+                },
+                "bindings": {
+                    "scriptController": {"<-": "@owner.scripts"}
+                }
+            },
+
+            "agentsRangeController": {
+                "prototype": "montage/core/range-controller",
                 "properties": {
                     "selectObjectsOnAddition": true,
-                    "automaticallyOrganizeObjects": true
+                    "automaticallyOrganizeObjects": true,
+                    "avoidsEmptySelection": true
                 }
             },
-            "arraycontroller2": {
-                "module": "montage/ui/controller/array-controller",
-                "name": "ArrayController",
+
+            "scriptsArrayController": {
+                "prototype": "montage/core/range-controller",
                 "properties": {
                     "selectObjectsOnAddition": true,
                     "automaticallyOrganizeObjects": true,
                     "delegate": {"@": "scriptcontrollerdelegate1"}
                 }
             },
-            "scriptlistview1": {
-                "module": "control-room/ui/script-list-view.reel",
-                "name": "ScriptListView",
-                "properties": {
-                    "element": {"#": "scriptList"}
-                },
-                "bindings": {
-                    "scriptController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "scripts",
-                        "oneway": true
-                    }
-                }
-            },
-            "scriptdetailview1": {
-                "module": "control-room/ui/script-detail-view.reel",
-                "name": "ScriptDetailView",
+
+            "scriptDetailView": {
+                "prototype": "ui/script-detail-view.reel",
                 "properties": {
                     "element": {"#": "scriptDetail"}
                 },
                 "bindings": {
-                    "scriptSource": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "scripts.selectedObjects.0",
-                        "oneway": true
-                    },
-                    "activeAgents": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "agents.selectedObjects",
-                        "oneway": true
-                    },
-                    "selectedAgent": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "agents.selectedObjects.0",
-                        "oneway": true
-                    },
-                    "serverVersion": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "serverVersion",
-                        "oneway": true
-                    }
+                    "scriptSource": {"<-": "@owner.scripts.selection[0]"},
+                    "activeAgents": {"<-": "@owner.agents.selection"},
+                    "selectedAgent": {"<-": "@owner.agents.selection.0"},
+                    "serverVersion": {"<-": "@owner.serverVersion"}
                 }
             },
-            "agentlistview1": {
-                "module": "control-room/ui/agent-list-view.reel",
-                "name": "AgentListView",
+
+            "agentListView": {
+                "prototype": "ui/agent-list-view.reel",
                 "properties": {
                     "element": {"#": "agentList"}
                 },
                 "bindings": {
-                    "agentController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "agents",
-                        "oneway": true
-                    }
-                }
-            },
-            "owner": {
-                "module": "control-room/main.reel",
-                "name": "Main",
-                "properties": {
-                    "element": {"#": "scriptManager"},
-                    
-                    "scriptDetail": {"@": "scriptdetailview1"},
-                    "emptyDetail": {"#": "emptyDetail"},
-                    "scriptList": {"@": "scriptlistview1"},
-                    "agents": {"@": "arraycontroller1"},
-                    "scripts": {"@": "arraycontroller2"}
+                    "agentController": {"<->": "@owner.agents"}
                 }
             }
         }
-        </script>
-    </head>
+    </script>
 
-    <body>
-        <section id="scriptManager" data-montage-id="scriptManager" class="mon-dock-view scriptManager">
-            <section id="topDockArea" class="dockPanel dockHorizontalPanel">
-                <!-- Empty -->
+</head>
+<body>
+    <div id="scriptManager" data-montage-id="main" data-montage-skin="light" class="mon-dock-view scriptManager">
+        <section id="topDockArea" class="dockPanel dockHorizontalPanel">
+                
+        </section>
+
+        <section id="middleDockArea" class="dockHorizontalPanel flexFill">
+            <section id="leftDockArea" class="dockPanel dockVerticalPanel">
+                <div id="scriptList" data-montage-id="scriptList" class="scriptList flexFill dockVerticalPanel"></div>
             </section>
-        
-            <section id="middleDockArea" class="dockHorizontalPanel flexFill">
-                <section id="leftDockArea" class="dockPanel dockVerticalPanel">
-                   <div id="scriptList" data-montage-id="scriptList" class="scriptList flexFill dockVerticalPanel"></div>
-                </section>
-            
-                <section id="centralDockArea" class="dockPanel dockVerticalPanel flexFill">
-                    <div id="scriptDetail" data-montage-id="scriptDetail" class="scriptDetail dockVerticalPanel flexFill"></div>
-                    <div id="emptyDetail" class="emptyDetail centeredContent flexFill">
-                        <div class="centeredWrapper">
-                            <p>
-                                No script selected.<br/><br/>
-                                Please select a script from the list on the left<br/>
-                                or click "New" to begin editing.
-                            </p>
-                        </div>
+
+            <section id="centralDockArea" class="dockPanel dockVerticalPanel flexFill">
+                <div id="scriptDetail" data-montage-id="scriptDetail" class="scriptDetail dockVerticalPanel flexFill"></div>
+                <div data-montage-id="emptyDetail" class="emptyDetail centeredContent flexFill">
+                    <div class="centeredWrapper">
+                        <p>
+                            No script selected.<br/><br/>
+                            Please select a script from the list on the left<br/>
+                            or click "New" to begin editing.
+                        </p>
                     </div>
-                </section>
-            
-                <section id="rightDockArea" class="dockPanel dockVerticalPanel">
-                    <!-- Empty -->
-                </section>
+                </div>
             </section>
-        
-            <section id="bottomDockArea" class="dockPanel dockHorizontalPanel">
-                <div id="agentList" data-montage-id="agentList" class="agentList flexFill"></div>
+            
+            <section id="rightDockArea" class="dockPanel dockVerticalPanel">
+                
             </section>
         </section>
-    </body>
+        
+        <section id="bottomDockArea" class="dockPanel dockHorizontalPanel">
+            <div id="agentList" data-montage-id="agentList" class="agentList flexFill"></div>
+        </section>
+    </div>
+</body>
 </html>

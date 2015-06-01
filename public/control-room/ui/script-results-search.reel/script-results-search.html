@@ -35,74 +35,67 @@ POSSIBILITY OF SUCH DAMAGE.
         <link rel="stylesheet" type="text/css" href="script-results-search.css">
         <script type="text/montage-serialization">
         {
-            "textfield1": {
-                "module": "montage/ui/input-text.reel",
-                "name": "InputText",
+            "owner": {
+                "properties": {
+                    "element": {"#": "resultsSearch"},
+                    "resultsSearchBox": {"@": "resultsSearchBox"}
+                }
+            },
+            "resultsSearchBox": {
+                "prototype": "matte/ui/input-text.reel",
                 "properties": {
                     "element": {"#": "resultsSearchBox"}
                 }
             },
-            "actioneventlistener1": {
-                "module": "montage/core/event/action-event-listener",
-                "name": "ActionEventListener",
+            "searchActionListener": {
+                "prototype": "montage/core/event/action-event-listener",
                 "properties": {
                     "handler": {"@": "owner"},
                     "action": "searchAction"
                 }
             },
-            "button1": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+            "searchButton": {
+                "prototype": "digit/ui/button.reel",
                 "properties": {
                     "element": {"#": "search"}
                 },
                 "listeners": [
                     {
                         "type": "action",
-                        "listener": {"@": "actioneventlistener1"}
+                        "listener": {"@": "searchActionListener"}
                     }
                 ]
             },
-            "actioneventlistener2": {
-                "module": "montage/core/event/action-event-listener",
-                "name": "ActionEventListener",
+            "toogleSearchOptionsListener": {
+                "prototype": "montage/core/event/action-event-listener",
                 "properties": {
                     "handler": {"@": "owner"},
                     "action": "toggleSearchOptions"
                 }
             },
-            "button2": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+            "optionsButton": {
+                "prototype": "digit/ui/button.reel",
                 "properties": {
                     "element": {"#": "options"}
                 },
                 "listeners": [
                     {
                         "type": "action",
-                        "listener": {"@": "actioneventlistener2"},
+                        "listener": {"@": "toogleSearchOptionsListener"},
                         "capture": false
                     }
                 ]
-            },
-            "owner": {
-                "module": "control-room/ui/script-results-search.reel",
-                "name": "ScriptResultsSearch",
-                "properties": {
-                    "element": {"#": "resultsSearch"},
-                    "resultsSearchBox": {"@": "textfield1"}
-                }
             }
         }
         </script>
     </head>
     <body>
-    <div id="resultsSearch" data-montage-id="resultsSearch" class="resultsSearch">
-        <span>
-            <input type="search" id="resultsSearchBox" data-montage-id="resultsSearchBox" class="resultsSearchBox" placeholder="Enter a name, agent or script name">
+    <div data-montage-id="resultsSearch" class="resultsSearch">
+        <span style="display: none;"><!--TODO: Search function does not work-->
+            <input type="search" data-montage-id="resultsSearchBox" class="resultsSearchBox" placeholder="Enter a name, agent or script name">
             <span class="button-group">
-                <button id="search" data-montage-id="search" class="button icon search primary big">Search</button>
-                <button id="options" data-montage-id="options" class="button icon settings" style="display: none;">Options</button><!-- Temporarily hiding Search Options -->
+                <button data-montage-id="search" class="button icon search primary big">Search</button>
+                <button data-montage-id="options" class="button icon settings" style="display: none;">Options</button><!-- Temporarily hiding Search Options -->
             </span>
         </span>
     </div>

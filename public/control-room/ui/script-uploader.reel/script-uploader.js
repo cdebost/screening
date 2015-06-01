@@ -28,13 +28,17 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var Montage = require("montage/core/core").Montage,
-    Component = require ("montage/ui/component").Component,
-    ScriptSource = require("control-room/script-source").ScriptSource,
-    Popup = require('montage/ui/popup/popup.reel').Popup,
-    Alert = require ("montage/ui/popup/alert.reel").Alert;
+var Component = require ("montage/ui/component").Component,
+    ScriptSource = require("core/script-source").ScriptSource,
+    Popup = require("matte/ui/popup/popup.reel").Popup,
+    Alert = require("matte/ui/popup/alert.reel").Alert;
 
-exports.ScriptUploader = Montage.create(Component, {
+exports.ScriptUploader = Component.specialize({
+    constructor: {
+        value: function ScriptUploader() {
+            this.super();
+        }
+    },
 
     _defaultText: {
         value: "Drag Script Here To Upload"
@@ -43,13 +47,14 @@ exports.ScriptUploader = Montage.create(Component, {
     _drawText: {
         value: ""
     },
-    prepareForDraw: {
+
+    templateDidLoad: {
         value: function() {
             if(window.FileReader) {
-                this.element.addEventListener('dragover', this, false);
-                this.element.addEventListener('dragenter', this, false);
-                this.element.addEventListener('dragleave', this, false);
-                this.element.addEventListener('drop', this, false);
+                document.addEventListener('dragover', this, false);
+                document.addEventListener('dragenter', this, false);
+                document.addEventListener('dragleave', this, false);
+                document.addEventListener('drop', this, false);
 
                 this._drawText = this._defaultText;
             } else {

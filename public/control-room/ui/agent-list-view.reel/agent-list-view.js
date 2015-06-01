@@ -28,13 +28,12 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var Montage = require("montage/core/core").Montage,
-    Component = require ("montage/ui/component").Component,
-    Popup = require ("montage/ui/popup/popup.reel").Popup,
-    Alert = require ("montage/ui/popup/alert.reel").Alert,
-    ScriptSource = require("control-room/script-source").ScriptSource;
+var Component = require ("montage/ui/component").Component,
+    Popup = require ("matte/ui/popup/popup.reel").Popup,
+    Alert = require ("matte/ui/popup/alert.reel").Alert,
+    ScriptSource = require("core/script-source").ScriptSource;
 
-exports.AgentListView = Montage.create(Component, {
+exports.AgentListView = Component.specialize({
     agentController: {
         value: null
     },
@@ -52,17 +51,18 @@ exports.AgentListView = Montage.create(Component, {
     templateDidLoad: {
         value: function() {
             var self = this;
-            self.webdriverDialog.addEventListener("message.ok", self._webdriverDialogCallback);
-        }
-    },
-
-    prepareForDraw: {
-        value: function() {
-            var self = this;
-            // Auto-select the first agent if available
-            if (!self.agentController.selectedIndexes && self.agentController.content.length > 0) {
-                self.agentController.selectedIndexes = [0];
-            }
+            this.webdriverDialog.addEventListener("message.ok", function(event) {
+                var req = new XMLHttpRequest();
+                req.open("POST", "/screening/api/v1/agents/webdriver?api_key=5150", true);
+                req.setRequestHeader("Content-Type", "application/json");
+                req.onreadystatechange = function(aEvt) {
+                    if(req.readyState == 4 && req.status >= 300) {
+                        var resp = JSON.parse(req.response);
+                        Alert.show(resp.error);
+                    }
+                };
+                req.send(JSON.stringify(event.detail));
+            });
         }
     },
 
@@ -74,19 +74,4 @@ exports.AgentListView = Montage.create(Component, {
             popup.show();
         }
     },
-
-    _webdriverDialogCallback: {
-        value: function(event) {
-            var req = new XMLHttpRequest();
-            req.open("POST", "/screening/api/v1/agents/webdriver?api_key=5150", true);
-            req.setRequestHeader("Content-Type", "application/json");
-            req.onreadystatechange = function(aEvt) {
-                if(req.readyState == 4 && req.status >= 300) {
-                    var resp = JSON.parse(req.response);
-                    Alert.show(resp.error);
-                }
-            };
-            req.send(JSON.stringify(event.detail));
-        }
-    }
 });

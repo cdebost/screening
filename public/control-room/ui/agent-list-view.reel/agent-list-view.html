@@ -36,47 +36,45 @@ POSSIBILITY OF SUCH DAMAGE.
 
         <script type="text/montage-serialization">
         {
+            "owner": {
+                "properties": {
+                    "element": {"#": "agentListView"},
+
+                    
+                    "addWebdriverButton": {"@": "addWebdriverBtn"},
+                    "webdriverDialog": {"@": "webdriverDialog"}
+                }
+            },
+            
             "agentview": {
-                "module": "control-room/ui/agent-view.reel",
-                "name": "AgentView",
+                "prototype": "ui/agent-view.reel",
                 "properties": {
                     "element": {"#": "agentView"}
                 },
                 "bindings": {
-                    "agent": {
-                        "boundObject": {"@": "agentList"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "agent": {"<-": "@agentList:iteration.object"}
                 }
             },
             "agentList": {
-                "module": "montage/ui/list.reel",
-                "name": "List",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "agentList"},
                     "axis": "horizontal",
                     "isSelectionEnabled": true
                 },
                 "bindings": {
-                    "contentController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "agentController",
-                        "oneway": true
-                    }
+                    "contentController": {"<->": "@owner.agentController"}
                 }
             },
             "addWebdriverAction": {
-                "module": "montage/core/event/action-event-listener",
-                "name": "ActionEventListener",
+                "prototype": "montage/core/event/action-event-listener",
                 "properties": {
                     "handler": {"@": "owner"},
                     "action": "addWebDriverAgent"
                 }
             },
             "addWebdriverBtn": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "digit/ui/button.reel",
                 "properties": {
                     "element": {"#": "addWebdriver"}
                 },
@@ -89,30 +87,20 @@ POSSIBILITY OF SUCH DAMAGE.
                 ]
             },
             "webdriverDialog": {
-                "module": "control-room/ui/agent-webdriver-dialog.reel",
-                "name": "AgentWebdriverDialog"
-            },
-            "owner": {
-                "module": "control-room/ui/agent-list-view.reel",
-                "name": "AgentListView",
-                "properties": {
-                    "element": {"#": "agentListView"},
-                    "webdriverDialog": {"@": "webdriverDialog"},
-                    "addWebdriverButton": {"@": "addWebdriverBtn"}
-                }
+                "prototype": "ui/agent-webdriver-dialog.reel"
             }
         }
         </script>
     </head>
     <body>
-        <div id="agentListView" data-montage-id="agentListView" class="agentListView">
-            <div id="menuBar" data-montage-id="menuBar" class="menuBar">
-                <button id="addWebdriver" data-montage-id="addWebdriver" class="blue">Add WebDriver Agent</button>
+        <div data-montage-id="agentListView" class="agentListView">
+            <div data-montage-id="menuBar" class="menuBar">
+                <button data-montage-id="addWebdriver" class="blue">Add WebDriver Agent</button>
             </div>
-            <ul id="agentList" data-montage-id="agentList" class="agentList flexFill">
-                <li><div id="agentView" data-montage-id="agentView"></div></li>
+            <ul data-montage-id="agentList" class="agentList flexFill">
+                <li><div data-montage-id="agentView"></div></li>
             </ul>
-            <div id="webdriverUrlPrompt" data-montage-id="webdriverUrlPrompt" style="display: none; margin: auto;"></div>
+            <div data-montage-id="webdriverUrlPrompt" style="display: none; margin: auto;"></div>
         </div>
     </body>
 </html>

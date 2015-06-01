@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage/core/core").Montage;
 
-exports.Keyboard = Montage.create(Montage, {
+exports.Keyboard = Montage.specialize({
     /**
     Mapping for Key Names to Key Code
       @private

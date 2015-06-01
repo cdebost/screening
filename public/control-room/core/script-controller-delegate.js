@@ -29,62 +29,49 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-/**
- * @module ui/script-search.reel
- * @requires montage/ui/component
- */
-var Component = require("montage/ui/component").Component;
+var Montage = require("montage/core/core").Montage,
+    Confirm = require("matte/ui/popup/confirm.reel").Confirm;
 
 /**
- * @class ScriptSearch
- * @extends Component
+ * @class ScriptControllerDelegate
+ * @extends Montage
  */
-exports.ScriptSearch = Component.specialize({
-    constructor: {
-        value: function ScriptSearch() {
-            this.super();
-        }
+exports.ScriptControllerDelegate = Montage.specialize({
+    scriptManager: {
+        value: null
     },
 
-    scriptSearchBox: {
-        value: null,
-        serializable: true
-    },
+    shouldChangeSelection: {
+        value: function(target, newSelection, oldSelection) {
+            var self = this;
+            if (oldSelection && newSelection && self.scriptManager && self.scriptManager.scriptDetail.needsSave) {
+                this.scriptManager.scriptDetail.unsavedChangesConfirm(function() {
+                    self.scriptManager.scriptDetail.needsSave = false;
+                    target.selectedObjects = newSelection;
+                    self.scriptManager.scriptList.needsDraw = true;
+                });
 
-    scriptSearchCombo: {
-        value: null,
-        serializable: true
-    },
-
-    templateDidLoad: {
-        value: function() {
-            document.addEventListener("keydown", this, false);
-        }
-    },
-
-    handleKeydown: {
-        value: function(event) {
-            // Handle ENTER key
-            if (event.keyCode === 13) {
-                if (document.activeElement === this.scriptSearchBox.element)
-                    this.searchAction(event);
+                return false;
             }
         }
     },
 
-    handleSearchButtonAction: {
-        value: function(event) {
-            this.searchAction();
-        }
-    },
+    canAddNewItem: {
+        value: function(callback) {
+            var self = this;
 
-    searchAction: {
-        value: function(event) {
-            var newEvent = document.createEvent("CustomEvent");
-            newEvent.initEvent("refreshScriptList", true, false);
-            newEvent.searchString = this.scriptSearchBox.value;
-            newEvent.searchScope = this.scriptSearchCombo.contentController.selection[0].label;
-            this.dispatchEvent(newEvent);
+            if (this.scriptManager && this.scriptManager.scriptDetail.needsSave) {
+                Confirm.show("Your script has unsaved changes. Continuing will discard any unsaved changes. Do you wish to continue?", function() {
+                    // OK
+                    callback();
+                }, function() {
+                    // Cancel, nothing need to be done here
+                });
+
+                return false;
+            } else {
+                callback();
+            }
         }
     }
 });

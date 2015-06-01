@@ -28,16 +28,16 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var Montage = require("montage/core/core").Montage;
 var Component = require ("montage/ui/component").Component;
 
-exports.PreferenceTextItem = Montage.create(Component, {
-    preferenceObject: {
-        value: null
+exports.PreferenceTextItem = Component.specialize({
+    constructor: {
+        value: function PreferenceTextItem() {
+            this.super();
+        }
     },
 
-    prepareForDraw: {
-        value: function() {
-        }
+    preferenceObject: {
+        value: null
     }
 });

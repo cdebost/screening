@@ -35,48 +35,37 @@ POSSIBILITY OF SUCH DAMAGE.
         <link rel="stylesheet" type="text/css" href="preference-text-item.css">
         <script type="text/montage-serialization">
         {
-            "dynamictext1": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+            "owner": {
+                "properties": {
+                    "element": {"#": "preferenceTextItem"}
+                }
+            },
+
+            "nameText": {
+                "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "name"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "preferenceObject.name",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.preferenceObject.name"}
                 }
             },
-            "textfield1": {
-                "module": "montage/ui/input-number.reel",
-                "name": "InputNumber",
+            "valueField": {
+                "prototype": "matte/ui/input-number.reel",
                 "properties": {
                     "element": {"#": "value"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "preferenceObject.value",
-                        "oneway": false
-                    }
-                }
-            },
-            "owner": {
-                "module": "control-room/ui/preference-text-item.reel",
-                "name": "PreferenceTextItem",
-                "properties": {
-                    "element": {"#": "preferenceTextItem"}
+                    "value": {"<->": "@owner.preferenceObject.value"}
                 }
             }
         }
         </script>
     </head>
     <body>
-        <div id="preferenceTextItem" data-montage-id="preferenceTextItem" class="preferenceTextItem">
-            <label id="name" data-montage-id="name"></label>
-            <input id="value" data-montage-id="value" type="number" step="100" min="0" />
+        <div data-montage-id="preferenceTextItem" class="preferenceTextItem">
+            <label data-montage-id="name"></label>
+            <input data-montage-id="value" type="number" step="100" min="0" />
         </div>
     </body>
 </html>

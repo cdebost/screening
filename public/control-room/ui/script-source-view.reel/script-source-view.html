@@ -35,25 +35,18 @@ POSSIBILITY OF SUCH DAMAGE.
         <link rel="stylesheet" type="text/css" href="script-source-view.css">
         <script type="text/montage-serialization">
         {
+            "owner": {
+                "properties": {
+                    "element": {"#": "scriptSource"}
+                }
+            },
             "dynamictext1": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "name"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "scriptSource.displayName",
-                        "oneway": true
-                    }
-                }
-            },
-            "owner": {
-                "module": "control-room/ui/script-source-view.reel",
-                "name": "ScriptSourceView",
-                "properties": {
-                    "element": {"#": "scriptSource"}
+                    "value": {"<-": "@owner.scriptSource.displayName"}
                 }
             }
         }
@@ -61,8 +54,8 @@ POSSIBILITY OF SUCH DAMAGE.
     </head>
     <body>
         <!-- One line summary of a test script -->
-        <div id="scriptSource" data-montage-id="scriptSource" class="scriptSource">
-            <span id="name" data-montage-id="name" class="name"></span>
+        <div data-montage-id="scriptSource" class="scriptSource">
+            <span data-montage-id="name" class="name"></span>
         </div>
     </body>
 </html>

@@ -35,100 +35,82 @@ POSSIBILITY OF SUCH DAMAGE.
         <link rel="stylesheet" type="text/css" href="text-prompt.css">
         <script type="text/montage-serialization">
          {
-             "dynamictext1": {
-                 "module": "montage/ui/dynamic-text.reel",
-                 "name": "DynamicText",
-                 "properties": {
-                     "element": {"#": "title"}
-                 },
-                 "bindings": {
-                     "value": {
-                         "boundObject": {"@": "owner"},
-                         "boundObjectPropertyPath": "title",
-                         "oneway": true
-                     }
-                 }
-             },
-             "dynamictext2": {
-                 "module": "montage/ui/dynamic-text.reel",
-                 "name": "DynamicText",
-                 "properties": {
-                     "element": {"#": "msg"}
-                 },
-                 "bindings": {
-                     "value": {
-                         "boundObject": {"@": "owner"},
-                         "boundObjectPropertyPath": "msg",
-                         "oneway": true
-                     }
-                 }
-             },
-             "textfield1": {
-                  "module": "montage/ui/bluemoon/textfield.reel",
-                  "name": "Textfield",
-                  "properties": {
-                      "element": {"#": "prompt-input"}
-                  },
-                  "bindings": {
-                      "value": {
-                          "boundObject": {"@": "owner"},
-                          "boundObjectPropertyPath": "value"
-                      }
-                  }
-              },
-             "button1": {
-                 "module": "montage/ui/bluemoon/button.reel",
-                 "name": "Button",
-                 "properties": {
-                     "element": {"#": "action-close"},
-                     "identifier": "Close"
-                 },
-                 "listeners": [
-                     {
-                         "type": "action",
-                         "listener": {"@": "owner"}
-                     }
-                 ]
-             },
-             "button2": {
-                 "module": "montage/ui/bluemoon/button.reel",
-                 "name": "Button",
-                 "properties": {
-                     "identifier": "Ok",
-                     "element": {"#": "action-ok"}
-                 },
-                 "listeners": [
-                     {
-                         "type": "action",
-                         "listener": {"@": "owner"}
-                     }
-                 ]
-             },
-             "owner": {
-                 "module": "common/ui/text-prompt.reel",
-                 "name": "TextPrompt",
-                 "properties": {
-                     "element": {"#": "mon-text-prompt"},
-                     "headerEl": {"#": "header"},
-                     "titleEl": {"#": "title"}
-                 }
-             }
-         }
-         </script>
+            "owner": {
+                "properties": {
+                    "element": {"#": "mon-text-prompt"},
+
+                    "titleEl": {"#": "title"}
+                }
+            },
+            "titleText": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "title"}
+                },
+                "bindings": {
+                    "value": {"<-": "@owner.title"}
+                }
+            },
+            "msgText": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "msg"}
+                },
+                "bindings": {
+                    "value": {"<-": "@owner.msg"}
+                }
+            },
+            "prompt": {
+                "prototype": "digit/ui/text-field.reel",
+                "properties": {
+                    "element": {"#": "prompt-input"}
+                },
+                "bindings": {
+                    "value": {"<->": "@owner.value"}
+                }
+            },
+            "closeButton": {
+                "prototype": "digit/ui/button.reel",
+                "properties": {
+                    "element": {"#": "action-close"},
+                    "identifier": "Close"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "okButton": {
+                "prototype": "digit/ui/button.reel",
+                "properties": {
+                    "identifier": "Ok",
+                    "element": {"#": "action-ok"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            }
+        }
+        </script>
     </head>
     <body>
-        <div id="mon-text-prompt" class="mon-text-prompt">
-            <div id="header" class="header">
-                <h4 id="title" class="title"></h4>
+        <div data-montage-id="mon-text-prompt" class="mon-text-prompt">
+            <div class="header">
+                <h4 data-montage-id="title" class="title"></h4>
             </div>
             <div class="content">
                 <div class="msg-container">
-                    <div id="msg" class="msg"></div>
-                    <input type="text" id="prompt-input" class="prompt-input" />
+                    <div data-montage-id="msg" class="msg"></div>
+                    <input type="text" data-montage-id="prompt-input" class="prompt-input" />
                 </div>
                 <div class="action-container">
-                    <div class="cancel" id="action-close">Cancel</div>
-                    <div class="submit" id="action-ok">OK</div>
+                    <div class="cancel" data-montage-id="action-close">Cancel</div>
+                    <div class="submit" data-montage-id="action-ok">OK</div>
                 </div>
             </div>
         </div>

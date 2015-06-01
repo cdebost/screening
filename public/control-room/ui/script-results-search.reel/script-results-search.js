@@ -28,10 +28,9 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var Montage = require("montage/core/core").Montage;
 var Component = require("montage/ui/component").Component;
 
-exports.ScriptResultsSearch = Montage.create(Component, {
+exports.ScriptResultsSearch = Component.specialize({
     _searchOptionsVisible: {
         enumerable: false,
         value: false
@@ -63,39 +62,34 @@ exports.ScriptResultsSearch = Montage.create(Component, {
         }
     },
 
-    prepareForDraw: {
+    templateDidLoad: {
         value: function() {
-            var self = this;
-            self.element.addEventListener("keydown", self);
+            this.element.addEventListener("keydown", this);
         }
     },
 
     handleKeydown: {
         value: function(event) {
-            var self = this;
             // Handle ENTER key
             if (event.keyCode === 13) {
-                self.searchAction(event);
+                this.searchAction(event);
             }
         }
     },
 
     searchAction: {
         value: function(event) {
-            var self = this;
-
             var newEvent = document.createEvent("CustomEvent");
                 newEvent.initEvent("refreshResults", true, false);
-                newEvent.searchString = self.resultsSearchBox.value;
+                newEvent.searchString = this.resultsSearchBox.value;
 
-                self.dispatchEvent(newEvent);
+                this.dispatchEvent(newEvent);
         }
     },
 
     toggleSearchOptions: {
         value: function(event) {
-            var self = this;
-            self.searchOptionsVisible = !self._searchOptionsVisible;
+            this.searchOptionsVisible = !this._searchOptionsVisible;
         }
     }
 });

@@ -28,11 +28,10 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var Montage = require("montage/core/core").Montage,
-    Component = require("montage/ui/component").Component,
-    Alert = require ("montage/ui/popup/alert.reel").Alert;
+var Component = require("montage/ui/component").Component,
+    Alert = require ("matte/ui/popup/alert.reel").Alert;
 
-exports.ScriptResultsView = Montage.create(Component, {
+exports.ScriptResultsView = Component.specialize({
     _results: {
         enumerable: false,
         value: []
@@ -45,7 +44,7 @@ exports.ScriptResultsView = Montage.create(Component, {
 
     _currentPage: {
         enumerable: false,
-        value: null
+        value: 1
     },
 
     _totalPages: {
@@ -84,22 +83,22 @@ exports.ScriptResultsView = Montage.create(Component, {
             return this._currentPage;
         },
         set: function(value) {
-            var self = this;
-
             value = parseInt(value);
-            //console.log("setCurrentPage", value);
-            self._currentPage = value < 1 ? 1 : value;
 
-            var resultsUrl = self._baseResultsUrl;
-            if(self.scriptResultsSearch.resultsSearchBox && self.scriptResultsSearch.resultsSearchBox.value) {
-                resultsUrl += "&any=" + self.scriptResultsSearch.resultsSearchBox.value;
+            this._currentPage = value >= 1 ? value : 1;
+
+            var resultsUrl = this._baseResultsUrl;
+            if(this.scriptResultsSearch && this.scriptResultsSearch.resultsSearchBox && this.scriptResultsSearch.resultsSearchBox.value) {
+                resultsUrl += "&any=" + this.scriptResultsSearch.resultsSearchBox.value;
             }
 
-            self.renderResults(resultsUrl);
+            this.renderResults(resultsUrl);
 
             // Disable/Enable page buttons if we are on the first/last pages
-            self.previousPageButtonTop.disabled = (self._currentPage === 1);
-            self.nextPageButtonTop.disabled = (self._currentPage === self._totalPages);
+            if (this.templateObjects) {
+                this.templateObjects.previousPageButtonTop.element.disabled = (this._currentPage === 1);
+                this.templateObjects.nextPageButtonTop.element.disabled = (this._currentPage === this._totalPages);
+            }
         }
     },
 
@@ -111,7 +110,7 @@ exports.ScriptResultsView = Montage.create(Component, {
         set: function(value) {
             this._totalPages = parseInt(value);
 
-            this.currentPageTextField.element.setAttribute("max", this._totalPages);
+            this.templateObjects.currentPage.element.setAttribute("max", this._totalPages);
         }
     },
 
@@ -141,16 +140,14 @@ exports.ScriptResultsView = Montage.create(Component, {
 
     deleteResults: {
         value: function(event) {
-            var self = this;
-
             // Verify that at least one element is selected
-            var atLeastOneSelected = self.isAtLeastOneSelected();
+            var atLeastOneSelected = this.isAtLeastOneSelected();
             if (!atLeastOneSelected) {
                 Alert.show("You must select at least one Testcase result to delete.");
                 return;
             }
 
-            var selectedResults = self.selectedResults();
+            var selectedResults = this.selectedResults();
 
             var ids = selectedResults.map(function(elem) {
                 return elem.object.id;
@@ -163,9 +160,17 @@ exports.ScriptResultsView = Montage.create(Component, {
                 ids: ids
             }));
 
+            var self = this;
             xhr.addEventListener("load", function(evt) {
-                //TODO: Less than ideal, it should dynamically update the repetition (table)
-                location.reload(true);
+                var offset = 0;
+                for (var res in selectedResults) {
+                    self.templateObjects.resultDetailsRepetition.content.splice(selectedResults[res].index - offset, 1);
+                    offset++;
+                }
+                
+                for (var i in self.templateObjects.resultDetailsRepetition.content) {
+                    self.templateObjects.resultDetailsRepetition.content[i].selected = false;
+                }
             });
         }
     },
@@ -174,7 +179,7 @@ exports.ScriptResultsView = Montage.create(Component, {
         value: function(event) {
             var selectedStatus = this.isAtLeastOneSelected();
 
-            this.selectAllButton.label = selectedStatus ? "Deselect All" : "Select All";
+            this.templateObjects.selectAllBtn.label = selectedStatus ? "Deselect All" : "Select All";
         }
     },
 
@@ -235,8 +240,6 @@ exports.ScriptResultsView = Montage.create(Component, {
         value: function(event) {
             var self = this;
 
-            console.log(event.searchString);
-
             var testResultsUrl = self._baseResultsUrl;
             if (event.searchString) {
                 testResultsUrl += "&any=" + event.searchString;
@@ -244,7 +247,7 @@ exports.ScriptResultsView = Montage.create(Component, {
 
             self.calculateTotalPages(event.searchString, function() {
                 self.currentPage = 1;
-                //self.renderResults(testResultsUrl);
+                self.renderResults(testResultsUrl);
             });
         }
     },
@@ -259,6 +262,7 @@ exports.ScriptResultsView = Montage.create(Component, {
 
             // Add pagination support
             testResultsUrl += "&limit=" + self._pageSize + "&skip=" + ((self._currentPage - 1) * self._pageSize);
+            console.log(testResultsUrl);
 
             xhr.onload = function(event) {
                 // Parse the response from /test_results
@@ -284,7 +288,7 @@ exports.ScriptResultsView = Montage.create(Component, {
         }
     },
 
-    prepareForDraw: {
+    templateDidLoad: {
         value: function() {
             var self = this;
 

@@ -29,52 +29,25 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
+/**
+ * @module ui/main.reel
+ * @requires montage/ui/component
+ */
 var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component,
-    Confirm = require("montage/ui/popup/confirm.reel").Confirm,
-    AgentBrowser = require("control-room/agent-browser").AgentBrowser;
+    AgentBrowser = require("core/agent-browser").AgentBrowser;
 
-exports.ScriptControllerDelegate = Montage.create(Montage, {
-    scriptManager: {
-        value: null
-    },
-
-    shouldChangeSelection: {
-        value: function(target, newSelection, oldSelection) {
-            var self = this;
-            if (oldSelection && newSelection && self.scriptManager && self.scriptManager.scriptDetail.needsSave) {
-                this.scriptManager.scriptDetail.unsavedChangesConfirm(function() {
-                    self.scriptManager.scriptDetail.needsSave = false;
-                    target.selectedObjects = newSelection;
-                    self.scriptManager.scriptList.prepareForDraw();
-                });
-
-                return false;
-            }
+/**
+ * @class Main
+ * @extends Component
+ */
+exports.Main = Component.specialize(/** @lends Main# */ {
+    constructor: {
+        value: function Main() {
+            this.super();
         }
     },
 
-    canAddNewItem: {
-        value: function(callback) {
-            var self = this;
-
-            if (this.scriptManager && this.scriptManager.scriptDetail.needsSave) {
-                Confirm.show("Your script has unsaved changes. Continuing will discard any unsaved changes. Do you wish to continue?", function() {
-                    // OK
-                    callback();
-                }, function() {
-                    // Cancel, nothing need to be done here
-                });
-
-                return false;
-            } else {
-                callback();
-            }
-        }
-    }
-});
-
-exports.Main = Montage.create(Component, {
     socket: {
         value: null
     },
@@ -134,6 +107,7 @@ exports.Main = Montage.create(Component, {
             // Confirm navigation away from Control Room if there's an unsaved script
             window.onbeforeunload = function() {
                 var navigateAwayMessage = "Your changes to the script have not been saved yet.";
+
                 return self.scriptDetail.needsSave ? navigateAwayMessage : null;
             }
 
@@ -142,26 +116,29 @@ exports.Main = Montage.create(Component, {
                 this.scripts.delegate.scriptManager = this;
             }
 
-            this.scriptDetail.addPropertyChangeListener("scriptSource", function(event) {
-                self.scriptChanged(event.plus, event.minus);
+            this.scriptDetail.addPathChangeListener("scriptSource", function(newScript) {
+                self.scriptChanged(newScript);
             }, false);
 
-            this.scriptDetail.addPropertyChangeListener("selectedAgent", function(event) {
-                self.selectedAgentChanged(event.plus, event.minus);
+            this.scriptDetail.addPathChangeListener("selectedAgent", function(newAgent) {
+                self.selectedAgentChanged(newAgent);
             }, false);
 
             this.scriptDetail.addEventListener("scriptDeleted", function(event) {
-                self.scripts.remove();
+                self.scriptList.deleteScript();
                 self.scripts.selectedObjects = [];
                 self.scripts.selectedIndexes = [];
-                self.scriptList.prepareForDraw();
                 self.scriptChanged(null, null);
                 self.scriptDetail.clearFields();
             }, false);
 
-            this.socket = io.connect("http://" + document.domain + ":" + document.location.port, { resource: "screening/socket.io" });
+            this.socket = io("http://" + document.domain + ":" + document.location.port, { path: "/socket.io" });
 
             this._initDriver();
+
+            this.socket.on("connect", function() {
+                console.log("Connected to the Screening server");
+            })
 
             this.socket.on("reconnect", function() {
                 self._initDriver();
@@ -175,8 +152,7 @@ exports.Main = Montage.create(Component, {
 
             this.socket.on("agentDisconnected", function(agentId) {
                 var displayedAgents = self.agents.organizedObjects;
-                var i;
-                for (i = 0; i < displayedAgents.length; ++i) {
+                for (var i = 0; i < displayedAgents.length; ++i) {
                     if (displayedAgents[i].info.id === agentId) {
                         self.agents.removeObjects(displayedAgents[i]);
                         return;
@@ -235,7 +211,8 @@ exports.Main = Montage.create(Component, {
     // TODO: Yeah, this is stupid slow but I don't care at this exact moment.
     getAgentById: {
         value: function(agentId) {
-            var displayedAgents = this.agents.organizedObjects;
+            var displayedAgents = this.agents.content;
+            
             for (var i = 0; i < displayedAgents.length; ++i) {
                 var agent = displayedAgents[i];
                 if (agent.info.id == agentId) {
@@ -251,39 +228,33 @@ exports.Main = Montage.create(Component, {
          * @param {Script} newScript New Script
          * @param {Script} prevScript Previous Script
          */
-        value: function(newScript, prevScript) {
-            var self = this;
-
-            // Verify if prevScript is still in the scripts array, otherwise it means it was deleted.
-            if(self.scripts._content.indexOf(prevScript) === -1) {
-                prevScript = null;
-            }
-
-            if (newScript && !prevScript) {
-                this.emptyDetail.style.display = "none";
-                //this.scriptDetail.element.style.display = "block";
-            } else if (!newScript) {
-                //this.scriptDetail.element.style.display = "none";
-                this.emptyDetail.style.display = "table";
-                self.scriptDetail.clearFields();
+        value: function(newScript) {
+            if (!this.emptyDetail || !this.scriptDetail) {
+                return;
             }
 
             if (newScript) {
+                this.emptyDetail.style.display = "none";
                 localStorage["Screening.AppState.CurrentScript"] = newScript.id;
+            } else {
+                this.emptyDetail.style.display = "table";
+                this.scriptDetail.clearFields();
             }
         }
     },
 
     selectedAgentChanged: {
-        value: function(newAgent, prevAgent) {
-            var self = this;
-
-            if (newAgent && newAgent.info.capabilities.browserName !== "chrome") {
-                self.scriptDetail.recordButton.disabled = true;
-            } else {
-                self.scriptDetail.recordButton.disabled = false;
+        value: function(newAgent) {
+            if (!this.scriptDetail || !this.scriptDetail.recordButton) {
+                //scriptDetail has not been fully loaded
+                return;
             }
 
+            if (newAgent && newAgent.info.capabilities.browserName !== "chrome") {
+                this.scriptDetail.recordButton.element.disabled = true;
+            } else  {
+                this.scriptDetail.recordButton.element.disabled = false;
+            }
         }
     }
 });

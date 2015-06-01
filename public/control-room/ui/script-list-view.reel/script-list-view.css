@@ -74,7 +74,7 @@ POSSIBILITY OF SUCH DAMAGE.
     text-transform: uppercase;
     font: bold 16px/40px "Lucida Grande", Lucida, Verdana, sans-serif;
     padding-left: 34px;
-    background: url('../../img/logo.png') no-repeat left center;
+    background: url('../../assets/img/logo.png') no-repeat left center;
 }
 
 

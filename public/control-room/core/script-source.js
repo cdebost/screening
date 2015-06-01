@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 var Montage = require("montage/core/core").Montage;
 
-exports.ScriptSource = Montage.create(Montage, {
+exports.ScriptSource = Montage.specialize({
     id: {
         enumerable: true,
         value: null
@@ -71,7 +71,7 @@ exports.ScriptSource = Montage.create(Montage, {
         set: function(value) {
             var self = this;
 
-            var tags = value.match(/\w+|"[^"]+"/g);
+            var tags = value.match(/\w+|"[^"]+"/g) || [];
             // Remove quotes
             tags.forEach(function(elem, index) {
                 tags[index] = tags[index].replace(/"/g, "");

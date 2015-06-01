@@ -28,10 +28,15 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var Montage = require("montage/core/core").Montage;
-var Component = require ("montage/ui/component").Component;
+var Component = require("montage/ui/component").Component;
 
-exports.ScriptResultView = Montage.create(Component, {
+exports.ScriptResultView = Component.specialize({
+    constructor: {
+        value: function ScriptResultView() {
+            this.super();
+        }
+    },
+    
     testcaseName: {
         value: null
     },
@@ -84,7 +89,7 @@ exports.ScriptResultView = Montage.create(Component, {
         value: []
     },
 
-    prepareForDraw: {
+    templateDidLoad: {
         value: function() {
             var self = this;
             // we pass the test-id within the search-string of the url
@@ -116,6 +121,7 @@ exports.ScriptResultView = Montage.create(Component, {
                     lineNumber: 0,
                     columnNumber: 0
                 });
+
                 for(var i=0, l=data.asserts.length; i<l; i++) {
                     assert = data.asserts[i];
                     self.messages.push({

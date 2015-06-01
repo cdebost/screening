@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage/core/core").Montage;
 
-exports.AgentBrowser = Montage.create(Montage, {
+exports.AgentBrowser = Montage.specialize({
     info: {
         value: null,
     },

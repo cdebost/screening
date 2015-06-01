@@ -29,11 +29,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage/core/core").Montage,
-    DynamicText = require("montage/ui/dynamic-text.reel").DynamicText,
-    TextPrompt = require("common/ui/text-prompt.reel").TextPrompt,
-    Popup = require ("montage/ui/popup/popup.reel").Popup;
+    Text = require("montage/ui/text.reel").Text,
+    TextPrompt = require("ui/text-prompt.reel").TextPrompt,
+    Popup = require ("matte/ui/popup/popup.reel").Popup;
 
-exports.ClickableText = Montage.create(DynamicText, {
+exports.ClickableText = Text.specialize({
+    constructor: {
+        value: function() {
+            this.super();
+        }
+    },
+
     hasTemplate: {
         value: false
     },
@@ -54,13 +60,12 @@ exports.ClickableText = Montage.create(DynamicText, {
         }
     },
 
-    prepareForDraw: {
+    willDraw: {
         value: function() {
             var self = this;
             var clickListener = {
                 handleClick: function(event) {
-                    console.log(self._value.id);
-                    var testcaseNamePrompt = Montage.create(TextPrompt);
+                    var testcaseNamePrompt = new TextPrompt();
                     testcaseNamePrompt.msg = "Enter new name";
                     testcaseNamePrompt.value = self._value.name;
 
@@ -78,7 +83,6 @@ exports.ClickableText = Montage.create(DynamicText, {
                         xhr.addEventListener("load", function(evt) {
                             // Parse the response from /test_results
                             var data = JSON.parse(evt.target.responseText);
-                            console.log("result of PUT: ", data);
                         }, false);
 
                         var testResultsUrl = "/screening/api/v1/test_results/" + self._value.id + "?api_key=5150";

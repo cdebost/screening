@@ -28,9 +28,12 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var Montage = require("montage/core/core").Montage;
 var Component = require ("montage/ui/component").Component;
 
-exports.Menu = Montage.create(Component, {
-
+exports.Menu = Component.specialize({
+	constructor: {
+		value: function Menu() {
+			this.super();
+		}
+	}
 });

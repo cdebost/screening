@@ -29,27 +29,27 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
-var Notifier = require("montage/ui/popup/notifier.reel").Notifier;
+var Notifier = require("matte/ui/popup/notifier.reel").Notifier;
 
-exports.AgentWebdriverDialog = Montage.create(Component, {
+exports.AgentWebdriverDialog = Component.specialize({
     hasTemplate: {value: true},
 
     url: {
-        value: "http://localhost:9515"
+        value: "http://localhost:9515",
+        writable: true
     },
 
     browserName: {
-        value: null, serializable: true
+        value: null,
+        serializable: true,
+        writable: true
     },
 
-    crxFile: {value: null, serializable: true},
-
-    templateDidLoad: {
-        value: function() {
-            var self = this;
-        }
+    crxFile: {
+        value: null,
+        serializable: true,
+        writable: true
     },
 
     handleOkAction: {
@@ -58,7 +58,7 @@ exports.AgentWebdriverDialog = Montage.create(Component, {
 
             var webdriverParams = {
                 url: self.url,
-                browserName: self.browserName.contentController.selectedObjects[0].value
+                browserName: self.browserName.contentController.selection[0].value
             };
 
             var dispatchAndHide = function() {
@@ -68,7 +68,7 @@ exports.AgentWebdriverDialog = Montage.create(Component, {
                 self.popup.hide();
             };
 
-            if(self.crxFile.element.files && self.crxFile.element.files.length > 0) {
+            if(this.crxFile.element.files && this.crxFile.element.files.length > 0) {
                 var reader = new FileReader();
 
                 reader.onload = function(readerEvt) {
@@ -76,9 +76,9 @@ exports.AgentWebdriverDialog = Montage.create(Component, {
                     dispatchAndHide();
                 };
 
-                webdriverParams.crxFileName = self.crxFile.element.files[0].name;
+                webdriverParams.crxFileName = this.crxFile.element.files[0].name;
 
-                reader.readAsBinaryString(self.crxFile.element.files[0]);
+                reader.readAsBinaryString(this.crxFile.element.files[0]);
             } else {
                dispatchAndHide();
             }
@@ -87,8 +87,7 @@ exports.AgentWebdriverDialog = Montage.create(Component, {
 
     handleCancelAction: {
         value: function() {
-            var self = this;
-            self.popup.hide();
+            this.popup.hide();
         }
     }
 });

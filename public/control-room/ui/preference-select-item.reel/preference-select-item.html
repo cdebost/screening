@@ -35,64 +35,47 @@ POSSIBILITY OF SUCH DAMAGE.
         <link rel="stylesheet" type="text/css" href="preference-select-item.css">
         <script type="text/montage-serialization">
         {
-            "dynamictext1": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+            "owner": {
+                "properties": {
+                    "element": {"#": "preferenceSelectItem"},
+                    "optionsController": {"@": "optionsController"},
+                    "selectInput": {"@": "selectInput"}
+                }
+            },
+            "nameText": {
+                "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "name"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "preferenceObject.name",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.preferenceObject.name"}
                 }
             },
             "optionsController": {
-                "name": "ArrayController",
-                "module": "montage/ui/controller/array-controller",
+                "prototype": "montage/core/range-controller",
                 "properties": {
                     "selectObjectsOnAddition": true,
                     "automaticallyOrganizeObjects": true
                 },
                 "bindings": {
-                    "content": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "preferenceObject.options",
-                        "oneway": false
-                    },
-                    "selectedObjects.0": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "preferenceObject.value",
-                        "oneway": false
-                    }
+                    "content": {"<->": "@owner.preferenceObject.options"},
+                    "selectionObjects.0": {"<->": "@owner.preferenceObject.value"}
                 }
             },
             "selectInput": {
-                "module": "montage/ui/select.reel",
-                "name": "Select",
+                "prototype": "matte/ui/select.reel",
                 "properties": {
                     "element": {"#": "value"},
                     "contentController": {"@": "optionsController"}
-                }
-            },
-            "owner": {
-                "module": "control-room/ui/preference-select-item.reel",
-                "name": "PreferenceSelectItem",
-                "properties": {
-                    "element": {"#": "preferenceSelectItem"},
-                    "optionsController": {"@": "optionsController"},
-                    "selectInput": {"@": "selectInput"}
                 }
             }
         }
         </script>
     </head>
     <body>
-        <div id="preferenceSelectItem" data-montage-id="preferenceSelectItem" class="preferenceSelectItem value">
-            <label id="name" data-montage-id="name"></label>
-            <select id="value" data-montage-id="value" class="value"></select>
+        <div data-montage-id="preferenceSelectItem" class="preferenceSelectItem value">
+            <label data-montage-id="name"></label>
+            <select data-montage-id="value" class="value"></select>
         </div>
     </body>
 </html>

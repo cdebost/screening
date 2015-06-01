@@ -35,28 +35,24 @@ POSSIBILITY OF SUCH DAMAGE.
         <link rel="stylesheet" type="text/css" href="menu.css">
         <script type="text/montage-serialization">
         {
-            "HomeButton": {
-                "module": "montage/ui/bluemoon/button.reel",
-                "name": "Button",
-                "properties": {
-                    "element": {"#": "homeButton"}
-                }
-            },
-            
             "owner": {
-                "module": "control-room/ui/menu.reel",
-                "name": "Menu",
                 "properties": {
                     "element": {"#": "menu"}
+                }
+            },
+            "homeButton": {
+                "prototype": "digit/ui/button.reel",
+                "properties": {
+                    "element": {"#": "homeButton"}
                 }
             }
         }
         </script>
     </head>
     <body>
-        <div id="menu" data-montage-id="menu" class="menu">
-            <div id="locationButtons">
-                <a href="index.html" id="homeButton" data-montage-id="homeButton" class="button">Home</a>
+        <div data-montage-id="menu" class="menu">
+            <div>
+                <a href="index.html" data-montage-id="homeButton" class="button">Home</a>
             </div>
         </div>
     </body>
