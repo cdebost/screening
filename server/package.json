@@ -1,10 +1,8 @@
 {
     "name": "screening",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "description": "A UI testing tool for Montage based apps",
     "keywords": ["testing", "montage"],
-    "homepage": "http://www.motorola.com",
-    "bugs": "http://jira.mot.com/browse/IKXARIA/component/25229",
     "contributors": [
         {
             "name": "Brandon Jones",
@@ -24,21 +22,22 @@
         "url": "git@github.com:Motorola-Mobility/screening.git"
     },
     "engines": {
-        "node": "~0.6"
+        "node": "~0.10"
     },
     "scripts": {
         "start": "node index.js",
         "install-mongodb": "node ./scripts/mongo.js"
     },
     "dependencies": {
+        "archiver": "0.14.x",
         "ansi-color": "0.2.x",
         "commander": ">=0.2.x <= 2.0.0",
-        "express" : "2.5.x",
+        "express" : "3.x",
         "mongodb": ">=0.9.6 <=1.0.0",
         "optimist": "0.2.x",
         "q": "0.8.x",
         "request": "2.9.x",
-        "socket.io": ">=0.8.5 <=0.9.0",
+        "socket.io": "1.3.4",
         "wrench": "1.3.x"
     },
     "devDependencies": {
