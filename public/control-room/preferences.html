@@ -32,33 +32,32 @@ POSSIBILITY OF SUCH DAMAGE.
 <html>
     <head>
         <title>Preferences Panel</title>
-        <link rel="stylesheet" href="css/screening.css" type="text/css" />
-        <link rel="stylesheet" href="css/button.css" type="text/css" />
-        <script src="../node_modules/montage/montage.js" data-package=".."></script>
+        <link rel="stylesheet" href="assets/style/screening.css" type="text/css" />
+        <link rel="stylesheet" href="assets/style/button.css" type="text/css" />
+        <script src="node_modules/montage/montage.js" async></script>
         <script type="text/montage-serialization">
         {
-            "preferenceview1": {
-                "module": "control-room/ui/preference-view.reel",
-                "name": "PreferenceView",
+            "owner": {
+                "prototype": "montage/core/application",
                 "properties": {
-                    "element": {"#": "preferences"}
+                    "components": [
+                        {"@": "preferenceView"},
+                        {"@": "menu"}
+                    ]
                 }
             },
-            "menu1": {
-                "module": "control-room/ui/menu.reel",
-                "name": "Menu",
+
+            "menu": {
+                "prototype": "ui/menu.reel",
                 "properties": {
                     "element": {"#": "menu"}
                 }
             },
-            "owner": {
-                "module": "montage/ui/application",
-                "name": "Application",
+
+            "preferenceView": {
+                "prototype": "ui/preference-view.reel",
                 "properties": {
-                    "components": [
-                        {"@": "preferenceview1"},
-                        {"@": "menu1"}
-                    ]
+                    "element": {"#": "preferences"}
                 }
             }
         }
@@ -68,7 +67,7 @@ POSSIBILITY OF SUCH DAMAGE.
     <body>
         <header class="menuBar">
             <div class="logo">Screening</div>
-            <div id="menu"></div>
+            <div id="menu" data-montage-id="menu"></div>
         </header>
         
         <div id="wrapper" class="wrapper">

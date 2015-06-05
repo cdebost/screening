@@ -32,24 +32,23 @@ POSSIBILITY OF SUCH DAMAGE.
 <html>
     <head>
         <title>All Test Results</title>
-        <link rel="stylesheet" href="css/screening.css" type="text/css" />
-        <script src="../node_modules/montage/montage.js" data-package=".."></script>
+        <link rel="stylesheet" href="assets/style/screening.css" type="text/css" />
+
+        <script src="node_modules/montage/montage.js" async></script>
         <script type="text/montage-serialization">
         {
-            "scriptresultsview1": {
-                "module": "control-room/ui/script-results-view.reel",
-                "name": "ScriptResultsView",
-                "properties": {
-                    "element": {"#": "scriptResults"}
-                }
-            },
             "owner": {
-                "module": "montage/ui/application",
-                "name": "Application",
+                "prototype": "montage/core/application",
                 "properties": {
                     "components": [
-                        {"@": "scriptresultsview1"}
+                        {"@": "scriptResults"}
                     ]
+                }
+            },
+            "scriptResults": {
+                "prototype": "ui/script-results-view.reel",
+                "properties": {
+                    "element": {"#": "scriptResults"}
                 }
             }
         }
