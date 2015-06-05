@@ -2,3 +2,4 @@
 .idea/
 server/results.json
 server/node_modules
+public/control-room/node_modules
