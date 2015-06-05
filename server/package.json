@@ -43,7 +43,7 @@
     "devDependencies": {
         "mocha": "*",
         "should": "*",
-        "template": "0.0.x"
+        "template": "0.1.x"
     },
     "private": true
 }
