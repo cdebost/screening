@@ -1,5 +1,8 @@
 .DS_Store
 .idea/
 server/results.json
-server/node_modules
+
+server/node_modules/*
+!server/node_modules/express
+
 public/control-room/node_modules

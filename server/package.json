@@ -32,7 +32,6 @@
         "archiver": "0.14.x",
         "ansi-color": "0.2.x",
         "commander": ">=0.2.x <= 2.0.0",
-        "express" : "3.x",
         "mongodb": ">=0.9.6 <=1.0.0",
         "optimist": "0.2.x",
         "q": "0.8.x",
