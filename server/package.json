@@ -1,49 +1,58 @@
 {
-    "name": "screening",
-    "version": "0.1.0",
-    "description": "A UI testing tool for Montage based apps",
-    "keywords": ["testing", "montage"],
-    "contributors": [
-        {
-            "name": "Brandon Jones",
-            "email": "brandon.jones@motorola.com"
-        },
-        {
-            "name": "Eliseo Soto",
-            "email": "eliseo.soto@motorola.com"
-        },
-        {
-            "name": "Zachary Cohen",
-            "email": "zachary.cohen@motorola.com"
-        }
-    ],
-    "repository": {
-        "type": "git",
-        "url": "git@github.com:Motorola-Mobility/screening.git"
+  "name": "screening",
+  "version": "0.1.0",
+  "description": "A UI testing tool for Montage based apps",
+  "keywords": [
+    "testing",
+    "montage"
+  ],
+  "contributors": [
+    {
+      "name": "Brandon Jones",
+      "email": "brandon.jones@motorola.com"
     },
-    "engines": {
-        "node": "~0.10"
+    {
+      "name": "Eliseo Soto",
+      "email": "eliseo.soto@motorola.com"
     },
-    "scripts": {
-        "start": "node index.js",
-        "install-mongodb": "node ./scripts/mongo.js"
-    },
-    "dependencies": {
-        "archiver": "0.14.x",
-        "ansi-color": "0.2.x",
-        "commander": ">=0.2.x <= 2.0.0",
-        "mongodb": ">=0.9.6 <=1.0.0",
-        "express": "4.x",
-        "optimist": "0.2.x",
-        "q": "0.8.x",
-        "request": "2.9.x",
-        "socket.io": "1.3.4",
-        "wrench": "1.3.x"
-    },
-    "devDependencies": {
-        "mocha": "*",
-        "should": "*",
-        "template": "0.1.x"
-    },
-    "private": true
+    {
+      "name": "Zachary Cohen",
+      "email": "zachary.cohen@motorola.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Motorola-Mobility/screening.git"
+  },
+  "engines": {
+    "node": "~0.10"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "install-mongodb": "node ./scripts/mongo.js"
+  },
+  "dependencies": {
+    "ansi-color": "0.2.x",
+    "archiver": "0.14.x",
+    "body-parser": "^1.13.1",
+    "commander": ">=0.2.x <= 2.0.0",
+    "connect-multiparty": "^1.2.5",
+    "cookie-parser": "^1.3.5",
+    "express": "4.x",
+    "express-session": "^1.11.3",
+    "mongodb": ">=0.9.6 <=1.0.0",
+    "optimist": "0.2.x",
+    "q": "0.8.x",
+    "request": "2.9.x",
+    "serve-index": "^1.7.0",
+    "serve-static": "^1.9.3",
+    "socket.io": "1.3.4",
+    "wrench": "1.3.x"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*",
+    "template": "0.1.x"
+  },
+  "private": true
 }

@@ -43,7 +43,16 @@ var path = require('path'),
 	MongoDbProvider = require("./lib/database/mongo-provider.js"),
     TestcaseResultsProvider = require("./lib/database/testcase-results-provider.js"),
     BatchesProvider = require("./lib/database/batches-provider.js"),
-    ScriptsProvider = require("./lib/database/scripts-provider.js");
+    ScriptsProvider = require("./lib/database/scripts-provider.js"),
+
+    // Middleware
+    bodyParser      = require("body-parser"),
+    multipart       = require("connect-multiparty"),
+    cookieParser    = require("cookie-parser"),
+    session         = require("express-session"),
+    serveIndex      = require("serve-index"),
+    serveStatic     = require("serve-static");
+
 
 
 
@@ -74,16 +83,14 @@ exports.createServer = function(customMongoDbProvider) {
 	const SCREENING_PATH = path.join(__dirname, "../public");
 
 	// TODO: Replace middleware, no longer supported in express 4.x
-    app.use(express.json());
-    app.use(express.urlencoded());
-    app.use(express.multipart());
-    app.use(express.cookieParser());
-    app.use(express.session({ secret: "hellomoto" }));
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded());
+    app.use(multipart());
+    app.use(cookieParser());
+    app.use(session({ secret: "hellomoto" }));
 
-    app.use(app.router);
-
-    app.use("/", express.directory(SCREENING_PATH));
-    app.use("/", express.static(SCREENING_PATH));
+    app.use("/", serveIndex(SCREENING_PATH));
+    app.use("/", serveStatic(SCREENING_PATH));
 
     // REST-API wiring
     routingConfig.apiKeyAuth(app);

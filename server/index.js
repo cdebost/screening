@@ -64,7 +64,9 @@ if(argv.port) {
 
 var express = require("express"),
 	http = require("http"),
-	path = require("path");
+	path = require("path"),
+  serveIndex = require("serve-index"),
+  serveStatic = require("serve-static");
 
 
 var app = express();
@@ -77,8 +79,8 @@ app.use("/screening", screening.app);
 if (process.env.NODE_ENV = "development") {
 	var MONTAGE_PATH = path.join(__dirname, "../../node_modules/montage");
 
-	app.use("/node_modules/montage", express.static(MONTAGE_PATH));
-	app.use("/node_modules/montage", express.directory(MONTAGE_PATH));
+	app.use("/node_modules/montage", serveStatic(MONTAGE_PATH));
+	app.use("/node_modules/montage", serveIndex(MONTAGE_PATH));
 }
 
 var socketApi = require("./lib/sockets.js");

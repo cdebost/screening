@@ -59,9 +59,6 @@ exports.apiKeyAuth = function(app) {
 }
 
 exports.init = function(app) {
-
-    app.use(app.router);
-
     app.use(apiV1Root, function(err, req, res, next) {
         // This middleware is exclusively for errors, so if you forgot to set the
         // statusCode to something other than 200 then it will be defaulted to 500
@@ -74,7 +71,7 @@ exports.init = function(app) {
             errorResponse.stack = err.stack;
         }
 
-        res.send(errorResponse, res.statusCode);
+        res.status(res.statusCode).send(errorResponse);
     });
 
     app.use(apiV1Root, function(req, res) {

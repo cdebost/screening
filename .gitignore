@@ -2,7 +2,6 @@
 .idea/
 server/results.json
 
-server/node_modules/*
-!server/node_modules/express
+server/node_modules
 
 public/control-room/node_modules
