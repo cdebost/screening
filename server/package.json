@@ -33,6 +33,7 @@
         "ansi-color": "0.2.x",
         "commander": ">=0.2.x <= 2.0.0",
         "mongodb": ">=0.9.6 <=1.0.0",
+        "express": "4.x",
         "optimist": "0.2.x",
         "q": "0.8.x",
         "request": "2.9.x",

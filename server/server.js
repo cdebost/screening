@@ -73,13 +73,13 @@ exports.createServer = function(customMongoDbProvider) {
 
 	const SCREENING_PATH = path.join(__dirname, "../public");
 
-	/* Express Middleware: ORDER MATTERS! */
+	// TODO: Replace middleware, no longer supported in express 4.x
     app.use(express.json());
     app.use(express.urlencoded());
     app.use(express.multipart());
-
     app.use(express.cookieParser());
     app.use(express.session({ secret: "hellomoto" }));
+
     app.use(app.router);
 
     app.use("/", express.directory(SCREENING_PATH));
