@@ -147,14 +147,14 @@ exports.Main = Component.specialize(/** @lends Main# */ {
             this.socket.on("agentConnected", function(agentInfo) {
                 var agent = AgentBrowser.create();
                 agent.info = agentInfo;
-                self.agents.addObjects(agent);
+                self.agents.add(agent);
             });
 
             this.socket.on("agentDisconnected", function(agentId) {
-                var displayedAgents = self.agents.organizedObjects;
+                var displayedAgents = self.agents.organizedContent;
                 for (var i = 0; i < displayedAgents.length; ++i) {
                     if (displayedAgents[i].info.id === agentId) {
-                        self.agents.removeObjects(displayedAgents[i]);
+                        self.agents.delete(displayedAgents[i]);
                         return;
                     }
                 }
@@ -194,7 +194,9 @@ exports.Main = Component.specialize(/** @lends Main# */ {
     _initDriver: {
         value: function() {
             var self = this;
-            self.agents.content = []; // TODO: find a more elegant solution to do this.
+            if (self.agents.content) {
+                self.agents.clear();
+            }
             this.socket.emit("initDriver", function(version, agentsInfo, availableTests) {
                 self.serverVersion = version;
                 var newAgentsArray = [];

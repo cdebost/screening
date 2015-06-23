@@ -124,19 +124,5 @@ exports.PreferenceManager = Object.create(Object, {
 
             return preferences;
         }
-    },
-
-    // TODO: deprecated, try to remove
-    savePreferences: {
-        value: function(prefs) {
-            // TODO: there is no way this is working right now.
-            for(var i = 0; i < prefs.length; ++i) {
-                var key = prefs[i].shortName;
-                var value = prefs[i].value;
-                if(value) {
-                    localStorage[key] = value;
-                }
-            }
-        }
     }
 });
