@@ -95,7 +95,11 @@ exports.ScriptResultsView = Component.specialize({
             this.renderResults(resultsUrl);
 
             // Disable/Enable page buttons if we are on the first/last pages
-            if (this.templateObjects) {
+            if ([
+                    this.templateObjects,
+                    this.templateObjects.previousPageButtonTop,
+                    this.templateObjects.nextPageButtonTop
+                ].all()) {
                 this.templateObjects.previousPageButtonTop.element.disabled = (this._currentPage === 1);
                 this.templateObjects.nextPageButtonTop.element.disabled = (this._currentPage === this._totalPages);
             }
