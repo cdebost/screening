@@ -42,7 +42,7 @@ exports.PreferenceView = Component.specialize({
         value: false
     },
 
-    preferences: { // TODO: rename this to be be something better, it's not a list really.
+    preferences: {
         value: [],
         distinct: true
     },

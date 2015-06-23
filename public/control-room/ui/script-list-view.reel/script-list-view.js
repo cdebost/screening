@@ -201,7 +201,6 @@ exports.ScriptListView = Component.specialize({
 
     handleDownloadAllButtonAction: {
         value: function() {
-            //TODO: Not working
             window.location.href = "/screening/api/v1/scripts/archive?api_key=5150";
         }
     }

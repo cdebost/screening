@@ -234,32 +234,19 @@ exports.ScriptDetailView = Component.specialize({
             };
             this._codeMirror = CodeMirror.fromTextArea(this.scriptCode.element, options);
 
-            var nameValueChangeListener = function(event) {
-                if (arguments.callee.firstTime) {
-                    arguments.callee.firstTime = false;
+            // Mark the script as needing a save when the name is changed
+            this.scriptNameField.addPathChangeListener("value", function (event) {
+                if (event && self.scriptSource.name !== self.scriptNameField.value) {
+                    self.needsSave = true;
                 }
-                else {
-                    if (self.scriptSource.name !== self.scriptNameField.value) {
-                        self.needsSave = true;
-                    }
-                }
-            };
-            //TODO: Find a better way to do this
-            nameValueChangeListener.firstTime = true;
-            this.scriptNameField.addPathChangeListener("value", nameValueChangeListener, false);
+            }, false);
 
-            var tagValueChangeListener = function(event) {
-                if (arguments.callee.firstTime) {
-                    arguments.callee.firstTime = false;
+            // Mark the script as needing a save when the tags are changed
+            this.scriptTags.addPathChangeListener("value", function (event) {
+                if (event !== undefined && self.scriptSource.displayTags !== self.scriptTags.value) {
+                    self.needsSave = true;
                 }
-                else {
-                    if (self.scriptSource.displayTags !== self.scriptTags.value) {
-                        self.needsSave = true;
-                    }
-                }
-            };
-            tagValueChangeListener.firstTime = true;
-            this.scriptTags.addPathChangeListener("value", tagValueChangeListener, false);
+            }, false);
 
             document.addEventListener("keydown", this);
             this.urlPrompt.addEventListener("message.ok", function(event) {
@@ -381,13 +368,6 @@ exports.ScriptDetailView = Component.specialize({
                 // Cancel
                 // Do nothing for now
             });
-        }
-    },
-
-    //TODO: Not currently used (should we use action event listeners or JS listeners for buttons?)
-    handleDownloadButtonAction: {
-        value: function(event) {
-            this.downloadScriptSource();
         }
     },
 
