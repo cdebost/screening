@@ -58,7 +58,9 @@ var Preferences = [
     }
 ];
 
-exports.PreferenceManager = Object.create(Object, {
+exports.PreferenceManager = Montage.specialize({
+
+}, {
     PREFERENCE_PREFIX: {
         value: "Screening.Preferences."
     },
