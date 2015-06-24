@@ -381,7 +381,9 @@ exports.ScriptDetailView = Component.specialize({
         value: function() {
             // update the code
             var id = this.scriptSource.id;
-            this.scriptSource.name = this.scriptNameField.value;
+            if (this.scriptNameField.value) {
+                this.scriptSource.name = this.scriptNameField.value;
+            }
             this.scriptSource.displayTags = this.scriptTags.value;
             this.scriptSource.code = this._codeMirror.getValue();
 
