@@ -138,6 +138,8 @@ TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, opt
         scriptObject.setOption(i, options[i]);
     }
 
+    var agentConstructor = function() { return new WebDriverAgent(session, sync, scriptObject, result); };
+
     var writeResultsAndShowNotification = function() {
         // Write the results to the DB
         result.finalize();
@@ -174,8 +176,7 @@ TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, opt
             }
         } else {
             // The session succeeded. Execute the test, using our code synchronization system
-            when(self._executeTestInVm(testScript.code, result, new WebDriverAgent(session, sync, scriptObject, result),
-                scriptObject, sync), function() {
+            when(self._executeTestInVm(testScript.code, result, agentConstructor, scriptObject, sync), function() {
                 // kill the webdriver session
                 session.quit().then(function() {
                     writeResultsAndShowNotification();
@@ -202,13 +203,13 @@ TestcaseRunner.prototype._executeTestInVm = function(source, result, agent, scri
         var scriptContext = {
             __result: result,
             script: scriptObject,
-            agent: agent,
+            Agent: agent,
             Mouse: mouseEnum,
             Key: keyEnum,
             console: console
         };
 
-        scriptObject.globalObjects = {agent: agent, script: scriptObject};
+        scriptObject.globalObjects = {Agent: agent, script: scriptObject};
         // Add all asserts to the script context that we are passing into the test scripts env.
         for (var f in decoratedAsserts) {
             if (f.substr(0, 6)=="assert") { // We ONLY want the assert functions.
