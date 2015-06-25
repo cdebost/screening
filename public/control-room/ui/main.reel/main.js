@@ -136,10 +136,6 @@ exports.Main = Component.specialize(/** @lends Main# */ {
 
             this._initDriver();
 
-            this.socket.on("connect", function() {
-                console.log("Connected to the Screening server");
-            })
-
             this.socket.on("reconnect", function() {
                 self._initDriver();
             });
@@ -148,6 +144,7 @@ exports.Main = Component.specialize(/** @lends Main# */ {
                 var agent = AgentBrowser.create();
                 agent.info = agentInfo;
                 self.agents.add(agent);
+                self.agents.select(agent);
             });
 
             this.socket.on("agentDisconnected", function(agentId) {
@@ -196,6 +193,7 @@ exports.Main = Component.specialize(/** @lends Main# */ {
             var self = this;
             if (self.agents.content) {
                 self.agents.clear();
+                self.agents.clearSelection();
             }
             this.socket.emit("initDriver", function(version, agentsInfo, availableTests) {
                 self.serverVersion = version;
@@ -206,6 +204,7 @@ exports.Main = Component.specialize(/** @lends Main# */ {
                     newAgentsArray.push(agent);
                 }
                 self.agents.content = newAgentsArray;
+                self.agents.selection = self.agents.content.slice();
             });
         }
     },
