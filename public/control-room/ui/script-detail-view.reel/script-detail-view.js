@@ -210,6 +210,8 @@ exports.ScriptDetailView = Component.specialize({
             var self = this;
 
             this.addPathChangeListener("scriptSource", function (event) {
+                self.scriptNameField.element.disabled = self.scriptTags.element.disabled = !self.scriptSource;
+
                 if (self.scriptSource) {
                     // Only enable recording if the selected browser is Chrome
                     if (self.selectedAgent && self.selectedAgent.info.capabilities.browserName === "chrome") {
@@ -222,8 +224,6 @@ exports.ScriptDetailView = Component.specialize({
                 }
             });
 
-            if (this.scriptSource) {
-            }
             var options = {
                 mode: 'javascript',
                 lineNumbers: true,
