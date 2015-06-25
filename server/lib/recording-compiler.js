@@ -355,7 +355,6 @@ var RecordingCompiler = exports.RecordingCompiler = Object.create(Object, {
             if (this.options.enhanceCodeReadibility) {
                 source.push("// ==== Start Recorded Script, " + new Date().toString() + "==== \r\n");
             }
-            source.push("var agent = new Agent();\r\n");
             var prevAction = null, nextAction, action;
 
             // TODO: Calculate delays
