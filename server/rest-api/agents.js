@@ -171,10 +171,10 @@ module.exports = function(agentPool, testcaseRunner, scriptsProvider, batchesPro
 
     /**
      * Executes a batch in the specified agent.
-     * @function
-     * @returns {Object} the same batch object which will eventually contain the results
      */
     app.post("/:id/execute_batch/:batchId", routingConfig.provides('json', '*/*'), function(req, res, next) {
+        console.log("POST batch with id", req.params.batchId);
+
         var agentId = req.params.id,
             batchId = req.params.batchId,
             agent = agentPool.getAgentById(agentId),
@@ -193,42 +193,54 @@ module.exports = function(agentPool, testcaseRunner, scriptsProvider, batchesPro
             batchesProvider.findById(batchId, function(error, batch) {
                 if (error) return next(new Error(error));
 
-                if (batch.scripts && batch.scripts.length > 0) {
-                    batch.scripts.forEach(function(scriptId, index) {
-                        scriptsProvider.findById(scriptId, function(error, script) {
-                            if (error) return next(new Error(error));
+                if (!batch.scripts || batch.scripts.length === 0) {
+                    res.statusCode = 400;
+                    return next({message: "The batch does not contain any scripts."});
+                }
 
-                            if (!script) {
-                                res.statusCode = 404;
-                                return next({message: "The script " + scriptId + " does not exist."});
+                var scriptObjects = [];
+                var scriptCheck = new Promise(function(resolve, reject) {
+                    batch.scripts.forEach(function(scriptName, index) {
+                        scriptsProvider.findByName(scriptName, function(error, scripts) {
+                            if (error) {
+                                reject();
+                                return next(new Error(error));
                             }
 
-                            try {
-                                var testcaseId = testcaseRunner.executeTest(script, {id: agentId}, options);
-                                testcaseIds.push(testcaseId);
-                                // If all the scripts are processed then add the results to the batch object
-                                // and respond
-                                if(index === batch.scripts.length - 1) {
-                                    batch.results = testcaseIds;
-                                    batchesProvider.upsert(batch, function(error, updatedBatch) {
-                                        if (error) return next(new Error(error));
+                            var script = scripts[0];
 
-                                        res.statusCode = 201;
-                                        res.send(updatedBatch);
-                                    });
-                                }
-                            } catch (ex) {
-                                console.log("Exception thrown while attempting to run test: " + ex, ex.stack);
+                            if (!script || script.name !== scriptName) {
                                 res.statusCode = 404;
-                                return next(new Error('Exception thrown while attempting to run test: ' + ex));
+                                return next({message: "The script " + scriptName + " does not exist."});
+                            }
+
+                            scriptObjects.push(script);
+
+                            // If this is the last script, we're done checking
+                            if (index === batch.scripts.length - 1) {
+                                resolve();
                             }
                         });
                     });
-                } else {
-                    res.statusCode = 400;
-                    return next({message: "The batch does not contain any scripts"});
-                }
+                });
 
+                scriptCheck.then(function() {
+                    var result = testcaseRunner.createResult(agentId, "Sample batch", " ");
+                    (function queueTest(index) {
+                        testcaseRunner.executeTestAsync(scriptObjects[index], {id: agentId}, options, result)
+                            .then(function() {
+                                if (index === scriptObjects.length - 1) {
+                                    testcaseRunner.finalize(agentId, result);
+
+                                    res.statusCode = 201;
+                                    res.send(null);
+                                }
+                                else {
+                                    queueTest(index + 1);
+                                }
+                            });
+                    })(0);
+                });
             });
         } catch (error) {
             console.error(error);

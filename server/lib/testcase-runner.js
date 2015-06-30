@@ -134,18 +134,6 @@ TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, opt
         scriptObject.setOption(i, options[i]);
     }
 
-    var writeResultsAndShowNotification = function() {
-        // Write the results to the DB
-        result.finalize();
-
-        self.resultsProv.upsert(result.get(), function(err, object) {
-            if (err) throw err;
-        });
-
-        // Show the notification to the control room
-        agent.endTest(result.get());
-    }
-
     // Start the webdriver session
     session.init(agent.capabilities, function(err) {
         if(!err.sessionId) {
@@ -162,11 +150,11 @@ TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, opt
             if (session.sessionUrl) {
                 session.quit().then(function successCb() {
                     result.reportException(err);
-                    writeResultsAndShowNotification();
+                    self.finalize(agent.id, result);
                 });
             } else {
                 result.reportException(err);
-                writeResultsAndShowNotification();
+                self.finalize(agent.id, result);
             }
         } else {
             // The session succeeded. Execute the test, using our code synchronization system
@@ -174,13 +162,85 @@ TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, opt
                 scriptObject, sync), function() {
                 // kill the webdriver session
                 session.quit().then(function() {
-                    writeResultsAndShowNotification();
+                    self.finalize(agent.id, result);
                 });
             });
         }
     });
 
     return result;
+};
+
+TestcaseRunner.prototype.executeTestAsync = function(testScript, desiredCaps, options, result) {
+    // TODO: extract the agents from the testscript
+    var agent = this.agentPool.getAgentByCaps(desiredCaps);
+    agent.startTest();
+
+    // If we are a webdriver agent, use the new backend
+    if(agent.type == agentTypes.WEBDRIVER) {
+        return this._executeWebdriverTestAsync(testScript, agent, options, result);
+    }
+};
+
+TestcaseRunner.prototype._executeWebdriverTestAsync = function(testScript, agent, options, result) {
+    var self = this;
+    var session = createWebdriverSession(agent.url);
+    var sync = Object.create(Sync).init();
+
+    // Validate that the passed testScript object contains code and name
+    if(!testScript.code || !testScript.name) throw new Error("testScript must be an object with code and name properties.");
+
+    // Create the result object if it doesn't exist
+    result = result || this.createResult(agent, testScript.name, testScript.code);
+
+    // the options object can be manipulated in the test script
+    var scriptObject = new ScriptClass();
+    scriptObject.sync = sync;
+    for(var i in testScript.preferences) {
+        var pref = testScript.preferences[i];
+        scriptObject.setOption(pref.shortName, pref.value);
+    }
+    for(var i in options){
+        scriptObject.setOption(i, options[i]);
+    }
+
+    var defer = Q.defer();
+
+    // Start the webdriver session
+    session.init(agent.capabilities, function(err) {
+        if(!err.sessionId) {
+            // Wrap error message inside Error object if required
+            if (!(err instanceof Error)) {
+                if (err.value && err.value.message) {
+                    err = new Error(err.value.message);
+                } else {
+                    err = new Error(err);
+                }
+            }
+
+            // If we have a valid session quit
+            if (session.sessionUrl) {
+                session.quit().then(function successCb() {
+                    result.reportException(err);
+                    defer.resolve();
+                });
+            } else {
+                result.reportException(err);
+                defer.resolve();
+            }
+        } else {
+            // The session succeeded. Execute the test, using our code synchronization system
+            when(self._executeTestInVm(testScript.code, result, new WebDriverAgent(session, sync, scriptObject, result),
+                scriptObject, sync), function() {
+                // kill the webdriver session
+                session.quit().then(function() {
+                    defer.resolve(result);
+                });
+            });
+        }
+    });
+
+    return defer.promise;
 };
 
 /**

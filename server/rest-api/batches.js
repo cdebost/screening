@@ -82,6 +82,14 @@ module.exports = function(batchesProvider) {
 
         body = parseObjectIds(body);
 
+        var now = new Date();
+        var generatedName = "Unnamed Batch - " + now.toISOString();
+
+        if (!body.name) {
+            body.name = generatedName;
+        }
+        body.modified = now;
+
         batchesProvider.upsert(body, function(error, batch) {
             if (error) return next(new Error(error));
 
@@ -130,12 +138,14 @@ module.exports = function(batchesProvider) {
     function parseObjectIds(object) {
         var scripts = object.scripts;
 
-        var objectIds = [];
-        scripts.forEach(function(script) {
-            objectIds.push(new BSON.ObjectID(script));
-        });
+        if (scripts) {
+            var objectIds = [];
+            scripts.forEach(function (script) {
+                objectIds.push(new BSON.ObjectID(script));
+            });
 
-        object.scripts = objectIds;
+            object.scripts = objectIds;
+        }
 
         return object;
     }
