@@ -121,11 +121,7 @@ TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, opt
     if(!testScript.code || !testScript.name) throw new Error("testScript must be an object with code and name properties.");
 
     // Create the result object
-    var result = new Result(agent, {
-        id: this.resultsProv.generateId(),
-        code: testScript.code,
-        name: testScript.name
-    });
+    var result = this.createResult(agent.id, testScript.name, testScript.code);
 
     // the options object can be manipulated in the test script
     var scriptObject = new ScriptClass();
@@ -237,4 +233,28 @@ TestcaseRunner.prototype._executeTestInVm = function(source, result, agent, scri
     });
 
     return defer.promise;
+};
+
+/**
+ * Writes results to the database and notifies the control-room
+ */
+TestcaseRunner.prototype.finalize = function(agentId, result) {
+    // Write the results to the DB
+    result.finalize();
+
+    this.resultsProv.upsert(result.get(), function(err, object) {
+        if (err) throw err;
+    });
+
+    // Show the notification to the control room
+    var agent = this.agentPool.getAgentById(agentId);
+    agent.endTest(result.get());
+};
+
+TestcaseRunner.prototype.createResult = function(agentId, name) {
+    var agent = this.agentPool.getAgentById(agentId);
+    return new Result(agent, {
+        id: this.resultsProv.generateId(),
+        name: name
+    });
 };

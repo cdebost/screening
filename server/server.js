@@ -82,7 +82,6 @@ exports.createServer = function(customMongoDbProvider) {
 
 	const SCREENING_PATH = path.join(__dirname, "../public");
 
-	// TODO: Replace middleware, no longer supported in express 4.x
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded());
     app.use(multipart());
