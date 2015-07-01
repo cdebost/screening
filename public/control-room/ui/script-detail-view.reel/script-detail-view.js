@@ -209,7 +209,17 @@ exports.ScriptDetailView = Component.specialize({
         value: function() {
             var self = this;
 
-            this.addPathChangeListener("scriptSource", function (event) {
+            var options = {
+                mode: 'javascript',
+                lineNumbers: true,
+                gutter:true,
+                onChange: function(codeMirror) {
+                    self.needsSave = true;
+                }
+            };
+            this._codeMirror = CodeMirror.fromTextArea(this.scriptCode.element, options);
+
+            this.addPathChangeListener("scriptSource", function (newScript) {
                 self.scriptNameField.element.disabled = self.scriptTags.element.disabled = !self.scriptSource;
 
                 if (self.scriptSource) {
@@ -222,17 +232,18 @@ exports.ScriptDetailView = Component.specialize({
                     self.deleteButton.disabled = false;
                     self.downloadButton.disabled = false;
                 }
-            });
 
-            var options = {
-                mode: 'javascript',
-                lineNumbers: true,
-                gutter:true,
-                onChange: function(codeMirror) {
-                    self.needsSave = true;
+                // Show/hide the empty detail
+                if (newScript) {
+                    this.emptyDetail.style.display = "none";
+                    localStorage["Screening.AppState.CurrentScript"] = newScript.id;
+                } else {
+                    this.emptyDetail.style.display = "table";
+                    this.clearFields();
                 }
-            };
-            this._codeMirror = CodeMirror.fromTextArea(this.scriptCode.element, options);
+            }, false);
+
+            this.addPathChangeListener("selectedAgent", this.selectedAgentChanged.bind(this), false);
 
             // Mark the script as needing a save when the name is changed
             this.scriptNameField.addPathChangeListener("value", function (event) {
@@ -243,7 +254,7 @@ exports.ScriptDetailView = Component.specialize({
 
             // Mark the script as needing a save when the tags are changed
             this.scriptTags.addPathChangeListener("value", function (event) {
-                if (event !== undefined && self.scriptSource.displayTags !== self.scriptTags.value) {
+                if (event && self.scriptSource && self.scriptSource.displayTags !== self.scriptTags.value) {
                     self.needsSave = true;
                 }
             }, false);
@@ -252,6 +263,19 @@ exports.ScriptDetailView = Component.specialize({
             this.urlPrompt.addEventListener("message.ok", function(event) {
                 self.urlPromptOk();
             });
+        }
+    },
+
+    enterDocument: {
+        value: function() {
+            var self = this;
+
+            // Confirm navigation away from Control Room if there's an unsaved script
+            window.onbeforeunload = function() {
+                var navigateAwayMessage = "Your changes to the script have not been saved yet.";
+
+                return self.needsSave ? navigateAwayMessage : null;
+            }
         }
     },
 
@@ -273,6 +297,16 @@ exports.ScriptDetailView = Component.specialize({
                     this.saveScriptSource();
                     event.preventDefault();
                 }
+            }
+        }
+    },
+
+    selectedAgentChanged: {
+        value: function(newAgent) {
+            if (newAgent && newAgent.info.capabilities.browserName !== "chrome") {
+                this.recordButton.element.disabled = true;
+            } else  {
+                this.recordButton.element.disabled = false;
             }
         }
     },
@@ -310,45 +344,6 @@ exports.ScriptDetailView = Component.specialize({
                     req.send(JSON.stringify(requestBody));
                 }
             }
-        }
-    },
-
-    showResult: {
-        value: function() {
-            var self = this;
-            if (!self.lastTestResult) return;
-
-            var resultId = self.lastTestResult._id;
-
-            // If Desktop Notifications are not available fallback to opening a new window
-            if (!window.webkitNotifications || window.webkitNotifications.checkPermission() > 0) {
-                window.open("/screening/control-room/script-result.html?" + resultId);
-            } else {
-                var popup = window.webkitNotifications.createHTMLNotification("/screening/control-room/script-result-popup.html?" + resultId);
-
-                // When you click anywhere in the popup it'll open the result page
-                popup.onclick = function() {
-                    window.open("/screening/control-room/script-result.html?" + resultId);
-                    popup.cancel();
-                };
-                popup.show();
-
-                setTimeout(function() {
-                    popup.cancel();
-                }, 10000);
-            }
-        }
-    },
-
-    showAllResults: {
-        value: function() {
-            window.open("/screening/control-room/script-results.html");
-        }
-    },
-
-    showSettings: {
-        value: function() {
-            document.location = "/screening/control-room/preferences.html";
         }
     },
 
@@ -556,7 +551,9 @@ exports.ScriptDetailView = Component.specialize({
             var event = document.createEvent("CustomEvent");
             event.initCustomEvent("scriptDeleted", true, false);
             event.script = this.scriptSource;
-            this.dispatchEvent(event);
+            document.dispatchEvent(event);
+
+            this.clearFields();
         }
     },
 
@@ -572,11 +569,6 @@ exports.ScriptDetailView = Component.specialize({
          * Clear the script name, tags and content.
          */
         value: function() {
-            if (!this.scriptNameField) {
-                // The component has not been fully loaded
-                return;
-            }
-
             this.scriptNameField.value = "";
             this.scriptTags.value = "";
             this._codeMirror.setValue(" ");

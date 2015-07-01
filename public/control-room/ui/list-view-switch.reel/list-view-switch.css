@@ -1,4 +1,3 @@
-/* @override http://localhost:8081/screening/control-room/ui/script-list-view.reel/script-list-view.css */
 /* <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
@@ -29,59 +28,60 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-.ScriptListView {
+.ListViewSwitch {
     position: absolute;
-    height: 100%;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: hsl(0,0%,90%);
 }
 
-.ScriptListView .scriptList {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
+.ListViewSwitch .listSubstitution {
+    position: absolute;
+    top: 43px;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+
+.ListViewSwitch .listView {
+    position: relative;
     -webkit-box-flex: 1;
-    overflow: auto;
-    -webkit-padding-start: 0;
+    border-right: 3px solid #898989;
+}
+
+/* Tabs */
+
+.Tabs {
+    position: relative;
+    color: white;
+    display: -webkit-flex;
+    color: black;
+    background: hsl(264, 10%, 24%);
+}
+
+.Tabs-item.digit-RadioButton {
+    -webkit-flex: 1;
+    flex: 1;
     margin: 0;
+    height: 43px;
+    font-size: 1.2em;
+    font-weight: normal;
+    text-align: center;
+    border-radius: 0;
+    border: none;
+    cursor: pointer;
 }
 
-/* List */
-.ScriptListView .scriptUploader {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    left: 0;
+.Tabs-item:before {
+    content: attr(data-label);
 }
 
-.ScriptListView.noUploader .scriptList {
-    position: absolute;
-    top: 58px;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background-color: #F2F2F2;
+.Tabs-item.digit-RadioButton svg {
+    display: none;
 }
 
-
-
-
-/* List */
-
-.scriptList {
-    padding: 0;
+.Tabs-item:after {
+    content: none;
 }
-
-
-
-/* Very hacky! I'd rather not have to do this */
-/*
-
-.ScriptListView .scriptList>div {
-    height: 100%;
-}
-*/
-.scriptList .uploadScript {
-    width:300px;
-    height:80px;
-    display:block;
-    border:1px solid red;
-}
-

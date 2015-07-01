@@ -78,12 +78,7 @@ exports.Main = Component.specialize(/** @lends Main# */ {
         serializable: true
     },
 
-    scriptDetail: {
-        value: null,
-        serializable: true
-    },
-
-    scriptList: {
+    editor: {
         value: null,
         serializable: true
     },
@@ -104,33 +99,10 @@ exports.Main = Component.specialize(/** @lends Main# */ {
         value: function() {
             var self = this;
 
-            // Confirm navigation away from Control Room if there's an unsaved script
-            window.onbeforeunload = function() {
-                var navigateAwayMessage = "Your changes to the script have not been saved yet.";
-
-                return self.scriptDetail.needsSave ? navigateAwayMessage : null;
-            }
-
             // Make this class visible to the scripts list delegate
             if (this.scripts.delegate) {
                 this.scripts.delegate.scriptManager = this;
             }
-
-            this.scriptDetail.addPathChangeListener("scriptSource", function(newScript) {
-                self.scriptChanged(newScript);
-            }, false);
-
-            this.scriptDetail.addPathChangeListener("selectedAgent", function(newAgent) {
-                self.selectedAgentChanged(newAgent);
-            }, false);
-
-            this.scriptDetail.addEventListener("scriptDeleted", function(event) {
-                self.scriptList.deleteScript();
-                self.scripts.selectedObjects = [];
-                self.scripts.selectedIndexes = [];
-                self.scriptChanged(null, null);
-                self.scriptDetail.clearFields();
-            }, false);
 
             this.socket = io("http://" + document.domain + ":" + document.location.port, { path: "/socket.io" });
 
@@ -177,8 +149,9 @@ exports.Main = Component.specialize(/** @lends Main# */ {
             this.socket.on("testCompleted", function(agentId, testResult) {
                 var agent = self.getAgentById(agentId);
                 agent.testing = false;
-                self.scriptDetail.lastTestResult = testResult;
-                self.scriptDetail.showResult();
+                //TODO can probably remove
+                //self.editor.scriptDetail.lastTestResult = testResult;
+                self.showResult(testResult);
             });
 
             // Get the available agents
@@ -223,39 +196,39 @@ exports.Main = Component.specialize(/** @lends Main# */ {
         }
     },
 
-    scriptChanged: {
-        /**
-         *
-         * @param {Script} newScript New Script
-         * @param {Script} prevScript Previous Script
-         */
-        value: function(newScript) {
-            if (!this.emptyDetail || !this.scriptDetail) {
-                return;
-            }
+    showResult: {
+        value: function(testResult) {
+            var resultId = testResult._id;
 
-            if (newScript) {
-                this.emptyDetail.style.display = "none";
-                localStorage["Screening.AppState.CurrentScript"] = newScript.id;
+            // If Desktop Notifications are not available fallback to opening a new window
+            if (!window.webkitNotifications || window.webkitNotifications.checkPermission() > 0) {
+                window.open("/screening/control-room/script-result.html?" + resultId);
             } else {
-                this.emptyDetail.style.display = "table";
-                this.scriptDetail.clearFields();
+                var popup = window.webkitNotifications.createHTMLNotification("/screening/control-room/script-result-popup.html?" + resultId);
+
+                // When you click anywhere in the popup it'll open the result page
+                popup.onclick = function() {
+                    window.open("/screening/control-room/script-result.html?" + resultId);
+                    popup.cancel();
+                };
+                popup.show();
+
+                setTimeout(function() {
+                    popup.cancel();
+                }, 10000);
             }
         }
     },
 
-    selectedAgentChanged: {
-        value: function(newAgent) {
-            if (!this.scriptDetail || !this.scriptDetail.recordButton) {
-                //scriptDetail has not been fully loaded
-                return;
-            }
-
-            if (newAgent && newAgent.info.capabilities.browserName !== "chrome") {
-                this.scriptDetail.recordButton.element.disabled = true;
-            } else  {
-                this.scriptDetail.recordButton.element.disabled = false;
-            }
+    showAllResults: {
+        value: function() {
+            window.open("/screening/control-room/script-results.html");
         }
-    }
+    },
+
+    showSettings: {
+        value: function() {
+            document.location = "/screening/control-room/preferences.html";
+        }
+    },
 });

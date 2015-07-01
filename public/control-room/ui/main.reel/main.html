@@ -44,28 +44,67 @@ POSSIBILITY OF SUCH DAMAGE.
                 "properties": {
                     "element": {"#": "main"},
 
-                    "scriptList": {"@": "scriptListView"},
-                    "emptyDetail": {"#": "emptyDetail"},
-                    "scriptDetail": {"@": "scriptDetailView"},
+                    "editor": {"@": "editorView"},
                     "agents": {"@": "agentsRangeController"},
-                    "scripts": {"@": "scriptsArrayController"}
+                    "scripts": {"@": "scriptsArrayController"},
+                    "batches": {"@": "batchesRangeController"}
                 }
             },
-            
+
+            "allResultsButtonListener": {
+                "prototype": "montage/core/event/action-event-listener",
+                "properties": {
+                    "handler": {"@": "owner"},
+                    "action": "showAllResults"
+                }
+            },
+            "allResultsButton": {
+                "prototype": "digit/ui/button.reel",
+                "properties": {
+                    "element": {"#": "allResults"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "allResultsButtonListener"},
+                        "capture": false
+                    }
+                ]
+            },
+            "settingsButtonListener": {
+                "prototype": "montage/core/event/action-event-listener",
+                "properties": {
+                    "handler": {"@": "owner"},
+                    "action": "showSettings"
+                }
+            },
+            "settingsButton": {
+                "prototype": "digit/ui/button.reel",
+                "properties": {
+                    "element": {"#": "settings"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "settingsButtonListener"},
+                        "capture": false
+                    }
+                ]
+            },
+
             "scriptcontrollerdelegate1": {
                 "prototype": "core/script-controller-delegate"
             },
-            
 
-            "scriptListView": {
-                "prototype": "ui/script-list-view.reel",
+            "listViewSwitch": {
+                "prototype": "ui/list-view-switch.reel",
                 "properties": {
-                    "element": {"#": "scriptList"},
-
-                    "delegate": {"@": "scriptcontrollerdelegate1"}
+                    "element": {"#": "listViewSwitch"},
+                    "scriptDelegate": {"@": "scriptcontrollerdelegate1"}
                 },
                 "bindings": {
-                    "scriptController": {"<-": "@owner.scripts"}
+                    "scriptController": {"<-": "@owner.scripts"},
+                    "batchController": {"<-": "@owner.batches"}
                 }
             },
 
@@ -86,16 +125,28 @@ POSSIBILITY OF SUCH DAMAGE.
                 }
             },
 
-            "scriptDetailView": {
-                "prototype": "ui/script-detail-view.reel",
+            "batchesRangeController": {
+                "prototype": "montage/core/range-controller",
                 "properties": {
-                    "element": {"#": "scriptDetail"}
+                    "selectObjectsOnAddition": true,
+                    "automaticallyOrganizeObjects": true,
+                    "delegate": {"@": "scriptcontrollerdelegate1"}
+                }
+            },
+
+            "editorView": {
+                "prototype": "ui/editor.reel",
+                "properties": {
+                    "element": {"#": "editorView"}
                 },
                 "bindings": {
                     "scriptSource": {"<-": "@owner.scripts.selection[0]"},
+                    "batchSource": {"<-": "@owner.batches.selection[0]"},
                     "activeAgents": {"<-": "@owner.agents.selection"},
                     "selectedAgent": {"<-": "@owner.agents.selection.0"},
-                    "serverVersion": {"<-": "@owner.serverVersion"}
+                    "serverVersion": {"<-": "@owner.serverVersion"},
+
+                    "selectedPanel": {"<-": "@listViewSwitch.selectedPanel"}
                 }
             },
 
@@ -120,20 +171,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
         <section id="middleDockArea" class="dockHorizontalPanel flexFill">
             <section id="leftDockArea" class="dockPanel dockVerticalPanel">
-                <div id="scriptList" data-montage-id="scriptList" class="scriptList flexFill dockVerticalPanel"></div>
+                <div class="menuBar">
+                    <div class="logo">Screening</div>
+                    <div class="menuButtons">
+                        <div class="buttonGroup">
+                            <button data-montage-id="allResults">All Results</button>
+                            <button data-montage-id="settings">Preferences</button>
+                        </div>
+                    </div>
+                </div>
+                <div data-montage-id="listViewSwitch" class="switchListView"></div>
             </section>
 
             <section id="centralDockArea" class="dockPanel dockVerticalPanel flexFill">
-                <div id="scriptDetail" data-montage-id="scriptDetail" class="scriptDetail dockVerticalPanel flexFill"></div>
-                <div data-montage-id="emptyDetail" class="emptyDetail centeredContent flexFill">
-                    <div class="centeredWrapper">
-                        <p>
-                            No script selected.<br/><br/>
-                            Please select a script from the list on the left<br/>
-                            or click "New" to begin editing.
-                        </p>
-                    </div>
-                </div>
+                <div data-montage-id="editorView" class="editorView"></div>
             </section>
             
             <section id="rightDockArea" class="dockPanel dockVerticalPanel">

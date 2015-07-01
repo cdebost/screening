@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="batch-list-view.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"}
+            }
+        },
+
+        "batchList": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "batchList"},
+                "isSelectionEnabled": true
+            },
+            "bindings": {
+                "contentController": {"<-": "@owner.batchController"}
+            }
+        },
+
+        "batchView": {
+            "prototype": "ui/batch-source-view.reel",
+            "properties": {
+                "element": {"#": "batchView"}
+            },
+            "bindings": {
+                "batchSource": {"<-": "@batchList:iteration.object"}
+            }
+        },
+
+        "newBatchButton": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "newBatchButton"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"},
+                    "capture": false
+                }
+            ]
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="BatchListView">
+        <div data-montage-id="newBatchButton">New</div>
+        <ul data-montage-id="batchList" class="batchList flexFill">
+            <li><div data-montage-id="batchView" tabindex="0"></div></li>
+        </ul>
+    </div>
+</body>
+</html>

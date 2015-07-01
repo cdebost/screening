@@ -54,11 +54,6 @@ body {
     right: 0;
 }
 
-.scriptManager #scriptList {
-    width: 350px;
-    -webkit-box-flex: 1;
-    border-right: 3px solid #898989;
-}
 
 .scriptManager #preferenceView {
     width:300px;
@@ -86,32 +81,6 @@ body {
     box-shadow: inset 0 -1px 0px hsla(0,0%,0%,.4), inset 0 1px 0px hsla(0,0%,0%,.5);
 }
 
-.scriptManager .centeredContent {
-    width: 100%; height: 100%; display: table;
-}
-
-.scriptManager .centeredWrapper {
-    display: table-cell; vertical-align: middle; width: 100%; text-align: center;
-}
-
-.scriptManager .scriptDetail {
-    height: 100%;
-    width: 100%;   
-}
-
-.scriptManager .emptyDetail p {
-    display: block;
-    color: #666;
-    text-shadow: 0 1px 0 hsla(0,0%,100%,.6);
-    width: 400px;
-    margin: auto;
-    text-align: center;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: hsla(0,0%,0%,.05);
-    box-shadow: inset 0 1px 4px hsla(0,0%,0%,.15);
-}
-
 /* Docked panel implementation */
 
 .mon-dock-view .dockHorizontalPanel {
@@ -133,7 +102,47 @@ body {
 }
 
 
+#leftDockArea {
+    width: 370px;
+}
 
+/* Menubar */
+
+.scriptManager .menuBar {
+    -webkit-box-pack: justify;
+}
+
+.scriptManager .menuButtons {
+    margin-right: 2px;
+}
+
+.scriptManager .menuBar .logo {
+    color: #000000;
+    text-shadow: 0 1px hsla(0,0%,100%,.2);
+    text-transform: uppercase;
+    font: bold 16px/40px "Lucida Grande", Lucida, Verdana, sans-serif;
+    padding-left: 34px;
+    background: url('../../assets/img/logo.png') no-repeat left center;
+}
+
+.scriptManager .switchListView {
+    position: absolute;
+    top: 42px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.scriptManager .editorView {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+
+/* TODO fix this hack */
 /* Quick Firefox hack. This feels pretty wrong, sorry to whoever has to change this. ;-) */
 
 @-moz-document url-prefix() { 

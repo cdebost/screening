@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="editor.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"}
+            }
+        },
+
+        "editorSubstitution": {
+            "prototype": "montage/ui/substitution.reel",
+            "properties": {
+                "element": {"#": "editorSubstitution"}
+            },
+            "bindings": {
+                "switchValue": {"<-": "@owner.selectedPanel"}
+            }
+        },
+
+        "scriptDetailView": {
+            "prototype": "ui/script-detail-view.reel",
+            "properties": {
+                "element": {"#": "scriptDetail"}
+            },
+            "bindings": {
+                "scriptSource": {"<-": "@owner.scriptSource"},
+                "activeAgents": {"<-": "@owner.activeAgents"},
+                "selectedAgent": {"<-": "@owner.selectedAgent"},
+                "serverVersion": {"<-": "@owner.serverVersion"}
+            }
+        },
+
+        "batchDetailView": {
+            "prototype": "ui/batch-detail-view.reel",
+            "properties": {
+                "element": {"#": "batchDetail"}
+            },
+            "bindings": {
+                "batchSource": {"<-": "@owner.batchSource"},
+                "activeAgents": {"<-": "@owner.activeAgents"},
+                "selectedAgent": {"<-": "@owner.selectedAgent"},
+                "serverVersion": {"<-": "@owner.serverVersion"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="Editor">
+        <div data-montage-id="editorSubstitution" class="editorSubstitution">
+            <div id="scriptDetail" data-montage-id="scriptDetail" data-arg="Scripts"
+                 class="scriptDetail dockVerticalPanel flexFill"></div>
+            <div data-montage-id="batchDetail" data-arg="Batches" class="batchDetail dockVerticalPanel flexFill"></div>
+        </div>
+    </div>
+</body>
+</html>
