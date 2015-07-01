@@ -42,15 +42,6 @@
                     "value": {"<-": "@owner.scriptSource.displayTags"}
                 }
             },
-            "serverVersion": {
-                "prototype": "montage/ui/text.reel",
-                "properties": {
-                    "element": {"#": "serverVersion"}
-                },
-                "bindings": {
-                    "value": {"<-": "@owner.serverVersion"}
-                }
-            },
             "codeText": {
                 "prototype": "matte/ui/input-text.reel",
                 "properties": {
@@ -194,8 +185,14 @@
     </head>
     <body>
         <!-- One line summary of a test script -->
-        <div data-montage-id="scriptDetail" class="scriptDetail">
-            <div class="menuBar">
+        <div data-montage-id="scriptDetail" class="ScriptDetail">
+            <div class="codeHeader">
+                <label for="name">Name</label>
+                <input type="text" data-montage-id="name" class="name">
+                <label for="tags">Tags</label>
+                <input type="text" data-montage-id="tags" class="tags" placeholder="Space separated. Use &quot; &quot; for tag with multiple words.">
+            </div>
+            <div class="toolBar">
                 <div class="buttonToggle">
                     <button data-montage-id="pauseRecord" class="red" style="display: none;">Pause Recording</button>
                     <button data-montage-id="record" class="red">Record</button>
@@ -209,15 +206,6 @@
                     <button data-montage-id="download">Download</button>
                 </div>
                 <div class="buttonGroup spacer"></div>
-                <div class="buttonGroup">
-                    <div class="versionString">Ver. <span data-montage-id="serverVersion">--</span></div>
-                </div>
-            </div>
-            <div class="codeHeader">
-                <label for="name">Name</label>
-                <input type="text" data-montage-id="name" class="name">
-                <label for="tags">Tags</label>
-                <input type="text" data-montage-id="tags" class="tags" placeholder="Space separated. Use &quot; &quot; for tag with multiple words.">
             </div>
             <textarea type="text" data-montage-id="code" class="code"></textarea>
             <div data-montage-id="emptyDetail" class="emptyDetail centeredContent flexFill">

@@ -39,8 +39,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* Bar */
 
-.BatchDetailView .menuBar {
-    border-left: 1px solid hsla(0,0%,0%,.15);
+.BatchDetailView .toolBar {
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+    background-color: hsl(0,0%,90%);
+    border-left: 1px solid hsla(0, 0%, 0%, .15);
+    border-bottom: 1px solid hsla(0, 0%, 0%, .15);
+    box-sizing: border-box;
+    height: 42px;
+    width: 100%;
+    margin: 0;
+    padding: 0 6px;
+    white-space: nowrap;
+    z-index: 2;
 }
 
 .pauseRecord {

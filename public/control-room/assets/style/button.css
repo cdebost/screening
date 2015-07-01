@@ -117,12 +117,30 @@ button.disabled {
     box-shadow: inset 0px 1px 0px hsla(0,0%,100%,.5), 0px 1px 1px hsla(0,0%,0%,.3);
 }
 
-button.blue { background-color: hsl(198,100%,70%); }
-button.blue:hover { background-color: hsl(198,100%,75%); }
+button.blue {
+    background-image: -webkit-linear-gradient(top, hsl(199,100%,70%), hsl(199,100%,76%) ) !important;
+    border-color: hsl(199, 100%, 30%) !important;
+}
+button.blue:hover {
+    background-image: -webkit-linear-gradient(top, hsl(199,100%,75%), hsl(199,100%,71%) ) !important;
+    border-color: hsl(199, 100%, 35%) !important;
+}
 
-button.red { background-color: hsl(0,100%,70%); }
-button.red:hover { background-color: hsl(0,100%,73%); }
+button.red {
+    background-image: -webkit-linear-gradient(top, hsl(0,100%,70%), hsl(0,100%,66%) ) !important;
+    border-color: hsl(0, 100%, 30%) !important;
+}
+button.red:hover {
+    background-image: -webkit-linear-gradient(top, hsl(0,100%,73%), hsl(0,100%,69%) ) !important;
+    border-color: hsl(0, 100%, 33%) !important;
+}
 
-button.green { background-color: hsl(140,70%,65%); }
-button.green:hover { background-color: hsl(140,70%,72%); }
+button.green {
+    background-image: -webkit-linear-gradient(top, hsl(140,70%,65%), hsl(140,70%,61%) ) !important;
+    border-color: hsl(140, 70%, 25%) !important;
+}
+button.green:hover {
+    background-image: -webkit-linear-gradient(top, hsl(140,70%,72%), hsl(140,70%,68%) ) !important;
+    border-color: hsl(140, 70%, 32%) !important;
+}
 
