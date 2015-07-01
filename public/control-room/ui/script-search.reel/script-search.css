@@ -34,11 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 .scriptSearch {
     display: -webkit-box;
     display: -moz-box;
-    -webkit-box-align: center;
     -moz-box-align: center;
-    height: 42px;
     padding: 0 8px;
     border-bottom: 1px solid hsl(0,0%,83%);
+    margin-bottom: 1px;
 }
 
 .scriptSearch .searchScope {

@@ -31,7 +31,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-.scriptDetail {
+.ScriptDetail {
     display: -webkit-box;
     -webkit-box-orient: vertical;
 }
@@ -39,25 +39,28 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* Bar */
 
-.scriptDetail .menuBar {
-    border-left: 1px solid hsla(0,0%,0%,.15);
+.scriptManager .toolBar {
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: justify;
+    background-color: hsl(0,0%,90%);
+    border-left: 1px solid hsla(0, 0%, 0%, .15);
+    border-bottom: 1px solid hsla(0, 0%, 0%, .15);
+    box-sizing: border-box;
+    height: 42px;
+    width: 100%;
+    margin: 0;
+    padding: 0 6px;
+    white-space: nowrap;
+    z-index: 2;
 }
 
 .pauseRecord {
     display: none;
 }
 
-.versionString {
-    display: block;
-    font-size: 0.8em;
-    font-style: italic;
-    background-color: #333333;
-    border-radius: 4px;
-    padding: 5px;
-}
 
-
-.scriptDetail .content {
+.ScriptDetail .content {
     padding: 0;
     overflow: auto;
 }
@@ -69,7 +72,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* Header */
 
-.scriptDetail .codeHeader {
+.ScriptDetail .codeHeader {
     display: -webkit-box;
     -webkit-box-align: center;
     height: 42px;
@@ -79,13 +82,13 @@ POSSIBILITY OF SUCH DAMAGE.
     border-left: 1px solid hsl(0, 0%, 80%);
 }
 
-.scriptDetail .codeHeader label {
+.ScriptDetail .codeHeader label {
     display: block;
     padding: 0 8px 0 15px;
     font-size: .9em;
 }
 
-.scriptDetail .codeHeader input {
+.ScriptDetail .codeHeader input {
     display: block;
     -webkit-box-flex: 1;
     margin-right: 20px;
@@ -98,16 +101,16 @@ POSSIBILITY OF SUCH DAMAGE.
     cursor: text;
 }
 
-.scriptDetail .codeHeader input:hover {
+.ScriptDetail .codeHeader input:hover {
     border-bottom: 1px solid hsl(0,0%,75%);
 }
 
-.scriptDetail .codeHeader input:focus {
+.ScriptDetail .codeHeader input:focus {
     outline: none;
     border-bottom: 1px solid hsl(0,0%,40%);
 }
 
-.scriptDetail .codeHeader input::-webkit-input-placeholder {
+.ScriptDetail .codeHeader input::-webkit-input-placeholder {
     font-size: 11px;
     padding-top: 4px;
 }
@@ -143,15 +146,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* Empty detail */
 
-.scriptDetail .centeredContent {
+.ScriptDetail .centeredContent {
     width: 100%; height: 100%; display: table;
 }
 
-.scriptDetail .centeredWrapper {
+.ScriptDetail .centeredWrapper {
     display: table-cell; vertical-align: middle; width: 100%; text-align: center;
 }
 
-.scriptDetail .emptyDetail p {
+.ScriptDetail .emptyDetail p {
     display: block;
     color: #666;
     text-shadow: 0 1px 0 hsla(0,0%,100%,.6);
