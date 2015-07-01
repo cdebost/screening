@@ -1,4 +1,3 @@
-/* @override http://localhost:8081/screening/control-room/ui/script-list-view.reel/script-list-view.css */
 /* <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
@@ -29,59 +28,64 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-.ScriptListView {
-    position: absolute;
-    height: 100%;
-}
-
-.ScriptListView .scriptList {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-box-flex: 1;
-    overflow: auto;
-    -webkit-padding-start: 0;
+.BatchSourceView {
     margin: 0;
-}
-
-/* List */
-.ScriptListView .scriptUploader {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    left: 0;
-}
-
-.ScriptListView.noUploader .scriptList {
-    position: absolute;
-    top: 58px;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background-color: #F2F2F2;
-}
-
-
-
-
-/* List */
-
-.scriptList {
     padding: 0;
+    list-style: none;
+    background-color: hsl(198,50%,96%);
+    border-top: 1px solid hsla(0,0%,100%,1);
+    border-bottom: 1px solid hsla(0,0%,0%,.1);
+    padding: 8px 15px 8px 15px;
+    outline: none;
 }
 
-
-
-/* Very hacky! I'd rather not have to do this */
-/*
-
-.ScriptListView .scriptList>div {
-    height: 100%;
-}
-*/
-.scriptList .uploadScript {
-    width:300px;
-    height:80px;
-    display:block;
-    border:1px solid red;
+.BatchSourceView:hover {
+    cursor: pointer;
+    background-color: hsl(198,60%,100%);
 }
 
+.BatchSourceView:focus {
+    border-top: 1px solid hsl(198,100%,50%);
+    border-bottom: 1px solid hsl(198,100%,50%);
+}
+
+.selected .BatchSourceView {
+    cursor: default;
+    background-color: hsl(198,60%,88%);
+    color: hsl(198,30%,30%);
+    border-top: 1px solid hsla(0,0%,0%,.1);
+    border-bottom: 1px solid hsla(0,0%,100%,.1);
+}
+
+.BatchSourceView .name {
+    font-weight: normal;
+    display: block;
+}
+
+.BatchSourceView .size, .BatchSourceView .modified {
+    font-size: 0.9em;
+    font-style: italic;
+}
+
+.BatchSourceView .size:after {
+    content: " bytes - "
+}
+
+.BatchSourceView .download {
+    display: block;
+}
+
+textarea {
+    width:600px;
+    min-height:300px;
+}
+
+/* This is the little blue arrow that appears after the selected script */
+.selected .BatchSourceView:before {
+    float: right;
+    content: "\025b6";
+    font-size: 0.8em;
+    margin-right: -12px;
+    color: #17b1e9;
+    text-shadow: rgba(255,255,255,0.5) 0 5px 6px;
+}

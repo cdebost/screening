@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="batch-detail-view.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"},
+
+                "batchCode": {"@": "batchCode"},
+                "emptyDetail": {"#": "emptyDetail"},
+                "batchNameField": {"@": "nameText"},
+                "saveButton": {"@": "saveButton"},
+                "runButton": {"@": "runButton"},
+                "deleteButton": {"@": "deleteButton"}
+            }
+        },
+
+        "nameText": {
+            "prototype": "matte/ui/input-text.reel",
+            "properties": {
+                "element": {"#": "name"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.batchSource.name"}
+            }
+        },
+
+        "batchCode": {
+            "prototype": "matte/ui/input-text.reel",
+            "properties": {
+                "element": {"#": "code"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.batchSource.code"}
+            }
+        },
+
+        "serverVersion": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "serverVersion"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.serverVersion"}
+            }
+        },
+
+        "runButtonListener": {
+            "prototype": "montage/core/event/action-event-listener",
+            "properties": {
+                "handler": {"@": "owner"},
+                "action": "runBatch"
+            }
+        },
+        "runButton": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "run"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "runButtonListener"},
+                    "capture": false
+                }
+            ]
+        },
+        "deleteButtonListener": {
+            "prototype": "montage/core/event/action-event-listener",
+            "properties": {
+                "handler": {"@": "owner"},
+                "action": "deleteBatch"
+            }
+        },
+        "deleteButton": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "delete"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "deleteButtonListener"},
+                    "capture": false
+                }
+            ]
+        },
+        "saveButtonListener": {
+            "prototype": "montage/core/event/action-event-listener",
+            "properties": {
+                "handler": {"@": "owner"},
+                "action": "saveBatch"
+            }
+        },
+        "saveButton": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "save"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "saveButtonListener"},
+                    "capture": false
+                }
+            ]
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="BatchDetailView">
+        <div class="menuBar">
+            <div class="buttonGroup">
+                <button data-montage-id="run" class="green">Run</button>
+            </div>
+            <div class="buttonGroup">
+                <button data-montage-id="save">Save</button>
+                <button data-montage-id="delete">Delete</button>
+            </div>
+            <div class="buttonGroup spacer"></div>
+            <div class="buttonGroup">
+                <div class="versionString">Ver. <span data-montage-id="serverVersion">--</span></div>
+            </div>
+        </div>
+        <div class="codeHeader">
+            <label for="name">Name</label>
+            <input type="text" data-montage-id="name" class="name">
+        </div>
+        <textarea type="text" data-montage-id="code" class="code"></textarea>
+        <div data-montage-id="emptyDetail" class="emptyDetail centeredContent flexFill">
+            <div class="centeredWrapper">
+                <p>
+                    No batch selected.<br/><br/>
+                    Please select a batch from the list on the left<br/>
+                    or click "New" to begin editing.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
