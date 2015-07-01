@@ -48,17 +48,22 @@ POSSIBILITY OF SUCH DAMAGE.
 .ListViewSwitch .listView {
     position: relative;
     -webkit-box-flex: 1;
-    border-right: 3px solid #898989;
+    border-right: 3px solid hsla(0, 0%, 0%, .15);
+}
+
+.ListViewSwitch .listSubstitution .listControlButton {
+    margin: 5px;
 }
 
 /* Tabs */
 
 .Tabs {
+    padding-right: 3px;
+    background-color: hsla(0, 0%, 0%, .15);
     position: relative;
-    color: white;
     display: -webkit-flex;
     color: black;
-    background: hsl(264, 10%, 24%);
+    height: 42px;
 }
 
 .Tabs-item.digit-RadioButton {

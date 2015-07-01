@@ -91,6 +91,15 @@ POSSIBILITY OF SUCH DAMAGE.
                     }
                 ]
             },
+            "serverVersion": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "serverVersion"}
+                },
+                "bindings": {
+                    "value": {"<-": "@owner.serverVersion"}
+                }
+            },
 
             "scriptcontrollerdelegate1": {
                 "prototype": "core/script-controller-delegate"
@@ -166,20 +175,21 @@ POSSIBILITY OF SUCH DAMAGE.
 <body>
     <div id="scriptManager" data-montage-id="main" data-montage-skin="light" class="mon-dock-view scriptManager">
         <section id="topDockArea" class="dockPanel dockHorizontalPanel">
-                
+            <div class="menuBar">
+                <div class="logo">Screening</div>
+                <div class="menuButtons">
+                    <div class="buttonGroup">
+                        <button data-montage-id="allResults">All Results</button>
+                        <button data-montage-id="settings">Preferences</button>
+                        <div class="buttonGroup spacer"></div>
+                        <div class="versionString">Ver. <span data-montage-id="serverVersion">--</span></div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section id="middleDockArea" class="dockHorizontalPanel flexFill">
             <section id="leftDockArea" class="dockPanel dockVerticalPanel">
-                <div class="menuBar">
-                    <div class="logo">Screening</div>
-                    <div class="menuButtons">
-                        <div class="buttonGroup">
-                            <button data-montage-id="allResults">All Results</button>
-                            <button data-montage-id="settings">Preferences</button>
-                        </div>
-                    </div>
-                </div>
                 <div data-montage-id="listViewSwitch" class="switchListView"></div>
             </section>
 

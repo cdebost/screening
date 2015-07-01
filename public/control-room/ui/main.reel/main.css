@@ -62,23 +62,7 @@ body {
 }
 
 .scriptManager .agentList {
-    height: 150px;
-}
-
-.scriptManager .menuBar {
-    display: -webkit-box;
-    -webkit-box-align: center;
-    color:#aeaeae;
-    background-color: hsl(0, 0%, 40%);
-    background-image: -webkit-linear-gradient(top, hsl(0, 0%, 40%), hsl(0, 0%, 30%));
-    background-image: -moz-linear-gradient(top, hsl(0, 0%, 40%), hsl(0, 0%, 30%));
-    box-sizing: border-box;
-    height: 42px;
-    margin: 0;
-    padding: 0px 6px;
-    white-space: nowrap;
-    z-index: 2;
-    box-shadow: inset 0 -1px 0px hsla(0,0%,0%,.4), inset 0 1px 0px hsla(0,0%,0%,.5);
+    height: 180px;
 }
 
 /* Docked panel implementation */
@@ -109,7 +93,21 @@ body {
 /* Menubar */
 
 .scriptManager .menuBar {
+    display: -webkit-box;
+    -webkit-box-align: center;
     -webkit-box-pack: justify;
+    color:#aeaeae;
+    background-color: hsl(0, 0%, 40%);
+    background-image: -webkit-linear-gradient(top, hsl(0, 0%, 40%), hsl(0, 0%, 30%));
+    background-image: -moz-linear-gradient(top, hsl(0, 0%, 40%), hsl(0, 0%, 30%));
+    box-sizing: border-box;
+    height: 42px;
+    width: 100%;
+    margin: 0;
+    padding: 0 6px;
+    white-space: nowrap;
+    z-index: 2;
+    box-shadow: inset 0 -1px 0 hsla(0,0%,0%,.4), inset 0 1px 0 hsla(0,0%,0%,.5);
 }
 
 .scriptManager .menuButtons {
@@ -125,9 +123,18 @@ body {
     background: url('../../assets/img/logo.png') no-repeat left center;
 }
 
+.scriptManager .versionString {
+    display: block;
+    font-size: 0.8em;
+    font-style: italic;
+    background-color: #333333;
+    border-radius: 4px;
+    padding: 5px;
+}
+
 .scriptManager .switchListView {
     position: absolute;
-    top: 42px;
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
