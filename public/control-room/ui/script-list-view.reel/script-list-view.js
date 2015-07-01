@@ -75,8 +75,16 @@ exports.ScriptListView = Component.specialize({
 
     templateDidLoad: {
         value: function() {
+            var self = this;
+
             this.queryScriptSources();
             this.scriptUploader.addEventListener('uploadEvent', this, false);
+
+            document.addEventListener("scriptDeleted", function() {
+                self.deleteScript();
+                self.scriptController.selectedObjects = [];
+                self.scriptController.selectedIndexes = [];
+            });
         }
     },
 

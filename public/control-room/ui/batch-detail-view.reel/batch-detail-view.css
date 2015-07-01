@@ -31,7 +31,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-.scriptDetail {
+.BatchDetailView {
     display: -webkit-box;
     -webkit-box-orient: vertical;
 }
@@ -39,7 +39,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* Bar */
 
-.scriptDetail .menuBar {
+.BatchDetailView .menuBar {
     border-left: 1px solid hsla(0,0%,0%,.15);
 }
 
@@ -57,19 +57,19 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 
 
-.scriptDetail .content {
+.BatchDetailView .content {
     padding: 0;
     overflow: auto;
 }
 
-.scriptManager .result {
+.BatchDetailView .result {
     background:#F2F2F2;
     padding:8px;
 }
 
 /* Header */
 
-.scriptDetail .codeHeader {
+.BatchDetailView .codeHeader {
     display: -webkit-box;
     -webkit-box-align: center;
     height: 42px;
@@ -79,13 +79,13 @@ POSSIBILITY OF SUCH DAMAGE.
     border-left: 1px solid hsl(0, 0%, 80%);
 }
 
-.scriptDetail .codeHeader label {
+.BatchDetailView .codeHeader label {
     display: block;
     padding: 0 8px 0 15px;
     font-size: .9em;
 }
 
-.scriptDetail .codeHeader input {
+.BatchDetailView .codeHeader input {
     display: block;
     -webkit-box-flex: 1;
     margin-right: 20px;
@@ -98,16 +98,16 @@ POSSIBILITY OF SUCH DAMAGE.
     cursor: text;
 }
 
-.scriptDetail .codeHeader input:hover {
+.BatchDetailView .codeHeader input:hover {
     border-bottom: 1px solid hsl(0,0%,75%);
 }
 
-.scriptDetail .codeHeader input:focus {
+.BatchDetailView .codeHeader input:focus {
     outline: none;
     border-bottom: 1px solid hsl(0,0%,40%);
 }
 
-.scriptDetail .codeHeader input::-webkit-input-placeholder {
+.BatchDetailView .codeHeader input::-webkit-input-placeholder {
     font-size: 11px;
     padding-top: 4px;
 }
@@ -121,7 +121,7 @@ POSSIBILITY OF SUCH DAMAGE.
     overflow-x: auto;
     background-color: hsl(0, 0%, 98%);
     font-size: 1.1em;
-    border-left: 1px solid hsl(0, 0%, 80%);   
+    border-left: 1px solid hsl(0, 0%, 80%);
 }
 
 
@@ -143,15 +143,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* Empty detail */
 
-.scriptDetail .centeredContent {
+.BatchDetailView .centeredContent {
     width: 100%; height: 100%; display: table;
 }
 
-.scriptDetail .centeredWrapper {
+.BatchDetailView .centeredWrapper {
     display: table-cell; vertical-align: middle; width: 100%; text-align: center;
 }
 
-.scriptDetail .emptyDetail p {
+.BatchDetailView .emptyDetail p {
     display: block;
     color: #666;
     text-shadow: 0 1px 0 hsla(0,0%,100%,.6);

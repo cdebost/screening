@@ -11,6 +11,7 @@
                     "element": {"#": "scriptDetail"},
 
                     "scriptCode": {"@": "codeText"},
+                    "emptyDetail": {"#": "emptyDetail"},
                     "scriptNameField": {"@": "nameText"},
                     "scriptTags": {"@": "tagsText"},
                     "saveButton": {"@": "saveButton"},
@@ -99,26 +100,6 @@
                     }
                 ]
             },
-            "allResultsButtonListener": {
-                "prototype": "montage/core/event/action-event-listener",
-                "properties": {
-                    "handler": {"@": "owner"},
-                    "action": "showAllResults"
-                }
-            },
-            "allResultsButton": {
-                "prototype": "digit/ui/button.reel",
-                "properties": {
-                    "element": {"#": "allResults"}
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "allResultsButtonListener"},
-                        "capture": false
-                    }
-                ]
-            },
             "deleteButtonListener": {
                 "prototype": "montage/core/event/action-event-listener",
                 "properties": {
@@ -199,26 +180,6 @@
                     }
                 ]
             },
-            "settingsButtonListener": {
-                "prototype": "montage/core/event/action-event-listener",
-                "properties": {
-                    "handler": {"@": "owner"},
-                    "action": "showSettings"
-                }
-            },
-            "settingsButton": {
-                "prototype": "digit/ui/button.reel",
-                "properties": {
-                    "element": {"#": "settings"}
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "settingsButtonListener"},
-                        "capture": false
-                    }
-                ]
-            },
 
             "urlPrompt": {
                 "prototype": "ui/text-prompt.reel",
@@ -249,12 +210,6 @@
                 </div>
                 <div class="buttonGroup spacer"></div>
                 <div class="buttonGroup">
-                    <button data-montage-id="allResults">All Results</button>
-                </div>
-                <div class="buttonGroup">
-                    <button data-montage-id="settings">Preferences</button>
-                </div>
-                <div class="buttonGroup">
                     <div class="versionString">Ver. <span data-montage-id="serverVersion">--</span></div>
                 </div>
             </div>
@@ -265,6 +220,15 @@
                 <input type="text" data-montage-id="tags" class="tags" placeholder="Space separated. Use &quot; &quot; for tag with multiple words.">
             </div>
             <textarea type="text" data-montage-id="code" class="code"></textarea>
+            <div data-montage-id="emptyDetail" class="emptyDetail centeredContent flexFill">
+                <div class="centeredWrapper">
+                    <p>
+                        No script selected.<br/><br/>
+                        Please select a script from the list on the left<br/>
+                        or click "New" to begin editing.
+                    </p>
+                </div>
+            </div>
             <div data-montage-id="urlPrompt" style="display: none; margin: auto;"></div>
         </div>
     </body>
