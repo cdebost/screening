@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="batch-step-dialog.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"},
+
+                "headerLabel": {"@": "headerLabel"},
+                "scripts": {"@": "scriptsRangeController"}
+            }
+        },
+
+        "headerLabel": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "headerLabel"},
+
+                "value": "Loading scripts..."
+            }
+        },
+
+        "scriptsRangeController": {
+            "prototype": "montage/core/range-controller"
+        },
+
+        "scriptsRepetition": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "scriptsRepetition"},
+                "contentController": {"@": "scriptsRangeController"},
+                "isSelectionEnabled": true
+            }
+        },
+
+        "script": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "script"}
+            },
+            "bindings": {
+                "value": {"<-": "@scriptsRepetition:iteration.object"}
+            }
+        },
+
+        "ok": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "identifier": "Ok",
+                "element": {"#": "ok"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+
+        "cancel": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "identifier": "Cancel",
+                "element": {"#": "cancel"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="BatchStepDialog">
+        <fieldset>
+            <label data-montage-id="headerLabel"></label>
+            <div data-montage-id="scriptsRepetition" class="scriptsRepetition">
+                <div data-montage-id="script" class="script"></div>
+            </div>
+        </fieldset>
+        <fieldset class="buttons">
+            <button data-montage-id="cancel">Cancel</button>
+            <button data-montage-id="ok" class="blue">OK</button>
+        </fieldset>
+    </div>
+</body>
+</html>

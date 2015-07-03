@@ -101,29 +101,13 @@ exports.BatchSource = Montage.specialize({
         }
     },
 
-    //TODO: Don't need a code attribute on batches
-    _code: {
-        enumerable: false,
-        value: [],
-        distinct: true
-    },
-
-    code: {
-        get: function() {
-            return this._code;
-        },
-        set: function(value) {
-            this._code = value;
-        }
-    },
-
     fromServer: {
         value: function(obj) {
             this.id = obj._id;
             this.name = obj.name;
             this.size = obj.size;
             this.modified = obj.modified;
-            this.code = obj.code;
+            this.scripts = obj.scripts;
 
 
             this._tags = obj.tags || [];
