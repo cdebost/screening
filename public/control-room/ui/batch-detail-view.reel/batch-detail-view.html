@@ -9,12 +9,11 @@
             "properties": {
                 "element": {"#": "owner"},
 
-                "batchCode": {"@": "batchCode"},
                 "emptyDetail": {"#": "emptyDetail"},
                 "batchNameField": {"@": "nameText"},
-                "saveButton": {"@": "saveButton"},
                 "runButton": {"@": "runButton"},
-                "deleteButton": {"@": "deleteButton"}
+                "deleteButton": {"@": "deleteButton"},
+                "batchUI": {"@": "batchUI"}
             }
         },
 
@@ -25,16 +24,6 @@
             },
             "bindings": {
                 "value": {"<-": "@owner.batchSource.name"}
-            }
-        },
-
-        "batchCode": {
-            "prototype": "matte/ui/input-text.reel",
-            "properties": {
-                "element": {"#": "code"}
-            },
-            "bindings": {
-                "value": {"<-": "@owner.batchSource.code"}
             }
         },
 
@@ -54,6 +43,26 @@
                 {
                     "type": "action",
                     "listener": {"@": "runButtonListener"},
+                    "capture": false
+                }
+            ]
+        },
+        "addButtonListener": {
+            "prototype": "montage/core/event/action-event-listener",
+            "properties": {
+                "handler": {"@": "owner"},
+                "action": "addBatchStep"
+            }
+        },
+        "addButton": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "add"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "addButtonListener"},
                     "capture": false
                 }
             ]
@@ -78,25 +87,17 @@
                 }
             ]
         },
-        "saveButtonListener": {
-            "prototype": "montage/core/event/action-event-listener",
-            "properties": {
-                "handler": {"@": "owner"},
-                "action": "saveBatch"
-            }
+
+        "stepsRangeController": {
+            "prototype": "montage/core/range-controller"
         },
-        "saveButton": {
-            "prototype": "digit/ui/button.reel",
+
+        "batchUI": {
+            "prototype": "./batch-ui.reel",
             "properties": {
-                "element": {"#": "save"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "saveButtonListener"},
-                    "capture": false
-                }
-            ]
+                "element": {"#": "batchUI"},
+                "steps": {"@": "stepsRangeController"}
+            }
         }
     }
     </script>
@@ -112,12 +113,14 @@
                 <button data-montage-id="run" class="green">Run</button>
             </div>
             <div class="buttonGroup">
-                <button data-montage-id="save">Save</button>
+                <button data-montage-id="add">Add Step</button>
+            </div>
+            <div class="buttonGroup">
                 <button data-montage-id="delete">Delete</button>
             </div>
             <div class="buttonGroup spacer"></div>
         </div>
-        <textarea type="text" data-montage-id="code" class="code"></textarea>
+        <div data-montage-id="batchUI" class="batchUI"></div>
         <div data-montage-id="emptyDetail" class="emptyDetail centeredContent flexFill">
             <div class="centeredWrapper">
                 <p>
@@ -125,7 +128,7 @@
                     Please select a batch from the list on the left<br/>
                     or click "New" to begin editing.
                 </p>
-            </div>
+            </div>s
         </div>
     </div>
 </body>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="batch-ui.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"},
+
+                "batchStepDialog": {"@": "batchStepDialog"}
+            }
+        },
+
+        "stepRepetition": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "stepRepetition"}
+            },
+            "bindings": {
+                "contentController": {"<-": "@owner.steps"}
+            }
+        },
+
+        "stepView": {
+            "prototype": "./batch-step-view.reel",
+            "properties": {
+                "element": {"#": "stepView"}
+            },
+            "bindings": {
+                "step": {"<-": "@stepRepetition:iteration.object"}
+            }
+        },
+
+        "batchStepDialog": {
+            "prototype": "./batch-step-dialog.reel"
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="BatchUi">
+        <div data-montage-id="stepRepetition" class="stepRepetition">
+            <div data-montage-id="stepView" class="stepView"></div>
+        </div>
+    </div>
+</body>
+</html>

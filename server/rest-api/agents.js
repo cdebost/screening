@@ -200,7 +200,9 @@ module.exports = function(agentPool, testcaseRunner, scriptsProvider, batchesPro
 
                 var scriptObjects = [];
                 var scriptCheck = new Promise(function(resolve, reject) {
-                    batch.scripts.forEach(function(scriptName, index) {
+                    batch.scripts.forEach(function(scriptObj, index) {
+                        var scriptName = scriptObj.name;
+
                         scriptsProvider.findByName(scriptName, function(error, scripts) {
                             if (error) {
                                 reject();
