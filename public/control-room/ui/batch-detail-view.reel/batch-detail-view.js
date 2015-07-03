@@ -26,11 +26,6 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
         enumerable: true
     },
 
-    saveButton: {
-        value: null,
-        enumerable: true
-    },
-
     deleteButton: {
         value: null,
         enumerable: true
@@ -55,53 +50,25 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
 
                 if (value !== this.batchSource) {
                     this._batchSource = value;
-                    if (this._codeMirror) {
-                        // This is a hack to get things working with Code Mirror which doesn't like empty code
-                        if (this.batchSource.code == "") {
-                            this.batchSource.code = " ";
-                        }
-
-                        this._codeMirror.setValue(this.batchSource.code);
-                        this.needsSave = false;
-                    }
                 }
 
             }
         }
     },
 
-    batchCode: {
-        enumerable:false,
-        serializable: true,
+    batchUI: {
         value: null
-    },
-
-    //TODO remove. We don't need codemirror for batches
-    _codeMirror: {
-        enumerable:false,
-        value:null
     },
 
     templateDidLoad: {
         value: function() {
             var self = this;
 
-            var options = {
-                mode: 'javascript',
-                lineNumbers: true,
-                gutter:true,
-                onChange: function(codeMirror) {
-                    self.needsSave = true;
-                }
-            };
-            this._codeMirror = CodeMirror.fromTextArea(this.batchCode.element, options);
-
             this.addPathChangeListener("batchSource", function (newBatch) {
                 self.batchNameField.element.disabled /*= self.scriptTags.element.disabled*/ = !self.batchSource;
 
                 if (self.batchSource) {
                     self.runButton.disabled = false;
-                    self.saveButton.disabled = false;
                     self.deleteButton.disabled = false;
                 }
 
@@ -113,12 +80,25 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
                     this.emptyDetail.style.display = "table";
                     this.clearFields();
                 }
+
+                if (newBatch) {
+                    self.batchUI.loadBatch(newBatch);
+                }
             }, false);
 
-            // Mark the script as needing a save when the name is changed
+            // Save the batch when its name is changed
             this.batchNameField.addPathChangeListener("value", function (event) {
-                if (event && self.scriptSource && self.scriptSource.name !== self.scriptNameField.value) {
-                    self.needsSave = true;
+                if (event && self.batchSource && self.batchSource.name !== self.batchNameField.value) {
+                    // Save if the name has not changed in one second
+                    setTimeout(function(lastInput) {
+                        if (self.batchSource.name === self.batchNameField.value) {
+                            return;
+                        }
+
+                        if (lastInput === self.batchNameField.value) {
+                            self.saveBatch();
+                        }
+                    }, 1000, self.batchNameField.value);
                 }
             }, false);
 
@@ -190,9 +170,12 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
             }
             //this.batchSource.displayTags = this.scriptTags.value;
             this.batchSource.displayTags = "";
-            this.batchSource.code = this._codeMirror.getValue();
 
-            var scripts = this.batchSource.code.split('\n');
+            var scripts = this.templateObjects.stepsRangeController.content.map(function(step) {
+                return {
+                    name: step.scriptName
+                }
+            });
 
             var self = this;
 
@@ -215,7 +198,6 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
                     }
                 }
                 self.needsDraw = true;
-                self.needsSave = false;
             };
             req.setRequestHeader("Content-Type", "application/json");
 
@@ -240,6 +222,12 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
         }
     },
 
+    addBatchStep: {
+        value: function() {
+            this.batchUI.add();
+        }
+    },
+
     deleteBatch: {
         value: function() {
             var self = this;
@@ -247,7 +235,6 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
                 // OK
                 var req = new XMLHttpRequest();
                 req.open("DELETE", "/screening/api/v1/batches/" + self.batchSource.id + "?api_key=5150", true);
-                self.needsSave = false;
                 req.onload = function(event) {
                     self._dispatchDeleted();
                 };
@@ -277,11 +264,9 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
         value: function() {
             this.batchNameField.value = "";
             //this.scriptTags.value = "";
-            this._codeMirror.setValue(" ");
 
             // Disable the Save, Run, etc buttons
             this.runButton.disabled = true;
-            this.saveButton.disabled = true;
             this.deleteButton.disabled = true;
         }
     }

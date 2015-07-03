@@ -1,0 +1,55 @@
+.BatchStepDialog {
+    padding: 10px;
+    border-radius: 4px;
+    background: hsl(0,0%,95%);
+}
+
+.BatchStepDialog fieldset {
+    padding: 5px;
+    border: 0px solid #333;
+}
+
+.webdriverDialog fieldset.buttons button {
+    margin: 0;
+}
+
+.webdriverDialog fieldset.buttons .blue {
+    float: right;
+    width: 60px;
+}
+
+.BatchStepDialog .scriptsRepetition {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-flex: 1;
+    overflow: auto;
+    -webkit-padding-start: 0;
+    margin: 0;
+    border-top: 1px solid hsla(0, 0%, 0%, .3);
+}
+
+.BatchStepDialog .script {
+    margin: 0;
+    list-style: none;
+    background-color: hsl(198,50%,96%);
+    border: 1px solid hsla(0, 0%, 0%, .3);
+    border-top: none;
+    padding: 8px 15px 8px 15px;
+    outline: none;
+}
+
+.BatchStepDialog .script:hover {
+    cursor: pointer;
+    background-color: hsl(198,60%,100%);
+}
+
+.BatchStepDialog .script.selected {
+    cursor: default;
+    background-color: hsl(198,60%,88%);
+    color: hsl(198,30%,30%);
+}
+
+.BatchStepDialog .script .name {
+    font-weight: normal;
+    display: block;
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="batch-step-view.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"}
+            }
+        },
+
+        "upButton": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "upButton"},
+                "label": "^"
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+
+        "downButton": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "downButton"},
+                "label": "v"
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+
+        "scriptName": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "batchName"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.step.scriptName"}
+            }
+        },
+
+        "deleteButton": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "deleteButton"},
+                "label": "x"
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="BatchStepView">
+        <span data-montage-id="upButton" class="upButton"></span>
+        <span data-montage-id="downButton" class="downButton"></span>
+        <span data-montage-id="batchName" class="batchName"></span>
+        <div class="right">
+            <span data-montage-id="deleteButton" class="deleteButton"></span>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+.BatchStepView {
+    background-color: hsl(198,50%,96%);
+    border: 1px solid hsla(0, 0%, 0%, .3);
+    border-radius: 10px;
+    padding: 3px;
+    margin: 2px;
+}
+
+.BatchStepView .right {
+    float: right;
+}
+
+.BatchStepView .upButton, .BatchStepView .downButton, .BatchStepView .deleteButton {
+    border: none;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-radius: 0;
+    font-weight: bold;
+
+    box-sizing: content-box;
+    width: 1em;
+    height: 1em;
+    min-width: 0;
+    margin: 0;
+    padding: .5em .3em;
+    text-align: center;
+}
+
+.BatchStepView .upButton, .BatchStepView .downButton {
+    color: hsl(198, 50%, 64%) !important;
+}
+
+.BatchStepView .deleteButton {
+    color: hsl(0, 50%, 50%) !important;
+}
