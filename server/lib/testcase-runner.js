@@ -158,7 +158,7 @@ TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, opt
             }
         } else {
             // The session succeeded. Execute the test, using our code synchronization system
-            when(self._executeTestInVm(testScript.code, result, new WebDriverAgent(session, sync, scriptObject, result),
+            when(self._executeTestInVm(testScript.code, testScript.variables, result, new WebDriverAgent(session, sync, scriptObject, result),
                 scriptObject, sync), function() {
                 // kill the webdriver session
                 session.quit().then(function() {
@@ -230,7 +230,7 @@ TestcaseRunner.prototype._executeWebdriverTestAsync = function(testScript, agent
             }
         } else {
             // The session succeeded. Execute the test, using our code synchronization system
-            when(self._executeTestInVm(testScript.code, result, new WebDriverAgent(session, sync, scriptObject, result),
+            when(self._executeTestInVm(testScript.code, testScript.variables, result, new WebDriverAgent(session, sync, scriptObject, result),
                 scriptObject, sync), function() {
                 // kill the webdriver session
                 session.quit().then(function() {
@@ -246,7 +246,7 @@ TestcaseRunner.prototype._executeWebdriverTestAsync = function(testScript, agent
 /**
  * Execute the given testcase source code on a given agent.
  */
-TestcaseRunner.prototype._executeTestInVm = function(source, result, agent, scriptObject, sync){
+TestcaseRunner.prototype._executeTestInVm = function(source, variables, result, agent, scriptObject, sync){
     var self = this;
     // We have to execute test-scripts from the filesystem to get line-numbers.
     var decoratedAsserts = assertDecorator.initSync(result, scriptObject, sync);
@@ -261,10 +261,16 @@ TestcaseRunner.prototype._executeTestInVm = function(source, result, agent, scri
             agent: agent,
             Mouse: mouseEnum,
             Key: keyEnum,
-            console: console
+            console: console,
+            variables: {}
         };
 
-        scriptObject.globalObjects = {agent: agent, script: scriptObject};
+        //Add variables to the script context
+        variables.forEach(function(variable) {
+            scriptContext.variables[variable.name] = variable.value;
+        });
+
+        scriptObject.globalObjects = {agent: agent, script: scriptObject, variables: scriptContext.variables};
         // Add all asserts to the script context that we are passing into the test scripts env.
         for (var f in decoratedAsserts) {
             if (f.substr(0, 6)=="assert") { // We ONLY want the assert functions.

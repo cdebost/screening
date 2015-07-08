@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="variables-dialog.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"},
+
+                "variablesController": {"@": "variablesController"},
+                "closeButton": {"@": "closeButton"}
+            }
+        },
+
+        "scriptName": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "scriptName"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.script.name"}
+            }
+        },
+
+        "variablesController": {
+            "prototype": "montage/core/range-controller",
+            "bindings": {
+                "content": {"<-": "@owner.script.variables"}
+            }
+        },
+
+        "variables": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "variables"},
+                "contentController": {"@": "variablesController"}
+            }
+        },
+
+        "variable": {
+            "prototype": "./variable-view.reel",
+            "properties": {
+                "element": {"#": "variable"}
+            },
+            "bindings": {
+                "name": {"<->": "@variables:iteration.object.name"},
+                "defaultValue": {"<->": "@variables:iteration.object.defaultValue"}
+            }
+        },
+
+        "addButton": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "add"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+
+        "closeButton": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "close"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="VariablesDialog">
+        <fieldset><span data-montage-id="scriptName"></span> variables</fieldset>
+        <fieldset>
+            <div>
+                <span class="nameHeader">Name</span>
+                <span class="defaultValueHeader">Default Value</span>
+            </div>
+        </fieldset>
+        <fieldset>
+            <div data-montage-id="variables" class="variables">
+                <div data-montage-id="variable"></div>
+            </div>
+            <button data-montage-id="add" class="blue">+</button>
+        </fieldset>
+        <fieldset class="buttons">
+            <button data-montage-id="close">Close</button>
+            <div class="usageString">Use as: variables["<i>variable name</i>"]</div>
+        </fieldset>
+    </div>
+</body>
+</html>

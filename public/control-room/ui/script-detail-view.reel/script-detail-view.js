@@ -73,6 +73,21 @@ exports.ScriptDetailView = Component.specialize({
         serializable: true
     },
 
+    scriptVariablesPrompt: {
+        value: null,
+        serializable: true
+    },
+
+    variablesButton: {
+        value: null,
+        serializable: true
+    },
+
+    variablesDialog: {
+        value: null,
+        serializable: true
+    },
+
     saveButton: {
         value: null,
         serializable: true
@@ -263,6 +278,10 @@ exports.ScriptDetailView = Component.specialize({
             this.urlPrompt.addEventListener("message.ok", function(event) {
                 self.urlPromptOk();
             });
+
+            this.scriptVariablesPrompt.addEventListener("message.run", function(ev) {
+                self._runScript(self._codeMirror.getValue(), ev.detail.variables);
+            }, false);
         }
     },
 
@@ -321,29 +340,54 @@ exports.ScriptDetailView = Component.specialize({
             }
 
             if (window.webkitNotifications) {
-                window.webkitNotifications.requestPermission(runScript);
+                window.webkitNotifications.requestPermission(promptVariables);
             } else {
-                runScript();
+                promptVariables();
             }
 
-            function runScript() {
+            function promptVariables() {
                 // We will post the code directly to the server so that you don't have to save to see your changes
                 var code = self._codeMirror.getValue();
-                var agentCount = self.activeAgents.length;
-                for (var i = 0; i < agentCount; ++i) {
-                    var agent = self.activeAgents[i];
-                    var req = new XMLHttpRequest();
-                    req.open("POST", "/screening/api/v1/agents/" + agent.info.id +
-                        "/execute_serialized_code?api_key=5150", true);
-                    req.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
-                    var requestBody = {
-                        code: code,
-                        name: self.scriptSource.name,
-                        preferences: PreferenceManager.getPreferences()
-                    };
-                    req.send(JSON.stringify(requestBody));
+
+                if (self.scriptSource.variables.length > 0) {
+                    var popup = Popup.create();
+                    popup.content = self.scriptVariablesPrompt;
+                    popup.target = self.runButton;
+                    popup.modal = true;
+                    popup.show();
+                } else {
+                    self._runScript(code, []);
                 }
             }
+        }
+    },
+
+    _runScript: {
+        value: function(code, variables) {
+            for (var i = 0; i < this.activeAgents.length; ++i) {
+                var agent = this.activeAgents[i];
+                var req = new XMLHttpRequest();
+                req.open("POST", "/screening/api/v1/agents/" + agent.info.id +
+                    "/execute_serialized_code?api_key=5150", true);
+                req.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+                var requestBody = {
+                    code: code,
+                    name: this.scriptSource.name,
+                    preferences: PreferenceManager.getPreferences(),
+                    variables: variables
+                };
+                req.send(JSON.stringify(requestBody));
+            }
+        }
+    },
+
+    manageVariables: {
+        value: function() {
+            var popup = Popup.create();
+            popup.content = this.variablesDialog;
+            popup.target = this.variablesButton.element;
+            popup.modal = true;
+            popup.show();
         }
     },
 
@@ -417,11 +461,17 @@ exports.ScriptDetailView = Component.specialize({
                 });
             }
 
-            var reqBody = {
-                name: self.scriptSource.name,
-                code: self.scriptSource.code,
-                tags: tags
+            var variables = this.scriptSource.variables;
+            for (var i = 0; i < variables.length; i++) {
+                variables[i].defaultValue = Number(variables[i].defaultValue) || variables[i].defaultValue;
             }
+
+            var reqBody = {
+                name: this.scriptSource.name,
+                code: this.scriptSource.code,
+                variables: variables,
+                tags: tags
+            };
             req.send(JSON.stringify(reqBody));
         }
     },
