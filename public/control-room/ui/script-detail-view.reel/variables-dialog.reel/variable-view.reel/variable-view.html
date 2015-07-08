@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="variable-view.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"}
+            }
+        },
+
+        "label": {
+            "prototype": "digit/ui/text-field.reel",
+            "properties": {
+                "element": {"#": "label"}
+            },
+            "bindings": {
+                "value": {"<->": "@owner.name"}
+            }
+        },
+
+        "field": {
+            "prototype": "digit/ui/text-field.reel",
+            "properties": {
+                "element": {"#": "field"}
+            },
+            "bindings": {
+                "value": {"<->": "@owner.defaultValue"}
+            }
+        },
+
+        "deleteButton": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "delete"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="VariableView">
+        <button data-montage-id="delete" class="red">X</button>
+        <input type="text" data-montage-id="label" />
+        <input type="text" data-montage-id="field" />
+    </div>
+</body>
+</html>
