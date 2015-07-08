@@ -140,6 +140,21 @@ exports.ScriptSource = Montage.specialize({
         }
     },
 
+    _variables: {
+        value: [],
+        enumerable: false,
+        distinct: true
+    },
+
+    variables: {
+        get: function() {
+            return this._variables;
+        },
+        set: function(value) {
+            this._variables = value;
+        }
+    },
+
     fromServer: {
         value: function(obj) {
             this.id = obj._id;
@@ -147,6 +162,7 @@ exports.ScriptSource = Montage.specialize({
             this.size = obj.size;
             this.modified = obj.modified;
             this.code = obj.code;
+            this.variables = obj.variables;
 
 
             this._tags = obj.tags || [];

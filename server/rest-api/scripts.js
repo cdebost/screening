@@ -202,6 +202,8 @@ module.exports = function(scriptsProvider) {
         }
         body.modified = now;
 
+        body.variables = [];
+
         scriptsProvider.upsert(body, function(err, object) {
             if (err) return next(new Error(err));
 
@@ -229,7 +231,7 @@ module.exports = function(scriptsProvider) {
 
         var code = body.code;
         if (!code) {
-            console.log('code was blank'); // Should be a warning TODOz
+            console.log('code was blank'); // Should be a warning TODO
         }
 
         // Add id to body

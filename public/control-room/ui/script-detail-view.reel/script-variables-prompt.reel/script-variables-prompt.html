@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="script-variables-prompt.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"},
+
+                "variableController": {"@": "variableController"},
+                "runButton": {"@": "runButton"},
+                "cancelButton": {"@": "cancelButton"}
+            }
+        },
+
+        "variableController": {
+            "prototype": "montage/core/range-controller"
+        },
+
+        "variableRepetition": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "variableRepetition"},
+                "contentController": {"@": "variableController"}
+            }
+        },
+
+        "variableName": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "variableName"}
+            },
+            "bindings": {
+                "value": {"<-": "@variableRepetition:iteration.object.name"}
+            }
+        },
+
+        "variableValue": {
+            "prototype": "digit/ui/text-field.reel",
+            "properties": {
+                "element": {"#": "variableValue"}
+            },
+            "bindings": {
+                "value": {"<->": "@variableRepetition:iteration.object.value"}
+            }
+        },
+
+        "runButton": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "run"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+
+        "cancelButton": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "cancel"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="ScriptVariablesPrompt">
+        <fieldset>Variable settings for this run</fieldset>
+        <fieldset>
+            <div data-montage-id="variableRepetition" class="variableRepetition">
+                <div class="variableEntry">
+                    <label data-montage-id="variableName"></label>:
+                    <input data-montage-id="variableValue" class="variableValue" />
+                </div>
+            </div>
+        </fieldset>
+        <fieldset class="buttons">
+            <button data-montage-id="run" class="green">Run</button>
+            <button data-montage-id="cancel">Cancel</button>
+        </fieldset>
+    </div>
+</body>
+</html>

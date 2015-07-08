@@ -18,6 +18,9 @@
                     "pauseRecordButton": {"@": "pauseRecordButton"},
                     "recordButton": {"@": "recordButton"},
                     "runButton": {"@": "runButton"},
+                    "scriptVariablesPrompt": {"@": "scriptVariablesPrompt"},
+                    "variablesButton": {"@": "variablesButton"},
+                    "variablesDialog": {"@": "variablesDialog"},
                     "deleteButton": {"@": "deleteButton"},
                     "downloadButton": {"@": "downloadButton"},
                     "urlPrompt": {"@": "urlPrompt"}
@@ -90,6 +93,38 @@
                         "capture": false
                     }
                 ]
+            },
+            "scriptVariablesPrompt": {
+                "prototype": "./script-variables-prompt.reel",
+                "bindings": {
+                    "scriptSource": {"<-": "@owner.scriptSource"}
+                }
+            },
+            "variablesButtonListener": {
+                "prototype": "montage/core/event/action-event-listener",
+                "properties": {
+                    "handler": {"@": "owner"},
+                    "action": "manageVariables"
+                }
+            },
+            "variablesButton": {
+                "prototype": "digit/ui/button.reel",
+                "properties": {
+                    "element": {"#": "manageVariables"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "variablesButtonListener"},
+                        "capture": "false"
+                    }
+                ]
+            },
+            "variablesDialog": {
+                "prototype": "./variables-dialog.reel",
+                "bindings": {
+                    "script": {"<-": "@owner.scriptSource"}
+                }
             },
             "deleteButtonListener": {
                 "prototype": "montage/core/event/action-event-listener",
@@ -199,6 +234,9 @@
                 </div>
                 <div class="buttonGroup">
                     <button data-montage-id="run" class="green">Run</button>
+                </div>
+                <div class="buttonGroup">
+                    <button data-montage-id="manageVariables">Manage Script Variables</button>
                 </div>
                 <div class="buttonGroup">
                     <button data-montage-id="save">Save</button>
