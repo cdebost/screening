@@ -107,23 +107,24 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
             //        self.needsSave = true;
             //    }
             //}, false);
+        }
+    },
 
-            //TODO overwritten by script keydown listener
+    enterDocument: {
+        value: function() {
             document.addEventListener("keydown", this);
+        }
+    },
+
+    exitDocument: {
+        value: function() {
+            document.removeEventListener("keydown", this);
         }
     },
 
     handleKeydown: {
         value: function(event) {
-            if (event.keyCode == 'S'.charCodeAt(0)) {
-                if (event.metaKey) { // OSX save
-                    this.saveBatch();
-                    event.preventDefault();
-                } else if (event.ctrlKey) { // Windows/Linux save
-                    this.saveBatch();
-                    event.preventDefault();
-                }
-            }
+            event.preventDefault();
         }
     },
 
