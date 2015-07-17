@@ -150,7 +150,7 @@ POSSIBILITY OF SUCH DAMAGE.
                 },
                 "bindings": {
                     "scriptSource": {"<-": "@owner.scripts.selection[0]"},
-                    "batchSource": {"<-": "@owner.batches.selection[0]"},
+                    "batchSource": {"<-": "@owner.batches.selection[0] || null"},
                     "activeAgents": {"<-": "@owner.agents.selection"},
                     "selectedAgent": {"<-": "@owner.agents.selection.0"},
 

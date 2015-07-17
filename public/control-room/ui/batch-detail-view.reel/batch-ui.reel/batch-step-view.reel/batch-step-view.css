@@ -1,16 +1,20 @@
 .BatchStepView {
+    display: flex;
+    align-items: center;
+
     background-color: hsl(198,50%,96%);
     border: 1px solid hsla(0, 0%, 0%, .3);
     border-radius: 10px;
     padding: 3px;
     margin: 2px;
+    height: 30px;
 }
 
 .BatchStepView .right {
     float: right;
 }
 
-.BatchStepView .upButton, .BatchStepView .downButton, .BatchStepView .deleteButton {
+.BatchStepView .button {
     border: none;
     background-image: none !important;
     box-shadow: none !important;
@@ -32,4 +36,30 @@
 
 .BatchStepView .deleteButton {
     color: hsl(0, 50%, 50%) !important;
+}
+
+.BatchStepView .button.hidden {
+    display: none;
+}
+
+.BatchStepView .scriptName {
+    font-weight: bold;
+}
+
+.BatchStepView .variablesSummary {
+    flex: 1;
+    overflow-x: scroll;
+    transform: translateY(2px);
+    white-space: nowrap;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.BatchStepView .variablesSummary .variableName {
+    font-weight: bold;
+}
+
+.BatchStepView .variablesSummary .variableValue {
+    color: blue;
+    font-style: italic;
 }

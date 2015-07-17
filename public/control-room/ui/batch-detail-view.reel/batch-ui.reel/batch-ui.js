@@ -19,7 +19,15 @@ exports.BatchUi = Component.specialize(/** @lends BatchUi# */ {
         value: null
     },
 
+    stepView: {
+        value: null
+    },
+
     batchStepDialog: {
+        value: null
+    },
+
+    batchConfigDialog: {
         value: null
     },
 
@@ -28,7 +36,11 @@ exports.BatchUi = Component.specialize(/** @lends BatchUi# */ {
             var self = this;
 
             this.batchStepDialog.addEventListener("message.ok", function(ev) {
-                self._addBatchItem(ev.detail.scriptName);
+                var script = ev.detail.script;
+                    script.variables.forEach(function(variable) {
+                        variable.value = variable.defaultValue;
+                    });
+                var newStep = self._addBatchItem(script.name, script.variables);
 
                 self.saveBatch();
             });
@@ -60,10 +72,18 @@ exports.BatchUi = Component.specialize(/** @lends BatchUi# */ {
             }, false);
 
             this.addEventListener("configStep", function(ev) {
+                self.batchConfigDialog.step = ev.detail.step;
+                self.batchConfigDialog.repaint = ev.detail.repaint;
 
-
-                self.saveBatch();
+                var popup = Popup.create();
+                popup.content = self.batchConfigDialog;
+                popup.modal = true;
+                popup.show();
             }, false);
+
+            this.batchConfigDialog.addEventListener("message.close", function() {
+                self.saveBatch();
+            });
 
             this.addEventListener("deleteStep", function(ev) {
                 self.steps.delete(ev.detail.step);
@@ -82,9 +102,30 @@ exports.BatchUi = Component.specialize(/** @lends BatchUi# */ {
             var self = this;
 
             if (batch.scripts) {
-                batch.scripts.forEach(function (script) {
-                    self._addBatchItem(script.name);
-                });
+                var req = new XMLHttpRequest();
+                req.open("GET", "/screening/api/v1/scripts?api_key=5150", true);
+                req.onload = function (event) {
+                    var sources = JSON.parse(this.responseText);
+
+                    // Create a dictionary that links script names to their variable definitions
+                    var scriptVariableMap = {};
+                    sources.forEach(function (source) {
+                        scriptVariableMap[source.name] = source.variables;
+                    });
+
+                    batch.scripts.forEach(function (script) {
+                        self._addBatchItem(script.name, script.variables);
+                    });
+                };
+                req.send(null);
+            }
+        }
+    },
+
+    unload: {
+        value: function() {
+            if (this.steps.content) {
+                this.steps.clear();
             }
         }
     },
@@ -105,11 +146,13 @@ exports.BatchUi = Component.specialize(/** @lends BatchUi# */ {
     },
 
     _addBatchItem: {
-        value: function(name) {
+        value: function(name, variables) {
             this.steps.addContent();
             var steps = this.steps.content;
             var newStep = steps[steps.length - 1];
             newStep.scriptName = name;
+            newStep.variables = variables;
+            return newStep;
         }
     }
 });

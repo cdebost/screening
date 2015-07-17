@@ -30,6 +30,12 @@ exports.BatchListView = Component.specialize(/** @lends BatchListView# */ {
                 self.batchController.selectedObjects = [];
                 self.batchController.selectedIndexes = [];
             });
+
+            this.application.addEventListener("scriptSaved", function() {
+                // Reload, there could have been a change of variables in the saved script
+                // that affects one or more batches
+                self.queryBatchSources();
+            })
         }
     },
 
@@ -72,17 +78,10 @@ exports.BatchListView = Component.specialize(/** @lends BatchListView# */ {
                 if (selectedBatch && selectedBatchIndex) {
                     self.batchController.selectedObjects = selectedBatch;
                     self.batchController.selectedIndexes = [selectedBatchIndex];
+                    self.batchController.selection.clear();
                 }
             };
-
-            // If the script editor contents have changed then prompt the user
-            //if (self.scriptDetail && self.scriptDetail.needsSave) {
-            //    self.scriptDetail.unsavedChangesConfirm(function() {
-            //        req.send(null);
-            //    });
-            //} else {
-                req.send(null);
-            //}
+            req.send(null);
         }
     },
 
