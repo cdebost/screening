@@ -21,6 +21,11 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
         enumerable: false
     },
 
+    batchTags: {
+        value: null,
+        enumerable: false
+    },
+
     runButton: {
         value: null,
         enumerable: true
@@ -62,7 +67,8 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
             var self = this;
 
             this.addPathChangeListener("batchSource", function (newBatch) {
-                self.batchNameField.element.disabled /*= self.scriptTags.element.disabled*/ = !self.batchSource;
+                console.log(!self.batchSource);
+                self.batchNameField.element.disabled = self.batchTags.element.disabled = !self.batchSource;
 
                 if (self.batchSource) {
                     self.runButton.disabled = false;
@@ -101,12 +107,21 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
                 }
             }, false);
 
-            // Mark the script as needing a save when the tags are changed
-            //this.scriptTags.addPathChangeListener("value", function (event) {
-            //    if (event && self.scriptSource && self.scriptSource.displayTags !== self.scriptTags.value) {
-            //        self.needsSave = true;
-            //    }
-            //}, false);
+            // Save the batch when its tags are changed
+            this.batchTags.addPathChangeListener("value", function (event) {
+                if (event && self.batchSource && self.batchSource.displayTags !== self.batchTags.value) {
+                    // Save if the tags have not changed in one second
+                    setTimeout(function (lastInput) {
+                        if (self.batchSource.displayTags === self.batchTags.value) {
+                            return;
+                        }
+
+                        if (lastInput === self.batchTags.value) {
+                            self.saveBatch();
+                        }
+                    }, 1000, self.batchTags.value);
+                }
+            }, false);
         }
     },
 
@@ -124,7 +139,13 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
 
     handleKeydown: {
         value: function(event) {
-            event.preventDefault();
+            if (event.keyCode == 'S'.charCodeAt(0)) {
+                if (event.metaKey) { // OSX save
+                    event.preventDefault();
+                } else if (event.ctrlKey) { // Windows/Linux save
+                    event.preventDefault();
+                }
+            }
         }
     },
 
@@ -168,8 +189,9 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
             if (this.batchNameField.value) {
                 this.batchSource.name = this.batchNameField.value;
             }
-            //this.batchSource.displayTags = this.scriptTags.value;
-            this.batchSource.displayTags = "";
+            console.log("save the batch", this.batchTags.value);
+            this.batchSource.displayTags = this.batchTags.value;
+            //this.batchSource.displayTags = "";
 
             this.batchSource.scripts = this.templateObjects.stepsRangeController.content.map(function(step) {
                 return {
@@ -202,22 +224,22 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
             };
             req.setRequestHeader("Content-Type", "application/json");
 
-            //// Parse tags
-            //var str = self.scriptTags.value;
-            //var tags = str.match(/\w+|"[^"]+"/g);
-            //// Remove quotes
-            //
-            //if (tags) {
-            //    tags.forEach(function(elem, index) {
-            //        tags[index] = tags[index].replace(/"/g, "");
-            //    });
-            //}
+            // Parse tags
+            var str = self.batchTags.value;
+            var tags = str.match(/\w+|"[^"]+"/g);
+            // Remove quotes
+
+            if (tags) {
+                tags.forEach(function(elem, index) {
+                    tags[index] = tags[index].replace(/"/g, "");
+                });
+            }
 
             var reqBody = {
                 name: this.batchSource.name,
                 code: this.batchSource.code,
-                scripts: this.batchSource.scripts
-                //tags: tags
+                scripts: this.batchSource.scripts,
+                tags: tags
             };
             req.send(JSON.stringify(reqBody));
         }

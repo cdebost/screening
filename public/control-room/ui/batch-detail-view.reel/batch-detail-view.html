@@ -11,6 +11,7 @@
 
                 "emptyDetail": {"#": "emptyDetail"},
                 "batchNameField": {"@": "nameText"},
+                "batchTags": {"@": "tagsText"},
                 "runButton": {"@": "runButton"},
                 "deleteButton": {"@": "deleteButton"},
                 "batchUI": {"@": "batchUI"}
@@ -26,7 +27,15 @@
                 "value": {"<-": "@owner.batchSource.name"}
             }
         },
-
+        "tagsText": {
+            "prototype": "matte/ui/input-text.reel",
+            "properties": {
+                "element": {"#": "tags"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.batchSource.displayTags"}
+            }
+        },
         "runButtonListener": {
             "prototype": "montage/core/event/action-event-listener",
             "properties": {
@@ -116,6 +125,8 @@
         <div class="codeHeader">
             <label for="name">Name</label>
             <input type="text" data-montage-id="name" class="name">
+            <label for="tags">Tags</label>
+            <input type="text" data-montage-id="tags" class="tags" placeholder="Space separated. Use &quot; &quot; for tag with multiple words.">
         </div>
         <div class="toolBar">
             <div class="buttonGroup">
@@ -137,7 +148,7 @@
                     Please select a batch from the list on the left<br/>
                     or click "New" to begin editing.
                 </p>
-            </div>s
+            </div>
         </div>
     </div>
 </body>
