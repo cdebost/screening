@@ -51,7 +51,8 @@
                     "element": {"#": "code"}
                 },
                 "bindings": {
-                    "value": {"<-": "@owner.scriptSource.code"}
+                    "value": {"<-": "@owner.scriptSource.code"},
+                    "classList.has('mon-hidden')": {"<-": "!@owner.scriptSource"}
                 }
             },
             "downloadButtonListener": {
@@ -72,7 +73,10 @@
                         "listener": {"@": "downloadButtonListener"},
                         "capture": false
                     }
-                ]
+                ],
+                "bindings": {
+                    "classList.has('mon-hidden')": {"<-": "!@owner.scriptSource"}
+                }
             },
             "runButtonListener": {
                 "prototype": "montage/core/event/action-event-listener",
@@ -92,7 +96,10 @@
                         "listener": {"@": "runButtonListener"},
                         "capture": false
                     }
-                ]
+                ],
+                "bindings": {
+                    "classList.has('mon-hidden')": {"<-": "!@owner.scriptSource"}
+                }
             },
             "scriptVariablesPrompt": {
                 "prototype": "./script-variables-prompt.reel",
@@ -118,7 +125,10 @@
                         "listener": {"@": "variablesButtonListener"},
                         "capture": "false"
                     }
-                ]
+                ],
+                "bindings": {
+                    "classList.has('mon-hidden')": {"<-": "!@owner.scriptSource"}
+                }
             },
             "variablesDialog": {
                 "prototype": "./variables-dialog.reel",
@@ -144,7 +154,10 @@
                         "listener": {"@": "deleteButtonListener"},
                         "capture": false
                     }
-                ]
+                ],
+                "bindings": {
+                    "classList.has('mon-hidden')": {"<-": "!@owner.scriptSource"}
+                }
             },
             "saveButtonListener": {
                 "prototype": "montage/core/event/action-event-listener",
@@ -164,7 +177,10 @@
                         "listener": {"@": "saveButtonListener"},
                         "capture": false
                     }
-                ]
+                ],
+                "bindings": {
+                    "classList.has('mon-hidden')": {"<-": "!@owner.scriptSource"}
+                }
             },
             "recordButtonListener": {
                 "prototype": "montage/core/event/action-event-listener",
@@ -184,7 +200,10 @@
                         "listener": {"@": "recordButtonListener"},
                         "capture": false
                     }
-                ]
+                ],
+                "bindings": {
+                    "classList.has('mon-hidden')": {"<-": "!@owner.scriptSource"}
+                }
             },
             "pauseRecordButtonListener": {
                 "prototype": "montage/core/event/action-event-listener",
@@ -204,7 +223,10 @@
                         "listener": {"@": "pauseRecordButtonListener"},
                         "capture": false
                     }
-                ]
+                ],
+                "bindings": {
+                    "classList.has('mon-hidden')": {"<-": "!@owner.scriptSource"}
+                }
             },
 
             "urlPrompt": {
