@@ -7,7 +7,10 @@
     {
         "owner": {
             "properties": {
-                "element": {"#": "owner"}
+                "element": {"#": "owner"},
+
+                "configButton": {"@": "configButton"},
+                "variablesSummary": {"@": "variablesSummary"}
             }
         },
 
@@ -42,11 +45,35 @@
         "scriptName": {
             "prototype": "montage/ui/text.reel",
             "properties": {
-                "element": {"#": "batchName"}
+                "element": {"#": "scriptName"}
             },
             "bindings": {
                 "value": {"<-": "@owner.step.scriptName"}
             }
+        },
+
+        "variablesSummary": {
+            "prototype": "./batch-step-variables-summary",
+            "properties": {
+                "element": {"#": "variablesSummary"}
+            },
+            "bindings": {
+                "variables": {"<-": "@owner.step.variables"}
+            }
+        },
+
+        "configButton": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "configButton"},
+                "label": "o"
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
         },
 
         "deleteButton": {
@@ -67,11 +94,15 @@
 </head>
 <body>
     <div data-montage-id="owner" class="BatchStepView">
-        <span data-montage-id="upButton" class="upButton"></span>
-        <span data-montage-id="downButton" class="downButton"></span>
-        <span data-montage-id="batchName" class="batchName"></span>
+        <div class="moveButtons">
+            <button data-montage-id="upButton" class="button upButton"></button>
+            <button data-montage-id="downButton" class="button downButton"></button>
+        </div>
+        <div data-montage-id="scriptName" class="scriptName"></div>
+        <div data-montage-id="variablesSummary" class="variablesSummary"></div>
         <div class="right">
-            <span data-montage-id="deleteButton" class="deleteButton"></span>
+            <button data-montage-id="configButton" class="button configButton"></button>
+            <button data-montage-id="deleteButton" class="button deleteButton"></button>
         </div>
     </div>
 </body>

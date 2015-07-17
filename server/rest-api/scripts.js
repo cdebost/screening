@@ -36,7 +36,7 @@ var wrench = require('wrench');
 var path = require('path');
 var archiver = require('archiver');
 
-module.exports = function(scriptsProvider) {
+module.exports = function(scriptsProvider, batchesProvider) {
     var app = express();
 
     // TODO: Broken since upgrading to express 3.x
@@ -245,6 +245,77 @@ module.exports = function(scriptsProvider) {
 
             hydrateAttributes(object);
             res.send(object);
+        });
+
+        // Update all batches that use this script, in case the variables have changed
+        batchesProvider.findAll({sort: ["name", "asc"]}, function(error, batches) {
+            if (error) {
+                console.warn("Unable to fetch batches after updating script", id);
+            }
+
+            batches.forEach(function(batch) {
+                var scriptInstance = null, scriptIndex;
+                batch.scripts.forEach(function(script, index) {
+                    if (script.name === body.name) {
+                        scriptInstance = script;
+                        scriptIndex = index;
+                    }
+                });
+
+                if (!scriptInstance) {
+                    return;
+                }
+
+                // Start by creating a mapping of variables for quicker access
+                var oldVars = {};
+                scriptInstance.variables.forEach(function(variable) {
+                    oldVars[variable.name] = variable;
+                });
+                var newVars = {};
+                body.variables.forEach(function(variable) {
+                    newVars[variable.name] = variable;
+                });
+
+                // Create a set with all of the new and old variables' keys
+                var varSet = new Set(Object.keys(oldVars).concat(Object.keys(newVars)));
+                varSet.forEach(function(v) {
+                    // Mark variables that have been removed as stale
+                    if (newVars[v] === undefined) {
+                        oldVars[v].stale = true;
+                    }
+
+                    // Add variables that have been added and mark them as new
+                    if (oldVars[v] === undefined) {
+                        oldVars[v] = {
+                            name: newVars[v].name,
+                            defaultValue: newVars[v].defaultValue,
+                            value: newVars[v].defaultValue,
+                            "new": true
+                        };
+                    }
+                });
+
+                // Translate the variable dictionary back into the script instance
+                while (scriptInstance.variables.pop()) {}
+                var oldVarsKeys = Object.keys(oldVars);
+                oldVarsKeys.forEach(function(key) {
+                    scriptInstance.variables[scriptInstance.variables.length] = {
+                        name: key,
+                        defaultValue: oldVars[key].defaultValue,
+                        value: oldVars[key].value,
+                        stale: oldVars[key].stale || false,
+                        "new": oldVars[key].new || false
+                    };
+                });
+
+
+                batchesProvider.upsert(batch, function(err, object) {
+                    if (err) {
+                        console.warn("Unable to update batch", batch.id, "while updating script", id);
+                        console.warn(err);
+                    }
+                });
+            });
         });
     });
 

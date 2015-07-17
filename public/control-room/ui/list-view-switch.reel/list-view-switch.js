@@ -48,4 +48,8 @@ exports.ListViewSwitch = Component.specialize(/** @lends ListViewSwitch# */ {
         value: null,
         serializable: true
     },
+
+    batchListView: {
+        value: null
+    }
 });

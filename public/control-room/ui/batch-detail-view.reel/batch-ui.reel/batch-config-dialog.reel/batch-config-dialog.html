@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="batch-config-dialog.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"},
+
+                "variables": {"@": "variableController"},
+                "blueHint": {"#": "blueHint"},
+                "redHint": {"#": "redHint"}
+            }
+        },
+
+        "scriptName": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "scriptName"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.step.scriptName"}
+            }
+        },
+
+        "variableController": {
+            "prototype": "montage/core/range-controller",
+            "properties": {
+                "content": []
+            }
+        },
+
+        "variableRepetition": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "variableRepetition"},
+
+                "contentController": {"@": "variableController"}
+            }
+        },
+
+        "removeVariable": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "removeVariable"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ],
+            "bindings": {
+                "variableObj": {"<-": "@variableRepetition:iteration.object"},
+                "classList.has('stale')": {"<-": "@variableRepetition:iteration.object.stale"}
+            }
+        },
+
+        "variableName": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "variableName"}
+            },
+            "bindings": {
+                "value": {"<-": "@variableRepetition:iteration.object.name"},
+                "classList.has('stale')": {"<-": "@variableRepetition:iteration.object.stale"},
+                "classList.has('new')": {"<-": "@variableRepetition:iteration.object.new"}
+            }
+        },
+
+        "variableValue": {
+            "prototype": "digit/ui/text-field.reel",
+            "properties": {
+                "element": {"#": "variableValue"}
+            },
+            "bindings": {
+                "value": {"<->": "@variableRepetition:iteration.object.value"},
+                "classList.has('stale')": {"<-": "@variableRepetition:iteration.object.stale"}
+            }
+        },
+
+        "closeButton": {
+            "prototype": "digit/ui/button.reel",
+            "properties": {
+                "element": {"#": "closeButton"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="BatchConfigDialog">
+        <fieldset><span data-montage-id="scriptName"></span> configuration</fieldset>
+        <fieldset>
+            <div data-montage-id="variableRepetition">
+                <div class="variableEntry">
+                    <button data-montage-id="removeVariable" class="removeVariable red">x</button>
+                    <label for="variableValue" data-montage-id="variableName" class="variableName"></label>:
+                    <input id="variableValue" data-montage-id="variableValue" class="variableValue">
+                </div>
+            </div>
+            <div class="hints">
+                <div data-montage-id="blueHint" class="blue hidden"><span>Variables in blue</span> have been
+                    added to the script since this batch was last edited.</div>
+                <div data-montage-id="redHint" class="red hidden"><span>Variables in red</span> are no longer
+                    in use by the script and can be safely deleted.</div>
+            </div>
+        </fieldset>
+        <fieldset class="buttons">
+            <button data-montage-id="closeButton">Close</button>
+        </fieldset>
+    </div>
+</body>
+</html>

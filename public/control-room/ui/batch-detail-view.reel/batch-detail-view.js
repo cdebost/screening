@@ -42,16 +42,13 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
             return this._batchSource;
         },
         set: function(value) {
-            if (value) {
-                if (!value) {
-                    this._batchSource = null;
-                    return;
-                }
+            if (!value) {
+                this._batchSource = null;
+                return;
+            }
 
-                if (value !== this.batchSource) {
-                    this._batchSource = value;
-                }
-
+            if (value !== this.batchSource) {
+                this._batchSource = value;
             }
         }
     },
@@ -83,6 +80,8 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
 
                 if (newBatch) {
                     self.batchUI.loadBatch(newBatch);
+                } else {
+                    self.batchUI.unload();
                 }
             }, false);
 
@@ -171,9 +170,10 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
             //this.batchSource.displayTags = this.scriptTags.value;
             this.batchSource.displayTags = "";
 
-            var scripts = this.templateObjects.stepsRangeController.content.map(function(step) {
+            this.batchSource.scripts = this.templateObjects.stepsRangeController.content.map(function(step) {
                 return {
-                    name: step.scriptName
+                    name: step.scriptName,
+                    variables: step.variables
                 }
             });
 
@@ -213,11 +213,11 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
             //}
 
             var reqBody = {
-                name: self.batchSource.name,
-                code: self.batchSource.code,
-                scripts: scripts
+                name: this.batchSource.name,
+                code: this.batchSource.code,
+                scripts: this.batchSource.scripts
                 //tags: tags
-            }
+            };
             req.send(JSON.stringify(reqBody));
         }
     },

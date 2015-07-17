@@ -9,11 +9,11 @@
     border: 0px solid #333;
 }
 
-.webdriverDialog fieldset.buttons button {
+.BatchStepDialog fieldset.buttons button {
     margin: 0;
 }
 
-.webdriverDialog fieldset.buttons .blue {
+.BatchStepDialog fieldset.buttons .blue {
     float: right;
     width: 60px;
 }
