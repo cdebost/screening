@@ -473,6 +473,8 @@ exports.ScriptDetailView = Component.specialize({
                 tags: tags
             };
             req.send(JSON.stringify(reqBody));
+
+            this.application.dispatchEventNamed("scriptSaved", false, false, {});
         }
     },
 

@@ -22,7 +22,7 @@ exports.BatchStepDialog = Component.specialize(/** @lends BatchStepDialog# */ {
         value: null
     },
     
-    templateDidLoad: {
+    enterDocument: {
         value: function() {
             var self = this;
 
@@ -31,9 +31,13 @@ exports.BatchStepDialog = Component.specialize(/** @lends BatchStepDialog# */ {
             var req = new XMLHttpRequest();
             req.open("GET", url, true);
             req.onload = function() {
+                if (self.scripts.content) {
+                    self.scripts.clear();
+                }
+
                 var sources = JSON.parse(this.responseText);
                 sources.forEach(function(source) {
-                   self.scripts.add(source.name);
+                    self.scripts.add(source);
                 });
 
                 self.headerLabel.value = "Select a script:";
@@ -45,7 +49,7 @@ exports.BatchStepDialog = Component.specialize(/** @lends BatchStepDialog# */ {
     handleOkAction: {
         value: function() {
             var ev = document.createEvent("CustomEvent");
-            ev.initCustomEvent("message.ok", true, true, {scriptName: this.scripts.selection[0]});
+            ev.initCustomEvent("message.ok", true, true, {script: this.scripts.selection[0]});
             this.dispatchEvent(ev);
             this.popup.hide();
         }

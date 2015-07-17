@@ -75,7 +75,7 @@ exports.createServer = function(customMongoDbProvider) {
 
     var routingConfig = require("./rest-api/routing-config.js");
     var agentsApi = require("./rest-api/agents.js")(agentPool, testcaseRunner, scriptsProvider, batchesProvider);
-    var scriptsApi = require("./rest-api/scripts.js")(scriptsProvider);
+    var scriptsApi = require("./rest-api/scripts.js")(scriptsProvider, batchesProvider);
     var testResultsApi = require("./rest-api/test-results.js")(testcaseResultsProvider);
     var batchesApi = require("./rest-api/batches.js")(batchesProvider);
 

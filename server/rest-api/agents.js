@@ -216,6 +216,10 @@ module.exports = function(agentPool, testcaseRunner, scriptsProvider, batchesPro
                                 return next({message: "The script " + scriptName + " does not exist."});
                             }
 
+                            script.variables.forEach(function(variable, index) {
+                                variable.value = scriptObj.variables[index].value;
+                            });
+
                             scriptObjects.push(script);
 
                             // If this is the last script, we're done checking
