@@ -45,7 +45,10 @@
                     "listener": {"@": "runButtonListener"},
                     "capture": false
                 }
-            ]
+            ],
+            "bindings": {
+                "classList.has('mon-hidden')": {"<-": "!@owner.batchSource"}
+            }
         },
         "addButtonListener": {
             "prototype": "montage/core/event/action-event-listener",
@@ -65,7 +68,10 @@
                     "listener": {"@": "addButtonListener"},
                     "capture": false
                 }
-            ]
+            ],
+            "bindings": {
+                "classList.has('mon-hidden')": {"<-": "!@owner.batchSource"}
+            }
         },
         "deleteButtonListener": {
             "prototype": "montage/core/event/action-event-listener",
@@ -85,7 +91,10 @@
                     "listener": {"@": "deleteButtonListener"},
                     "capture": false
                 }
-            ]
+            ],
+            "bindings": {
+                "classList.has('mon-hidden')": {"<-": "!@owner.batchSource"}
+            }
         },
 
         "stepsRangeController": {

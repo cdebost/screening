@@ -49,3 +49,7 @@ POSSIBILITY OF SUCH DAMAGE.
 .montage-popup-content .montage-button {
     margin: 1px 5px;
 }
+
+.mon-hidden {
+    display: none !important;
+}
