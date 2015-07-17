@@ -274,7 +274,6 @@ exports.ScriptDetailView = Component.specialize({
                 }
             }, false);
 
-            document.addEventListener("keydown", this);
             this.urlPrompt.addEventListener("message.ok", function(event) {
                 self.urlPromptOk();
             });
@@ -295,6 +294,14 @@ exports.ScriptDetailView = Component.specialize({
 
                 return self.needsSave ? navigateAwayMessage : null;
             }
+
+            document.addEventListener("keydown", this);
+        }
+    },
+
+    exitDocument: {
+        value: function() {
+            document.removeEventListener("keydown", this);
         }
     },
 
