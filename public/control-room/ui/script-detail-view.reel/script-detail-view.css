@@ -116,26 +116,6 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 
 
-/* CodeMirror */
-
-.CodeMirror {
-    -webkit-box-flex: 1;
-    overflow-y: auto;
-    overflow-x: auto;
-    background-color: hsl(0, 0%, 98%);
-    font-size: 1.1em;
-    border-left: 1px solid hsl(0, 0%, 80%);   
-}
-
-
-.CodeMirror-scroll {
-    height: auto !important;
-    width: auto !important;
-    overflow-y: visible !important;
-    overflow-x: visible !important;
-}
-
-
 .link:link {
     color: #AEAEAE;
 }
