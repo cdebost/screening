@@ -228,6 +228,7 @@ exports.ScriptDetailView = Component.specialize({
                 mode: 'javascript',
                 lineNumbers: true,
                 gutter:true,
+                viewportMargin: Infinity,
                 onChange: function(codeMirror) {
                     self.needsSave = true;
                 }
