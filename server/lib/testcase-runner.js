@@ -317,10 +317,11 @@ TestcaseRunner.prototype.finalize = function(agentId, result) {
     agent.endTest(result.get());
 };
 
-TestcaseRunner.prototype.createResult = function(agentId, name) {
+TestcaseRunner.prototype.createResult = function(agentId, name, code) {
     var agent = this.agentPool.getAgentById(agentId);
     return new Result(agent, {
         id: this.resultsProv.generateId(),
-        name: name
+        name: name,
+        code: code
     });
 };
