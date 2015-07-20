@@ -254,6 +254,10 @@ module.exports = function(scriptsProvider, batchesProvider) {
             }
 
             batches.forEach(function(batch) {
+                if (!batch.scripts) {
+                    return;
+                }
+
                 var scriptInstance = null, scriptIndex;
                 batch.scripts.forEach(function(script, index) {
                     if (script.name === body.name) {
