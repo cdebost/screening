@@ -34,8 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
  * @requires montage/ui/component
  */
 var Component = require("montage/ui/component").Component,
-    ScriptSource = require("core/script-source").ScriptSource,
-    Keyboard = require("core/keyboard").Keyboard;
+    ScriptSource = require("core/script-source").ScriptSource;
 
 /**
  * @class ScriptListView
@@ -124,7 +123,7 @@ exports.ScriptListView = Component.specialize({
 
             var req = new XMLHttpRequest();
             req.open("GET", url, true);
-            req.onload = function(event) {
+            req.onload = function() {
                 var lastScriptId = localStorage["Screening.AppState.CurrentScript"];
                 self.scriptController.content = [];
                 var sources = JSON.parse(this.responseText);
@@ -132,22 +131,24 @@ exports.ScriptListView = Component.specialize({
                 var selectedScriptIndex = null;
                 var scriptSources = [];
                 for (var i in sources) {
-                    var scriptSource = ScriptSource.create();
-                    scriptSource.fromServer(sources[i]);
-                    scriptSources.push(scriptSource);
+                    if (sources.hasOwnProperty(i)) {
+                        var scriptSource = ScriptSource.create();
+                        scriptSource.fromServer(sources[i]);
+                        scriptSources.push(scriptSource);
 
-                    // We want to select a script if one was passed in or
-                    // if we have stored one in localStorage. Passed in name
-                    // gets the preference between the two. Hopefully this logic
-                    // does that.
-                    if (scriptName && scriptName === scriptSource.name) {
-                        selectedScript = scriptSource;
-                        selectedScriptIndex = i;
-                    }
+                        // We want to select a script if one was passed in or
+                        // if we have stored one in localStorage. Passed in name
+                        // gets the preference between the two. Hopefully this logic
+                        // does that.
+                        if (scriptName && scriptName === scriptSource.name) {
+                            selectedScript = scriptSource;
+                            selectedScriptIndex = i;
+                        }
 
-                    if(!selectedScript && !scriptName && lastScriptId == scriptSource.id) {
-                        selectedScript = scriptSource;
-                        selectedScriptIndex = i;
+                        if (!selectedScript && !scriptName && lastScriptId == scriptSource.id) {
+                            selectedScript = scriptSource;
+                            selectedScriptIndex = i;
+                        }
                     }
                 }
                 self.scriptController.content = scriptSources;
@@ -175,7 +176,7 @@ exports.ScriptListView = Component.specialize({
 
             var req = new XMLHttpRequest();
             req.open("POST", "/screening/api/v1/scripts/?api_key=5150", true);
-            req.onload = function(event) {
+            req.onload = function() {
                 var createdScript = JSON.parse(this.responseText);
 
                 // Create a proper ScriptSource object and then populate it with the response

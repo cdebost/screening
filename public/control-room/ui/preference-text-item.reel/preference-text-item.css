@@ -40,7 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
  
      border: 1px solid hsl(0,0%,70%);
      background-color: hsl(0,0%,95%);
-     box-shadow: inset 0px 1px 2px hsla(0,0%,0%,.1),
+     box-shadow: inset 0 1px 2px hsla(0,0%,0%,.1),
                          0 1px 0 hsla(0,0%,100%,.6);
  }
  .preferenceTextItem > input:focus {
@@ -48,7 +48,7 @@ POSSIBILITY OF SUCH DAMAGE.
  
      border: 1px solid hsl(200,100%,50%);
      background-color: hsl(200,50%,95%);
-     box-shadow: inset 0px 1px 2px hsla(200,50%,30%,.3),
+     box-shadow: inset 0 1px 2px hsla(200,50%,30%,.3),
                          0 1px 0 hsla(0,0%,100%,.6);
  }
  

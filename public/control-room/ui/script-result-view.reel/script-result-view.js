@@ -185,7 +185,7 @@ exports.ScriptResultView = Component.specialize({
             }, false);
             var link = this.viewJsonUrl = "/screening/api/v1/test_results/" + self.testcaseId + "?api_key=5150";
             this.downloadJsonUrl = link + "&download=true";
-            xhr.open("GET", this.downloadJsonUrl);
+            xhr.open("GET", String(this.downloadJsonUrl));
             xhr.send();
         }
     }

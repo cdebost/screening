@@ -58,7 +58,7 @@ exports.ScriptSearch = Component.specialize({
 
     templateDidLoad: {
         value: function() {
-            document.addEventListener("keydown", this, false);
+            document.addEventListener("keydown", this.handleKeydown.bind(this), false);
         }
     },
 
@@ -73,13 +73,13 @@ exports.ScriptSearch = Component.specialize({
     },
 
     handleSearchButtonAction: {
-        value: function(event) {
+        value: function() {
             this.searchAction();
         }
     },
 
     searchAction: {
-        value: function(event) {
+        value: function() {
             var newEvent = document.createEvent("CustomEvent");
             newEvent.initEvent("refreshScriptList", true, false);
             newEvent.searchString = this.scriptSearchBox.value;

@@ -47,7 +47,7 @@ exports.BatchListView = Component.specialize(/** @lends BatchListView# */ {
 
             var req = new XMLHttpRequest();
             req.open("GET", url, true);
-            req.onload = function(event) {
+            req.onload = function() {
                 var lastBatchId = localStorage["Screening.AppState.CurrentBatch"];
                 self.batchController.content = [];
                 var sources = JSON.parse(this.responseText);
@@ -55,22 +55,24 @@ exports.BatchListView = Component.specialize(/** @lends BatchListView# */ {
                 var selectedBatchIndex = null;
                 var batchSources = [];
                 for (var i in sources) {
-                    var batchSource = BatchSource.create();
-                    batchSource.fromServer(sources[i]);
-                    batchSources.push(batchSource);
+                    if (sources.hasOwnProperty(i)) {
+                        var batchSource = BatchSource.create();
+                        batchSource.fromServer(sources[i]);
+                        batchSources.push(batchSource);
 
-                    // We want to select a batch if one was passed in or
-                    // if we have stored one in localStorage. Passed in name
-                    // gets the preference between the two. Hopefully this logic
-                    // does that.
-                    //if (scriptName && scriptName === scriptSource.name) {
-                    //    selectedScript = scriptSource;
-                    //    selectedScriptIndex = i;
-                    //}
+                        // We want to select a batch if one was passed in or
+                        // if we have stored one in localStorage. Passed in name
+                        // gets the preference between the two. Hopefully this logic
+                        // does that.
+                        //if (scriptName && scriptName === scriptSource.name) {
+                        //    selectedScript = scriptSource;
+                        //    selectedScriptIndex = i;
+                        //}
 
-                    if(!selectedBatch /*&& !scriptName*/ && lastBatchId == batchSource.id) {
-                        selectedBatch = batchSource;
-                        selectedBatchIndex = i;
+                        if (!selectedBatch /*&& !scriptName*/ && lastBatchId == batchSource.id) {
+                            selectedBatch = batchSource;
+                            selectedBatchIndex = i;
+                        }
                     }
                 }
                 self.batchController.content = batchSources;
@@ -91,7 +93,7 @@ exports.BatchListView = Component.specialize(/** @lends BatchListView# */ {
 
             var req = new XMLHttpRequest();
             req.open("POST", "/screening/api/v1/batches/?api_key=5150", true);
-            req.onload = function(event) {
+            req.onload = function() {
                 var createdBatch = JSON.parse(this.responseText);
 
                 // Create a proper BatchSource object and then populate it with the response

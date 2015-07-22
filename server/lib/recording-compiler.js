@@ -200,7 +200,7 @@ var RecordingCompiler = exports.RecordingCompiler = Object.create(Object, {
         value: function(stack) {
             var condensable = ['mousemove', 'textInput'];
             var condensedStack = [];
-            var action, nextAction;
+            var action;
 
             var stackSize = stack.length;
             for(var i = 0; i < stackSize; ++i) {
@@ -313,7 +313,7 @@ var RecordingCompiler = exports.RecordingCompiler = Object.create(Object, {
 
     /**
      * Checks to see if a mousedown event can be condensed with the following events into a single "click"
-     * @returns -1 if the events cannot condense, or the new stack position if they can.
+     * @returns {Number} -1 if the events cannot condense, or the new stack position if they can.
      */
     _canCondenseToClick: {
         value: function(event, stack, i) {
@@ -370,7 +370,7 @@ var RecordingCompiler = exports.RecordingCompiler = Object.create(Object, {
                         source.push("agent.setWindowSize(" + action.width + ", " + action.height + ");\r\n");
                         break;
                     default:
-                        var eventSource = this._dispatchEventSource(action, prevAction, nextAction)
+                        var eventSource = this._dispatchEventSource(action, prevAction, nextAction);
                         if(eventSource.length > 0 || eventSource === ";") {
                             source.push(eventSource);
                         }
@@ -578,5 +578,5 @@ var RecordingCompiler = exports.RecordingCompiler = Object.create(Object, {
 
             return source;
         }
-    },
+    }
 });

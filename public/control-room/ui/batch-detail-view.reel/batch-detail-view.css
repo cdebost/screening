@@ -101,7 +101,7 @@ POSSIBILITY OF SUCH DAMAGE.
     display: block;
     -webkit-box-flex: 1;
     margin-right: 20px;
-    padding: 3px 3px 3px 0px;
+    padding: 3px 3px 3px 0;
     color: #000000;
     background-color: transparent;
     border: none;

@@ -183,7 +183,7 @@ exports.ScriptResultsView = Component.specialize({
     },
 
     deleteResults: {
-        value: function(event) {
+        value: function() {
             // Verify that at least one element is selected
             var atLeastOneSelected = this.isAtLeastOneSelected();
             if (!atLeastOneSelected) {
@@ -205,22 +205,23 @@ exports.ScriptResultsView = Component.specialize({
             }));
 
             var self = this;
-            xhr.addEventListener("load", function(evt) {
+            xhr.addEventListener("load", function() {
                 var offset = 0;
-                for (var res in selectedResults) {
-                    self.templateObjects.resultDetailsRepetition.content.splice(selectedResults[res].index - offset, 1);
+                console.log(selectedResults);
+                selectedResults.forEach(function(res) {
+                    self.templateObjects.resultDetailsRepetition.content.splice(res.index - offset, 1);
                     offset++;
-                }
-                
-                for (var i in self.templateObjects.resultDetailsRepetition.content) {
-                    self.templateObjects.resultDetailsRepetition.content[i].selected = false;
-                }
+                });
+
+                self.templateObjects.resultDetailRepetition.content.forEach(function(resDetail) {
+                    resDetail.selected = true;
+                });
             });
         }
     },
 
     resultSelected: {
-        value: function(event) {
+        value: function() {
             var selectedStatus = this.isAtLeastOneSelected();
 
             this.templateObjects.selectAllBtn.label = selectedStatus ? "Deselect All" : "Select All";
@@ -231,7 +232,7 @@ exports.ScriptResultsView = Component.specialize({
         value: function(event) {
             var selectedStatus = !this.isAtLeastOneSelected();
 
-            this._results.forEach(function(elem, i) {
+            this._results.forEach(function(elem) {
                 elem.selected = selectedStatus;
             });
 
@@ -240,7 +241,7 @@ exports.ScriptResultsView = Component.specialize({
     },
 
     nextPage: {
-        value: function(event) {
+        value: function() {
             var self = this;
 
             self.currentPage = self._currentPage < self._totalPages ? self._currentPage + 1 : self._totalPages;
@@ -248,7 +249,7 @@ exports.ScriptResultsView = Component.specialize({
     },
 
     previousPage: {
-        value: function(event) {
+        value: function() {
             var self = this;
 
             self.currentPage = self.currentPage == 1 ? 1 : self.currentPage - 1;
@@ -304,7 +305,7 @@ exports.ScriptResultsView = Component.specialize({
         value: function(searchString, cb) {
             var self = this;
 
-            var metadataUrl = "/screening/api/v1/test_results/metadata?api_key=5150"
+            var metadataUrl = "/screening/api/v1/test_results/metadata?api_key=5150";
             if(searchString) {
                 metadataUrl += "&any=" + searchString;
             }

@@ -64,7 +64,7 @@ exports.ClickableText = Text.specialize({
         value: function() {
             var self = this;
             var clickListener = {
-                handleClick: function(event) {
+                handleClick: function() {
                     var testcaseNamePrompt = new TextPrompt();
                     testcaseNamePrompt.msg = "Enter new name";
                     testcaseNamePrompt.value = self._value.name;

@@ -353,7 +353,7 @@ module.exports = function(scriptsProvider, batchesProvider) {
 
         var scriptSources = [];
         for (var i in files) {
-            var filename = files[i]
+            var filename = files[i];
             if (filename.indexOf(".") == 0) {
                 continue;
             } // Skip hidden files
@@ -372,7 +372,7 @@ module.exports = function(scriptsProvider, batchesProvider) {
 
             if (!exclude_code) {
                 var contents = fs.readFileSync(SCRIPTS_PATH + files[i], 'utf8');
-                newScriptSource.code = contents
+                newScriptSource.code = contents;
             }
             scriptSources.push(newScriptSource);
         }
@@ -398,4 +398,4 @@ module.exports = function(scriptsProvider, batchesProvider) {
     }
 
     return app;
-}
+};

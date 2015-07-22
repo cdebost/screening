@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var friendlyNames = require("./friendly-names.js"),
     color = require("ansi-color").set;
 
-var BaseAgent = exports.BaseAgent = Object.create(Object, {
+exports.BaseAgent = Object.create(Object, {
     init: {
         value: function() {
             this.friendlyName = friendlyNames.getNext();

@@ -151,4 +151,4 @@ module.exports = function(batchesProvider) {
     }
 
     return app;
-}
+};

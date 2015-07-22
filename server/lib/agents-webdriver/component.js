@@ -138,7 +138,7 @@ WebDriverComponent.prototype._syncPrototype = function() {
                         self.setProperty(name, value);
                     },
                     enumerable: true,
-                    configurable: true,
+                    configurable: true
                 });
                 break;
         }

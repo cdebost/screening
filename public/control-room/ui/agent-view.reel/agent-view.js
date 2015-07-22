@@ -29,7 +29,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Component = require ("montage/ui/component").Component;
-var ScriptSource = require("core/script-source").ScriptSource;
 
 exports.AgentView = Component.specialize({
     _agent: {

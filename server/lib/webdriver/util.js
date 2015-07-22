@@ -61,13 +61,13 @@ var By = exports.By = {
     xpath: function(param){
         return {using: "xpath", "value": param}
     }
-}
+};
 
-var MOUSEBUTTON = exports.MOUSEBUTTON = {
+exports.MOUSEBUTTON = {
     LEFT: 0,
     MIDDLE: 1,
     RIGHT: 2
-}
+};
 
 var pshallow = exports.pshallow=function(obj){
     for (var i in obj){
@@ -88,7 +88,7 @@ var pshallow = exports.pshallow=function(obj){
             console.log("Error on: " + i);
         }
     }
-}
+};
 
 //shallow mixin
 var mix = exports.mix = function(){
@@ -99,7 +99,7 @@ var mix = exports.mix = function(){
         }
     }
     return base;
-}
+};
 
 //wonder if i should be doing this on my own?
 var strip = function strip(str){
@@ -110,7 +110,7 @@ var strip = function strip(str){
         }
     }
     return x.join('');
-}
+};
 
 var responseHandler = function (error, response, body) {
     const HTTP_204_NO_CONTENT = 204; // The server successfully processed the request, but is not returning any content.
@@ -136,23 +136,23 @@ var responseHandler = function (error, response, body) {
         }
         return ret;
     }
-}
+};
 
 var GETHeaders={
     accept: "application/json;charset=utf-8",
     "content-type": "application/json;charset=utf-8"
-}
+};
 
 var POSTHeaders={
     "accept": "application/json;charset=utf8",
     "content-type": "application/json;charset=utf8"
-}
+};
 var GET=exports.GET=function(request){
     var req= {
         url: request.url,
         method: "GET",
         headers: mix({},GETHeaders,{host: parseUrl(request.url).host}, request.headers)
-    }
+    };
 
     //print("GET " + req.url);
     var defer = Q.defer();
@@ -171,14 +171,14 @@ var GET=exports.GET=function(request){
         }
     });
     return defer.promise;
-}
+};
 
 var DELETE=exports.DELETE=function(request){
     var req= {
         url: request.url,
         method: "DELETE",
         headers: mix({},GETHeaders,{host: parseUrl(request.url).host}, request.headers)
-    }
+    };
 
     var defer = Q.defer();
     xhr(req, function(error, response, body){
@@ -196,7 +196,7 @@ var DELETE=exports.DELETE=function(request){
         }
     });
     return defer.promise;
-}
+};
 
 /*
 This entire method is re-implemented using only node's http client library, there's a problem
@@ -247,7 +247,7 @@ var POST = exports.POST = function(request) {
         path: parsedUrl.pathname + (parsedUrl.search || "") + (parsedUrl.hash || ""),
         method: "POST",
         headers: mix({}, POSTHeaders, {host: parsedUrl.host}, request.headers)
-    }
+    };
 
     // Fix the body
     if(typeof(request.body) === "object") {
@@ -266,7 +266,7 @@ var POST = exports.POST = function(request) {
         res.on('data', function(chunk) {
             fullBody += chunk;
         });
-        res.on('end', function(chunk) {
+        res.on('end', function() {
             var ret = responseHandler(null, res, fullBody);
 
             if (ret.statusCode && ret.statusCode >= 400) {
@@ -295,4 +295,4 @@ var POST = exports.POST = function(request) {
     httpReq.end();
 
     return defer.promise;
-}
+};

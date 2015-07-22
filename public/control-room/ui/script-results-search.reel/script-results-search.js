@@ -78,7 +78,7 @@ exports.ScriptResultsSearch = Component.specialize({
     },
 
     searchAction: {
-        value: function(event) {
+        value: function() {
             var newEvent = document.createEvent("CustomEvent");
                 newEvent.initEvent("refreshResults", true, false);
                 newEvent.searchString = this.resultsSearchBox.value;
@@ -88,7 +88,7 @@ exports.ScriptResultsSearch = Component.specialize({
     },
 
     toggleSearchOptions: {
-        value: function(event) {
+        value: function() {
             this.searchOptionsVisible = !this._searchOptionsVisible;
         }
     }

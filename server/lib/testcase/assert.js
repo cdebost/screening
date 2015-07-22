@@ -42,7 +42,7 @@ function cleanString(s){
  * @param {any} value is what you are looking for
  * @param {String} msg message associated with the call
  */
-var assertContains = exports.assertContains = function(collection, value, msg){
+var assertContains = exports.assertContains = function(collection, value){
     return cleanString(collection).indexOf(cleanString(value))!=-1
 };
 
@@ -61,7 +61,7 @@ var assertNotContains = exports.assertContainsNot = exports.assertNotContains = 
  * @param {any} actualValue
  * @param {String} expectedValue
  */
-var assertEqual = exports.assertEqual = exports.assertEquals = function(expectedValue, actualValue, msg){
+var assertEqual = exports.assertEqual = exports.assertEquals = function(expectedValue, actualValue){
     // There are (at least) two space-characters (with charcode 32 and 160), unify them before comparing.
     return cleanString(JSON.stringify(actualValue)) == cleanString(JSON.stringify(expectedValue));
 };
@@ -81,7 +81,7 @@ var assertNotEqual = exports.assertEqualsNot = exports.assertNotEquals = exports
  * @param {any} actualValue
  * @param {String} expectedValue
  */
-var assertStartsWith = exports.assertStartsWith = function(expectedValue, actualValue, msg){
+var assertStartsWith = exports.assertStartsWith = function(expectedValue, actualValue){
     return cleanString(actualValue).indexOf(cleanString(expectedValue))==0;
 };
 var assertStartsNotWith = exports.assertStartsNotWith = function(expectedValue, actualValue, msg){
@@ -93,7 +93,7 @@ var assertStartsNotWith = exports.assertStartsNotWith = function(expectedValue, 
  * @param {any} actualValue
  * @param {String} expectedValue
  */
-var assertEndsWith = exports.assertEndsWith = function(expectedValue, actualValue, msg){
+var assertEndsWith = exports.assertEndsWith = function(expectedValue, actualValue){
     return cleanString(actualValue).substr(-cleanString(expectedValue).length) == cleanString(expectedValue);
 };
 var assertEndsNotWith = exports.assertEndsNotWith = function(expectedValue, actualValue, msg){
@@ -105,7 +105,7 @@ var assertEndsNotWith = exports.assertEndsNotWith = function(expectedValue, actu
  * @param {any} actualValue
  * @param {String} expectedValue
  */
-var assertLess = exports.assertLess = function(expectedValue, actualValue, msg){
+var assertLess = exports.assertLess = function(expectedValue, actualValue){
     if (!isNaN(parseFloat(expectedValue, 10)) && !isNaN(parseFloat(actualValue, 10))){
         return parseFloat(actualValue, 10) < parseFloat(expectedValue, 10);
     } else {
@@ -133,7 +133,7 @@ var assertLessOrEqual = exports.assertLessOrEqual = function(){
  * @param {any} actualValue
  * @param {String} expectedValue
  */
-var assertBetween = exports.assertBetween = function(expectedValue, actualValue, message){
+var assertBetween = exports.assertBetween = function(expectedValue, actualValue){
     var min = expectedValue[0];
     var max = expectedValue[1];
     if (!isNaN(parseFloat(expectedValue[0])) && !isNaN(parseFloat(expectedValue[1]))){
@@ -145,14 +145,14 @@ var assertBetween = exports.assertBetween = function(expectedValue, actualValue,
 
 var assertNotBetween = exports.assertNotBetween = function(expectedValue, actualValue, message){
     return !assertBetween.apply(this, arguments);
-}
+};
 
 /**
  * @param {Array(2)} expectedValue, The first value is the value, the second the offset.
  * @param {any} actualValue
  * @param {String} expectedValue
  */
-var assertPrecision = exports.assertPrecision = function(expectedValue, actualValue, message){
+var assertPrecision = exports.assertPrecision = function(expectedValue, actualValue){
     var middle = expectedValue[0];
     var offset = Math.abs(expectedValue[1]); // Ensure its a positive number (a negative offset would make no sense - saving the user here :)).
     return assertGreater(middle-offset, actualValue) && assertLess(middle+offset, actualValue);
@@ -169,7 +169,7 @@ var assertNotPrecision = exports.assertNotPrecision = function(expectedValue, ac
  * @param {any} actualValue
  * @param {String} expectedValue
  */
-var assertTrue = exports.assertTrue = function(actualValue, msg){
+var assertTrue = exports.assertTrue = function(actualValue){
     return !!actualValue;
 };
 
@@ -186,7 +186,7 @@ var assertFalse = exports.assertFalse = function(){
  * @param {any} actualValue
  * @param {String} expectedValue
  */
-var assertEmpty = exports.assertEmpty = function(actualValue, msg){
+var assertEmpty = exports.assertEmpty = function(actualValue){
     return !actualValue;
 };
 
