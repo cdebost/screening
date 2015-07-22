@@ -57,6 +57,36 @@ exports.ScriptResultsView = Component.specialize({
         value: "/screening/api/v1/test_results?api_key=5150"
     },
 
+    selectAllButton: {
+        serializable: true,
+        enumerable: false,
+        value: null
+    },
+
+    currentPageTextField: {
+        serializable: true,
+        enumerable: false,
+        value: null
+    },
+
+    previousPageButtonTop: {
+        serializable: true,
+        enumerable: false,
+        value: null
+    },
+
+    nextPageButtonTop: {
+        serializable: true,
+        enumerable: false,
+        value: null
+    },
+
+    scriptResultsSearch: {
+        serializable: true,
+        enumerable: false,
+        value: null
+    },
+
     results: {
         enumerable: true,
         get: function() {
@@ -115,6 +145,16 @@ exports.ScriptResultsView = Component.specialize({
             this._totalPages = parseInt(value);
 
             this.templateObjects.currentPage.element.setAttribute("max", this._totalPages);
+        }
+    },
+
+    templateDidLoad: {
+        value: function() {
+            var self = this;
+
+            self.calculateTotalPages(null, function() {
+                self.currentPage = 1;
+            });
         }
     },
 
@@ -215,43 +255,12 @@ exports.ScriptResultsView = Component.specialize({
         }
     },
 
-    selectAllButton: {
-        serializable: true,
-        enumerable: false
-    },
-
-    currentPageTextField: {
-        serializable: true,
-        enumerable: false
-    },
-
-    previousPageButtonTop: {
-        serializable: true,
-        enumerable: false
-    },
-
-    nextPageButtonTop: {
-        serializable: true,
-        enumerable: false
-    },
-
-    scriptResultsSearch: {
-        serializable: true,
-        enumerable: false
-    },
-
     handleRefreshResults: {
         value: function(event) {
             var self = this;
 
-            var testResultsUrl = self._baseResultsUrl;
-            if (event.searchString) {
-                testResultsUrl += "&any=" + event.searchString;
-            }
-
             self.calculateTotalPages(event.searchString, function() {
                 self.currentPage = 1;
-                self.renderResults(testResultsUrl);
             });
         }
     },
@@ -262,11 +271,10 @@ exports.ScriptResultsView = Component.specialize({
             var xhr = new XMLHttpRequest();
 
             // Clear all the results from the table
-            while (self._results.pop());
+            while (self._results.pop()) {}
 
             // Add pagination support
             testResultsUrl += "&limit=" + self._pageSize + "&skip=" + ((self._currentPage - 1) * self._pageSize);
-            console.log(testResultsUrl);
 
             xhr.onload = function(event) {
                 // Parse the response from /test_results
@@ -285,20 +293,10 @@ exports.ScriptResultsView = Component.specialize({
                         resultUrl: "script-result.html?" + res._id
                     });
                 });
-            }
+            };
 
             xhr.open("GET", testResultsUrl);
             xhr.send();
-        }
-    },
-
-    templateDidLoad: {
-        value: function() {
-            var self = this;
-
-            self.calculateTotalPages(null, function() {
-                self.currentPage = 1;
-            });
         }
     },
 
@@ -317,7 +315,7 @@ exports.ScriptResultsView = Component.specialize({
 
                 self.totalPages = Math.ceil(data.count / self.pageSize);
                 cb();
-            }
+            };
             xhr.open("GET", metadataUrl);
             xhr.send();
         }
