@@ -80,14 +80,6 @@ var getStackTraceByErrorStack = exports.getStackTraceByErrorStack = function(sta
         }
     }
     return stackTrace;
-
-    // TODO: this is never called??? Remove???
-    // Replace all characters other than letters and numbers by a "." to not break the dynamically created regexp.
-    var lineNoMatch = stackLines[foundAt].match(/:([\d]+):([\d]+)/);
-    if (wasFound && lineNoMatch && lineNoMatch.length && lineNoMatch.length>=fileOffset){
-        lineCol = [parseInt(lineNoMatch[1], 10), parseInt(lineNoMatch[2], 10)];
-    }
-    return lineCol;
 };
 
 

@@ -83,7 +83,7 @@ TestcaseRunner.prototype.executeTestFile = function(testFile, desiredCaps) {
     fs.readFile(testFile, "utf8", function(err, data) {
         self.executeTest(data, desiredCaps);
     });
-}
+};
 
 /**
  * Executes a script string.
@@ -106,7 +106,7 @@ TestcaseRunner.prototype.executeTest = function(testScript, desiredCaps, options
     }
 
     // add the result to our central repository
-    this.resultsProv.upsert(result.get(), function(err, object) {
+    this.resultsProv.upsert(result.get(), function(err) {
         if (err) throw err;
     });
     return result.testcase.id;
@@ -247,7 +247,6 @@ TestcaseRunner.prototype._executeWebdriverTestAsync = function(testScript, agent
  * Execute the given testcase source code on a given agent.
  */
 TestcaseRunner.prototype._executeTestInVm = function(source, variables, result, agent, scriptObject, sync){
-    var self = this;
     // We have to execute test-scripts from the filesystem to get line-numbers.
     var decoratedAsserts = assertDecorator.initSync(result, scriptObject, sync);
 
@@ -308,7 +307,7 @@ TestcaseRunner.prototype.finalize = function(agentId, result) {
     // Write the results to the DB
     result.finalize();
 
-    this.resultsProv.upsert(result.get(), function(err, object) {
+    this.resultsProv.upsert(result.get(), function(err) {
         if (err) throw err;
     });
 

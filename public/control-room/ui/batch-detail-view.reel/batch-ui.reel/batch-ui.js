@@ -40,7 +40,7 @@ exports.BatchUi = Component.specialize(/** @lends BatchUi# */ {
                     script.variables.forEach(function(variable) {
                         variable.value = variable.defaultValue;
                     });
-                var newStep = self._addBatchItem(script.name, script.variables);
+                self._addBatchItem(script.name, script.variables);
 
                 self.saveBatch();
             });
@@ -104,7 +104,7 @@ exports.BatchUi = Component.specialize(/** @lends BatchUi# */ {
             if (batch.scripts) {
                 var req = new XMLHttpRequest();
                 req.open("GET", "/screening/api/v1/scripts?api_key=5150", true);
-                req.onload = function (event) {
+                req.onload = function () {
                     var sources = JSON.parse(this.responseText);
 
                     // Create a dictionary that links script names to their variable definitions

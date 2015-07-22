@@ -371,7 +371,7 @@ var EventUtility = Object.create(Object, {
                 var offset = webkitConvertPointFromPageToNode(element, new WebKitPoint(event.pageX,event.pageY));
                 return [offset.x, offset.y];
             } else {
-                var offsetX = event.pageX;
+                var offsetX = event.pageX,
                     offsetY = event.pageY;
 
                 while(element) {

@@ -50,7 +50,7 @@ var chromedriver = {
         this.process.kill('SIGHUP');
         return this;
     }
-}
+};
 // chromedriver.start();
 
 httpProxy.createServer(function(req, res, proxy) {

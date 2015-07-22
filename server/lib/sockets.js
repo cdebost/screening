@@ -28,8 +28,6 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var sio = require("socket.io");
-
 var fs = require('fs');
 
 
@@ -60,7 +58,7 @@ exports.setupSocketIO = function(httpServer, agentPool, screeningVersion) {
 
 			socket.on("disconnect", function() {
 				console.log("Client disconnected");
-			})
+			});
 			callback(screeningVersion, agentPool.getAgents()/*, listAvailableTests()*/);
 		});
 
@@ -72,4 +70,4 @@ exports.setupSocketIO = function(httpServer, agentPool, screeningVersion) {
 
 	// attaching our socket.io port here for control-room communication
 	agentPool.io = io;
-}
+};

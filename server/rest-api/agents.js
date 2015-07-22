@@ -55,7 +55,7 @@ module.exports = function(agentPool, testcaseRunner, scriptsProvider, batchesPro
             default:
                 return Boolean(string);
         }
-    }
+    };
 
     /**
      * GETs all the agents connected to this server
@@ -392,4 +392,4 @@ module.exports = function(agentPool, testcaseRunner, scriptsProvider, batchesPro
     });
 
     return app;
-}
+};

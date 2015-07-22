@@ -65,7 +65,7 @@ var WebdriverElement = exports.WebdriverElement = function(agent, element){
  * @param {String} evtName The event to be fired, such as "mousedown", "click", etc.
  * @param {Object} params The parameters that will be set for the event, like "clientX", "keyIdentifier", etc.
  */
-WebdriverElement.prototype.dispatchEvent = Warning.deprecateApi(function(evtName, params){
+WebdriverElement.prototype.dispatchEvent = Warning.deprecateApi(function(){
     // I have no idea how this used to work! There doesn't seem to be any code that supports it...
     //throw new Error("API not yet implemented");
     return this;

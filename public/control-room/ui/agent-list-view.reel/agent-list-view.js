@@ -30,8 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Component = require ("montage/ui/component").Component,
     Popup = require ("matte/ui/popup/popup.reel").Popup,
-    Alert = require ("matte/ui/popup/alert.reel").Alert,
-    ScriptSource = require("core/script-source").ScriptSource;
+    Alert = require ("matte/ui/popup/alert.reel").Alert;
 
 exports.AgentListView = Component.specialize({
     agentController: {
@@ -50,14 +49,13 @@ exports.AgentListView = Component.specialize({
 
     templateDidLoad: {
         value: function() {
-            var self = this;
             this.webdriverDialog.addEventListener("message.ok", function(event) {
                 var req = new XMLHttpRequest();
                 req.open("POST", "/screening/api/v1/agents/webdriver?api_key=5150", true);
                 req.setRequestHeader("Content-Type", "application/json");
-                req.onreadystatechange = function(aEvt) {
+                req.onreadystatechange = function() {
                     if(req.readyState == 4 && req.status >= 300) {
-                        var resp = JSON.parse(req.response);
+                        var resp = JSON.parse(String(req.response));
                         Alert.show(resp.error);
                     }
                 };
@@ -73,5 +71,5 @@ exports.AgentListView = Component.specialize({
             popup.modal = true;
             popup.show();
         }
-    },
+    }
 });

@@ -117,7 +117,7 @@ var Sync = exports.Sync = Object.create(Object, {
      * @return {Object} The result of the synchronous call
      */
     once: {
-        value: function(syncFunction, resultCallback) {
+        value: function(syncFunction) {
             var result;
             if(this._resultStack.length > this._resultOffset) {
                 this._resultOffset++;
@@ -171,6 +171,6 @@ var Sync = exports.Sync = Object.create(Object, {
             // Call the callback to notify the system that we've finished successfully
             this._defer.resolve(result);
         }
-    },
+    }
 
 });

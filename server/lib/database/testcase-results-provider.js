@@ -73,7 +73,7 @@ TestcaseResultsProvider.prototype = Object.create(MongoDbProvider.prototype, {
             var keywords = optionsAndKeywords.keywords;
 
             self._getSelfCollection(function(err, resultsCollection) {
-                if (err) cb(err)
+                if (err) cb(err);
                 else {
                     // Construct query dateRange
                     var dateRange = {};

@@ -38,7 +38,7 @@ var WebElement = exports.WebElement = function(el, session){
     this.rawElement = el;
     this.session = session;
     this.elementUrl = this.session.sessionUrl + "/element/" + this.ELEMENT;
-}
+};
 
 WebElement.prototype = {
     toString: function(){
@@ -50,7 +50,6 @@ WebElement.prototype = {
         });
     },
     findElement: function(query){
-        var _self=this;
         return POST({
             url: this.elementUrl + "/element",
             body: JSON.stringify(query)
@@ -173,4 +172,4 @@ WebElement.prototype = {
             body: JSON.stringify({x: x, y: y})
         });
     }
-}
+};

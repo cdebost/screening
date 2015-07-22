@@ -86,7 +86,7 @@ WebDriverAgent.prototype.getSession = function() {
  * @function module:screening/agent.WebDriverAgent#endTest
  * @param {String} message Message to log about why the test was ended.
  */
-WebDriverAgent.prototype.endTest = function(message){
+WebDriverAgent.prototype.endTest = function(){
     var self = this;
     return this.sync.promise(function() {
         return self.session.close(); // TODO: How is the message passed back to the results?
@@ -256,9 +256,9 @@ WebDriverAgent.prototype.doesElementExist = function(selector){
         var defer = Q.defer();
         var xpathQuery = self._getXPathQuery(selector);
 
-        self.session.findElement(by.xpath(xpathQuery)).then(function(element) {
+        self.session.findElement(by.xpath(xpathQuery)).then(function() {
             defer.resolve(true);
-        }, function(err) {
+        }, function() {
             defer.resolve(false);
         });
         return defer.promise;

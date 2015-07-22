@@ -95,7 +95,8 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
             this.batchNameField.addPathChangeListener("value", function (event) {
                 if (event && self.batchSource && self.batchSource.name !== self.batchNameField.value) {
                     // Save if the name has not changed in one second
-                    setTimeout(function(lastInput) {
+                    var lastInput = self.batchNameField.value;
+                    setTimeout(function() {
                         if (self.batchSource.name === self.batchNameField.value) {
                             return;
                         }
@@ -103,7 +104,7 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
                         if (lastInput === self.batchNameField.value) {
                             self.saveBatch();
                         }
-                    }, 1000, self.batchNameField.value);
+                    }, 1000);
                 }
             }, false);
 
@@ -111,7 +112,8 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
             this.batchTags.addPathChangeListener("value", function (event) {
                 if (event && self.batchSource && self.batchSource.displayTags !== self.batchTags.value) {
                     // Save if the tags have not changed in one second
-                    setTimeout(function (lastInput) {
+                    var lastInput = self.batchTags.value;
+                    setTimeout(function () {
                         if (self.batchSource.displayTags === self.batchTags.value) {
                             return;
                         }
@@ -119,7 +121,7 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
                         if (lastInput === self.batchTags.value) {
                             self.saveBatch();
                         }
-                    }, 1000, self.batchTags.value);
+                    }, 1000);
                 }
             }, false);
         }
@@ -258,7 +260,7 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
                 // OK
                 var req = new XMLHttpRequest();
                 req.open("DELETE", "/screening/api/v1/batches/" + self.batchSource.id + "?api_key=5150", true);
-                req.onload = function(event) {
+                req.onload = function() {
                     self._dispatchDeleted();
                 };
                 req.send(null);
@@ -272,7 +274,7 @@ exports.BatchDetailView = Component.specialize(/** @lends BatchDetailView# */ {
     _dispatchDeleted: {
         value: function() {
             var event = document.createEvent("CustomEvent");
-            event.initCustomEvent("batchDeleted", true, false);
+            event.initCustomEvent("batchDeleted", true, false, {});
             event.batch = this.batchSource;
             document.dispatchEvent(event);
 

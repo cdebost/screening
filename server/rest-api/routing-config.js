@@ -56,7 +56,7 @@ exports.apiKeyAuth = function(app) {
         req.key = key;
         next();
     });
-}
+};
 
 exports.init = function(app) {
     app.use(apiV1Root, function(err, req, res, next) {
@@ -66,7 +66,7 @@ exports.init = function(app) {
             res.statusCode = HTTP_500_INTERNAL_SERVER_ERROR;
         }
 
-        var errorResponse = { error: err.message }
+        var errorResponse = { error: err.message };
         if(err.stack) {
             errorResponse.stack = err.stack;
         }
@@ -77,7 +77,7 @@ exports.init = function(app) {
     app.use(apiV1Root, function(req, res) {
         res.send({ error: "Resource not found" }, HTTP_404_NOT_FOUND);
     });
-}
+};
 
 /**
  * Used to define if an app.{http-verb} method supports a given MIME type,
@@ -93,6 +93,6 @@ exports.provides = function provides() {
         }
         next('route');
     }
-}
+};
 
 exports.apiRoot = apiV1Root;

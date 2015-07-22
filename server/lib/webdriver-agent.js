@@ -35,7 +35,7 @@ var BaseAgent = require("./base-agent.js").BaseAgent,
     fs = require("fs"),
     Q = require("q");
 
-var WebDriverAgent = exports.WebDriverAgent = Object.create(BaseAgent, {
+exports.WebDriverAgent = Object.create(BaseAgent, {
 
     init: {
         value: function(capabilities, url, io) {
@@ -56,7 +56,7 @@ var WebDriverAgent = exports.WebDriverAgent = Object.create(BaseAgent, {
 
     isAvailable: {
         value: function(cb) {
-            simpleRequest(this.url + "/status", function (error, response, body) {
+            simpleRequest(this.url + "/status", function (error, response) {
                 if(error || response.statusCode != 200) {
                     cb(false);
                 }
@@ -181,7 +181,6 @@ var WebDriverAgent = exports.WebDriverAgent = Object.create(BaseAgent, {
     pauseRecording: {
         value: function(callback) {
             var socket = this.socket;
-            var self = this;
 
             socket.emit("pauseRecord", callback);
 
@@ -198,7 +197,6 @@ var WebDriverAgent = exports.WebDriverAgent = Object.create(BaseAgent, {
     resumeRecording: {
         value: function(callback) {
             var socket = this.socket;
-            var self = this;
 
             socket.emit("resumeRecord", callback);
         }

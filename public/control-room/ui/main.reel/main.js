@@ -168,14 +168,14 @@ exports.Main = Component.specialize(/** @lends Main# */ {
                 self.agents.clear();
                 self.agents.clearSelection();
             }
-            this.socket.emit("initDriver", function(version, agentsInfo, availableTests) {
+            this.socket.emit("initDriver", function(version, agentsInfo) {
                 self.serverVersion = version;
                 var newAgentsArray = [];
-                for (var i in agentsInfo) {
+                agentsInfo.forEach(function(info) {
                     var agent = AgentBrowser.create();
-                    agent.info = agentsInfo[i];
+                    agent.info = info;
                     newAgentsArray.push(agent);
-                }
+                });
                 self.agents.content = newAgentsArray;
                 self.agents.selection = self.agents.content.slice();
             });
@@ -230,5 +230,5 @@ exports.Main = Component.specialize(/** @lends Main# */ {
         value: function() {
             document.location = "/screening/control-room/preferences.html";
         }
-    },
+    }
 });

@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 var Session = require("../webdriver/session.js").Session;
 
-var createWebdriverSession = exports.createWebdriverSession = function(url) {
+exports.createWebdriverSession = function(url) {
     var session = new Session({url: url});
     session.init = function(caps, cb){
         caps = caps ? caps : {};
@@ -39,11 +39,11 @@ var createWebdriverSession = exports.createWebdriverSession = function(url) {
             console.error("**** WEBDRIVER START SESSION REJECTED! *****", err);
             cb(err);
         });
-    }
+    };
     return session;
 };
 
-var resultFilter = exports.resultFilter = function(ret) {
+exports.resultFilter = function(ret) {
     return ret.value;
 };
 

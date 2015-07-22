@@ -32,7 +32,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 .scriptSource {
     margin: 0;
-    padding: 0;
     list-style: none;
     background-color: hsl(198,50%,96%);
     border-top: 1px solid hsla(0,0%,100%,1);

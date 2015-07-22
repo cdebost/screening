@@ -43,19 +43,19 @@ var pshallow= require("./util").pshallow;
 
 var Session = exports.Session = function(options){
     this.options = options;
-}
+};
 
 Session.prototype = {
     startSession: function(desiredCapabilities) {
         var req = {
             url: this.options.url + "/session",
             body: JSON.stringify({desiredCapabilities: desiredCapabilities})
-        }
+        };
 
         var self = this;
         return when(POST(req), function(results) {
             if (results.status == '0') {
-                var sessionUrl = self.sessionUrl = self.options.url + "/session/" + results.sessionId;
+                self.sessionUrl = self.options.url + "/session/" + results.sessionId;
                 return when(GET({url: self.sessionUrl}), function(response) {
                     // Validate that the session was created on the desired browser
                     if (desiredCapabilities.browserName !== response.value.browserName) {
@@ -367,6 +367,6 @@ Session.prototype = {
         return POST({
             url: this.sessionUrl + "/dismiss_alert"
         });
-    },
-}
+    }
+};
 

@@ -32,7 +32,7 @@ var Montage = require("montage/core/core").Montage;
 
 exports.AgentBrowser = Montage.specialize({
     info: {
-        value: null,
+        value: null
     },
 
     _testing: {
@@ -52,7 +52,7 @@ exports.AgentBrowser = Montage.specialize({
     _messages: {
         enumerable: false,
         value: [],
-        distinct: true,
+        distinct: true
     },
 
     messages: {
@@ -96,7 +96,7 @@ exports.AgentBrowser = Montage.specialize({
     },
 
     clearLog: {
-        value: function(message) {
+        value: function() {
             this.messages = [];
             this.warnCount = 0;
             this.errorCount = 0;

@@ -60,7 +60,6 @@ exports.PreferenceView = Component.specialize({
             } catch (e) {
                 console.error(e);
                 this._storageIssue = true;
-                return;
             }
         }
     },
@@ -72,7 +71,7 @@ exports.PreferenceView = Component.specialize({
 
                 var storageMessage = document.createElement('div');
                 storageMessage.setAttribute('class', 'storageIssue');
-                storageMessage.innerText = "There is an issue with local storage, maybe you have your cookies disabled?"
+                storageMessage.innerText = "There is an issue with local storage, maybe you have your cookies disabled?";
 
                 this.preferenceRepetition.element.parentElement.appendChild(storageMessage);
             }

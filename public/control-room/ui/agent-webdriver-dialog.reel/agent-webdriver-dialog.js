@@ -30,7 +30,6 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 var Component = require("montage/ui/component").Component;
-var Notifier = require("matte/ui/popup/notifier.reel").Notifier;
 
 exports.AgentWebdriverDialog = Component.specialize({
     hasTemplate: {value: true},
@@ -53,13 +52,14 @@ exports.AgentWebdriverDialog = Component.specialize({
     },
 
     handleOkAction: {
-        value: function(event) {
+        value: function() {
             var self = this;
 
             var webdriverParams = {
                 url: self.url,
                 browserName: self.browserName.contentController.selection[0].value
             };
+            console.log(self.browserName);
 
             var dispatchAndHide = function() {
                 var anEvent = document.createEvent("CustomEvent");

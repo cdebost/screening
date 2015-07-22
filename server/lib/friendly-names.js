@@ -60,9 +60,9 @@ var friendlyNameId = 0;
 
 // Honestly this serves no legitimate purpose whatsoever. But it's more fun to get pseudo-random names!
 function shuffle(v) {
-    for(var j, x, i = v.length; i; j = parseInt(Math.random() * i), x = v[--i], v[i] = v[j], v[j] = x);
+    for(var j, x, i = v.length; i; j = parseInt(Math.random() * i), x = v[--i], v[i] = v[j], v[j] = x) {}
     return v;
-};
+}
 friendlyNames = shuffle(friendlyNames);
 // </goofing_off>
 
@@ -79,4 +79,4 @@ exports.getNext = function() {
    friendlyNameId++;
 
    return name + (suffix ? " " + suffix : "");
-}
+};

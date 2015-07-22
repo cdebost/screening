@@ -6,7 +6,7 @@
 
 .BatchStepDialog fieldset {
     padding: 5px;
-    border: 0px solid #333;
+    border: 0 solid #333;
 }
 
 .BatchStepDialog fieldset.buttons button {

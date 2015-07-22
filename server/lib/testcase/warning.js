@@ -42,7 +42,6 @@ var Warning = exports.Warning = {};
  * @param {String} msg An optional message that will be appended to the warning.
  */
 Warning.deprecateApi = function(functionToCall, deprecatedFunctionName, msg){
-    var name = functionToCall.name;
     msg = msg ? msg : "";
 
     return function() {

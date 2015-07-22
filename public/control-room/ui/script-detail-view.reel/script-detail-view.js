@@ -229,7 +229,7 @@ exports.ScriptDetailView = Component.specialize({
                 lineNumbers: true,
                 gutter:true,
                 viewportMargin: Infinity,
-                onChange: function(codeMirror) {
+                onChange: function() {
                     self.needsSave = true;
                 }
             };
@@ -275,7 +275,7 @@ exports.ScriptDetailView = Component.specialize({
                 }
             }, false);
 
-            this.urlPrompt.addEventListener("message.ok", function(event) {
+            this.urlPrompt.addEventListener("message.ok", function() {
                 self.urlPromptOk();
             });
 
@@ -294,7 +294,7 @@ exports.ScriptDetailView = Component.specialize({
                 var navigateAwayMessage = "Your changes to the script have not been saved yet.";
 
                 return self.needsSave ? navigateAwayMessage : null;
-            }
+            };
 
             document.addEventListener("keydown", this);
         }
@@ -330,11 +330,7 @@ exports.ScriptDetailView = Component.specialize({
 
     selectedAgentChanged: {
         value: function(newAgent) {
-            if (newAgent && newAgent.info.capabilities.browserName !== "chrome") {
-                this.recordButton.element.disabled = true;
-            } else  {
-                this.recordButton.element.disabled = false;
-            }
+            this.recordButton.element.disabled = (newAgent && newAgent.info.capabilities.browserName !== "chrome");
         }
     },
 
@@ -407,7 +403,7 @@ exports.ScriptDetailView = Component.specialize({
                 var req = new XMLHttpRequest();
                 req.open("DELETE", "/screening/api/v1/scripts/" + self.scriptSource.id + "?api_key=5150", true);
                 self.needsSave = false;
-                req.onload = function(event) {
+                req.onload = function() {
                     self._dispatchDeleted();
                 };
                 req.send(null);
@@ -557,7 +553,7 @@ exports.ScriptDetailView = Component.specialize({
             var self = this;
             var req = new XMLHttpRequest();
             req.open("DELETE", "/screening/api/v1/agents/" + agent.info.id + "/recording?api_key=5150", true);
-            req.onload = function(event) {
+            req.onload = function() {
                 var responseBody = JSON.parse(this.responseText);
                 self.appendCode(responseBody.source);
             };
@@ -585,7 +581,7 @@ exports.ScriptDetailView = Component.specialize({
             var self = this;
             var req = new XMLHttpRequest();
             req.open("PUT", "/screening/api/v1/agents/" + agent.info.id + "/recording/pause?api_key=5150", true);
-            req.onload = function(event) {
+            req.onload = function() {
                 var responseBody = JSON.parse(this.responseText);
                 self.appendCode(responseBody.source);
             };
@@ -599,7 +595,6 @@ exports.ScriptDetailView = Component.specialize({
             this._recordingPaused = false;
             this.pauseRecordButton.label = "Pause Recording";
 
-            var self = this;
             var req = new XMLHttpRequest();
             req.open("PUT", "/screening/api/v1/agents/" + agent.info.id + "/recording/resume?api_key=5150", true);
             req.send(null);
@@ -609,7 +604,7 @@ exports.ScriptDetailView = Component.specialize({
     _dispatchDeleted: {
         value: function() {
             var event = document.createEvent("CustomEvent");
-            event.initCustomEvent("scriptDeleted", true, false);
+            event.initCustomEvent("scriptDeleted", true, false, {});
             event.script = this.scriptSource;
             document.dispatchEvent(event);
 

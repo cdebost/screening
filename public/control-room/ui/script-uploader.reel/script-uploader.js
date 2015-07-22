@@ -29,7 +29,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Component = require ("montage/ui/component").Component,
-    ScriptSource = require("core/script-source").ScriptSource,
     Popup = require("matte/ui/popup/popup.reel").Popup,
     Alert = require("matte/ui/popup/alert.reel").Alert;
 
@@ -51,10 +50,10 @@ exports.ScriptUploader = Component.specialize({
     templateDidLoad: {
         value: function() {
             if(window.FileReader) {
-                document.addEventListener('dragover', this, false);
-                document.addEventListener('dragenter', this, false);
-                document.addEventListener('dragleave', this, false);
-                document.addEventListener('drop', this, false);
+                document.addEventListener('dragover', this.handleDragover.bind(this), false);
+                document.addEventListener('dragenter', this.handleDragenter.bind(this), false);
+                document.addEventListener('dragleave', this.handleDragleave.bind(this), false);
+                document.addEventListener('drop', this.handleDrop.bind(this), false);
 
                 this._drawText = this._defaultText;
             } else {
@@ -89,7 +88,7 @@ exports.ScriptUploader = Component.specialize({
     },
 
     handleDragleave: {
-        value: function(event) {
+        value: function() {
             this.element.classList.remove('dragover');
             this._drawText = this._defaultText;
             this.needsDraw = true;
@@ -126,7 +125,7 @@ exports.ScriptUploader = Component.specialize({
                             var scriptAddedMsg = (files.length === 1) ? "Your Script has been added" : "Your Scripts have been added";
 
                             if(event.target.status === 200){
-                                self._dispatchUploadEvent(event, script)
+                                self._dispatchUploadEvent(event, script);
 
                                 Alert.show(scriptAddedMsg, function() {
                                     // Maybe select the script in the future.
@@ -149,7 +148,7 @@ exports.ScriptUploader = Component.specialize({
         enumerable: false,
         value: function(eventObj, script) {
             var event = document.createEvent("CustomEvent");
-            event.initCustomEvent("uploadEvent", true, false);
+            event.initCustomEvent("uploadEvent", true, false, {});
             event.script = script;
             this.dispatchEvent(event);
         }

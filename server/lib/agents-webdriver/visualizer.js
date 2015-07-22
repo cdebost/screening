@@ -74,7 +74,7 @@ var visCss = [
     "    -webkit-transform: scale(1.0);",
     "    -webkit-transition-property: opacity, -webkit-transform;",
     "    -webkit-transition-duration: 0.2s, 0.2s;",
-    "}",
+    "}"
 ].join("\n");
 
 var visStyle = document.createElement('style');
@@ -98,7 +98,7 @@ function getTouchElement(touch) {
     touchDiv.style.left = touch.pageX + "px";
     touchDiv.style.top = touch.pageY + "px";
     return touchDiv;
-};
+}
 
 function getMouseElement(event) {
     var id = "screening-mouse-vis-id";
@@ -113,7 +113,7 @@ function getMouseElement(event) {
     mouseDiv.style.left = event.pageX + "px";
     mouseDiv.style.top = event.pageY + "px";
     return mouseDiv;
-};
+}
 
 // Visualize mouse input
 document.addEventListener("mousedown", function(event) {

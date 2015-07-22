@@ -58,8 +58,6 @@ exports.ScriptControllerDelegate = Montage.specialize({
 
     canAddNewItem: {
         value: function(callback) {
-            var self = this;
-
             if (this.scriptManager && this.scriptManager.scriptDetail.needsSave) {
                 Confirm.show("Your script has unsaved changes. Continuing will discard any unsaved changes. Do you wish to continue?", function() {
                     // OK

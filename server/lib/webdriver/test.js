@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 var Session = require("./session").Session;
-var by = require('./util').By
+var by = require('./util').By;
 var assert = require("assert");
 var when = require("q").when;
 
@@ -45,7 +45,7 @@ when(capabilities, function(capabilities){
     assert.equal(capabilities.value.browserName, browserName);
     var getUrl = session.get(url);
     return getUrl.then(function(){
-        return when(session.getCurrentUrl(), function(currentUrl){
+        return when(session.getCurrentUrl(), function(){
             return when(session.findElements(by.id("lst-ib")), function(el){
                 return when(el[0].setValue("hhhh"), function(){
                     return when(session.findElements(by.name("btnG")), function(el){

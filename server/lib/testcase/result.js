@@ -43,7 +43,7 @@ var Result = exports.Result = function(agent, testcase) {
     this.asserts = [];
     this.warnings = [];
     this._lastAssertResult = null;
-}
+};
 
 Result.prototype._cleanFileName = function(fileName) {
     var cleanedFileName = "";
@@ -54,7 +54,7 @@ Result.prototype._cleanFileName = function(fileName) {
         cleanedFileName = fileName.replace(path.normalize(path.join(__dirname, "../../sample_tests/")), "");
     }
     return cleanedFileName;
-}
+};
 
 Result.prototype.reportException = function(exception) {
     // Currently we just support one failure!
@@ -84,18 +84,18 @@ Result.prototype.reportException = function(exception) {
 
     // Also inform the main server and the control-room about it.
     this.agent.processLog(this.exception);
-}
+};
 
 Result.prototype.reportAssert = function(assert) {
     this._lastAssertResult = assert.success;
     assert.fileName = this._cleanFileName(assert.fileName);
     this.asserts.push(assert);
-}
+};
 
 Result.prototype.reportWarning = function(warning) {
     // TODOz: any other manipulations on this?
     this.warnings.push(warning);
-}
+};
 
 Result.prototype.didLastAssertFail = function() {
     return this._lastAssertResult === false; // Only really false is a fail, null and stuff are not explicit enough!
@@ -103,16 +103,16 @@ Result.prototype.didLastAssertFail = function() {
 
 Result.prototype.finalize = function() {
     this.endTime = new Date();
-}
+};
 
 var isDate = function(object) {
     return Object.prototype.toString.call(object) === '[object Date]';
 };
 
 // Utility function to copy an object, but only allow it to iterate so many levels deep
-function deepCopy(src, maxDepth, filterKeys) {
+function deepCopy(src, maxDepth) {
     var type = typeof src,
-        key, value, dest;
+        key, dest;
 
     if(!src || type !== "object" || isDate(src)) { return src; }
 
@@ -166,5 +166,5 @@ Result.prototype.get = function() {
     ret.status = status;
 
     return ret;
-}
+};
 

@@ -33,7 +33,7 @@ var BSON = require('mongodb').BSONPure,
 
 var BatchesProvider = function(db) {
     this._db = db;
-}
+};
 
 BatchesProvider.prototype = Object.create(MongoDbProvider.prototype, {
     constructor: {

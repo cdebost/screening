@@ -59,7 +59,7 @@ var path = require('path'),
 // Get the Screening Version from package.json
 var packageJsonContents = fs.readFileSync(__dirname + "/package.json", "utf8");
 var packageJson = JSON.parse(packageJsonContents);
-const SCREENING_VERSION = exports.SCREENING_VERSION = packageJson.version;
+exports.SCREENING_VERSION = packageJson.version;
 
 var app = exports.app = express();
 exports.agentPool = agentPool;
@@ -101,8 +101,8 @@ exports.createServer = function(customMongoDbProvider) {
 
     // Check to see if a local Webdriver agent is available on the default port
     // when the server starts up. If we get a response, add it as an agent automatically.
-    var url = "http://localhost:9515"
-    simpleRequest(url + "/status", function (error, response, body) {
+    var url = "http://localhost:9515";
+    simpleRequest(url + "/status", function (error, response) {
         if (error || response.statusCode != 200) {
             // Fail silently, this isn't really a problem.
         } else {
@@ -113,4 +113,4 @@ exports.createServer = function(customMongoDbProvider) {
             console.log("Found a webdriver instance running at " + url + ". Added it as an Agent by default.");
         }
     });
-}
+};

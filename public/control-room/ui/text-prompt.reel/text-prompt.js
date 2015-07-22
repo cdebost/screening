@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Component = require("montage/ui/component").Component;
 
-var TextPrompt = exports.TextPrompt = Component.specialize({
+exports.TextPrompt = Component.specialize({
     hasTemplate: {value: true},
 
     headerEl: {
@@ -94,7 +94,7 @@ var TextPrompt = exports.TextPrompt = Component.specialize({
     },
 
     handleOkAction: {
-        value: function(event) {
+        value: function() {
             var anEvent = document.createEvent("CustomEvent");
             anEvent.initCustomEvent("message.ok", true, true, "Prompt result was OK");
 
@@ -104,7 +104,7 @@ var TextPrompt = exports.TextPrompt = Component.specialize({
     },
 
     handleCloseAction: {
-        value: function(event) {
+        value: function() {
             var anEvent = document.createEvent("CustomEvent");
             anEvent.initCustomEvent("message.close", true, true, "Prompt result was Cancel");
 

@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Db = require('mongodb').Db;
-var BSON = require('mongodb').BSONPure
+var BSON = require('mongodb').BSONPure;
 var Connection = require('mongodb').Connection;
 var Server = require('mongodb').Server;
 
@@ -240,16 +240,16 @@ MongoDbProvider.prototype = Object.create(Object, {
             var keywords = optionsAndKeywords.keywords;
 
             self._getSelfCollection(function(err, objectsCollection) {
-                if (err) cb(err)
+                if (err) cb(err);
                 else {
                     objectsCollection.find({}, options, function(err, cursor) {
-                        if (err) cb(err)
+                        if (err) cb(err);
                         else {
                             cursor.skip(keywords.skip || 0);
                             cursor.limit(keywords.limit || 0);
                             cursor.sort(keywords.sort);
                             cursor.toArray(function(err, objects) {
-                                if (err) cb(err)
+                                if (err) cb(err);
                                 else cb(null, objects);
                             });
                         }
@@ -292,12 +292,10 @@ MongoDbProvider.prototype = Object.create(Object, {
             self._getCollection("scripts", function(err, scriptsCollection) {
                 if (err) cb(err);
                 else {
-                    scriptsCollection.ensureIndex({name: 1}, {unique: true}, function(err, indexName) {
+                    scriptsCollection.ensureIndex({name: 1}, {unique: true}, function(err) {
                         if (err) {
                             console.error("Couldn't create index", err.message);
                             process.exit(1);
-                        } else {
-                            return;
                         }
                     })
                 }
