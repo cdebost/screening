@@ -48,6 +48,9 @@ var fs = require("fs"),
     mouseEnum = require('./agents-webdriver/util.js').Mouse,
     keyEnum = require('./agents-webdriver/util.js').Key,
 
+    // Socket Agent
+    SocketAgent = require('./agents-socket/agent.js').SocketAgent,
+
     // Actually we just import the assert.js, to generate the mapping code further down, that we inject in the test script,
     // no idea how to otherwise map methods to the inside-function scope, so we generate them.
     assertDecorator = require('../lib/testcase/assert-decorator.js'),
@@ -91,7 +94,7 @@ TestcaseRunner.prototype.executeTestFile = function(testFile, desiredCaps) {
  * @param {String} testScript a complete test script object, contains the code and name
  * @param {Object} desiredCaps which capabilities should the agent support
  * @param {Object} options will describe preferences during this run of the code (they do not persist)
- * @return void
+ * @return {Number} test case id
  */
 TestcaseRunner.prototype.executeTest = function(testScript, desiredCaps, options) {
     // TODO: extract the agents from the testscript
@@ -100,9 +103,15 @@ TestcaseRunner.prototype.executeTest = function(testScript, desiredCaps, options
 
     var result;
 
-    // If we are a webdriver agent, use the new backend
-    if(agent.type == agentTypes.WEBDRIVER) {
-        result = this._executeWebdriverTest(testScript, agent, options);
+    switch (agent.type) {
+        case agentTypes.WEBDRIVER:
+            result = this._executeWebdriverTest(testScript, agent, options);
+            break;
+        case agentTypes.SOCKET:
+            result = this._executeSocketTest(testScript, agent, options);
+            break;
+        default:
+            throw new Error("Unrecognized agent type", agent.type);
     }
 
     // add the result to our central repository
@@ -171,6 +180,40 @@ TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, opt
     return result;
 };
 
+TestcaseRunner.prototype._executeSocketTest = function (testScript, agent, options) {
+    var self = this;
+    var sync = Object.create(Sync).init();
+
+    // Validate that the passed testScript object contains code and name
+    if(!testScript.code || !testScript.name) throw new Error("testScript must be an object with code and name properties.");
+
+    // Create the result object
+    var result = this.createResult(agent.id, testScript.name, testScript.code);
+
+    // the options object can be manipulated in the test script
+    var scriptObject = new ScriptClass();
+    scriptObject.sync = sync;
+    for(var i in testScript.preferences) {
+        var pref = testScript.preferences[i];
+        scriptObject.setOption(pref.shortName, pref.value);
+    }
+    for(var i in options){
+        scriptObject.setOption(i, options[i]);
+    }
+
+    when(self._executeTestInVm(testScript.code, testScript.variables, result, new SocketAgent(agent, sync, scriptObject, result),
+        scriptObject, sync), function() {
+            // Socket.io hack -- for some reason the endTest message does not pass unless we first emit another message
+            agent.socket.emit("");
+            agent.socket.emit("endTest");
+            self.finalize(agent.id, result);
+        }
+    );
+
+    return result;
+};
+
+// TODO: Merge with executeTest
 TestcaseRunner.prototype.executeTestAsync = function(testScript, desiredCaps, options, result) {
     // TODO: extract the agents from the testscript
     var agent = this.agentPool.getAgentByCaps(desiredCaps);

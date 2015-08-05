@@ -70,24 +70,33 @@ exports.AgentView = Component.specialize({
     templateDidLoad: {
         value: function() {
             var self = this;
-            var clickListener = function(){
-                var xhr = new XMLHttpRequest();
-                var removeAgentUrl = "/screening/api/v1/agents/" + encodeURIComponent(self.agent.info.id) + "?api_key=5150";
-                xhr.open("DELETE", removeAgentUrl);
-                xhr.setRequestHeader("Content-Type", "application/json");
-                xhr.send();
-                self.needsDraw = false;
-                self.agentDelete.removeEventListener("click", clickListener, false);
-            };
-            this.agentDelete.addEventListener("click", clickListener, false);
+
+            if (this.agent && this.agent.info.type === "webdriver") {
+                var clickListener = function(){
+                    var xhr = new XMLHttpRequest();
+                    var removeAgentUrl = "/screening/api/v1/agents/" + encodeURIComponent(self.agent.info.id) + "?api_key=5150";
+                    xhr.open("DELETE", removeAgentUrl);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.send();
+                    self.needsDraw = false;
+                    self.agentDelete.removeEventListener("click", clickListener, false);
+                };
+                this.agentDelete.addEventListener("click", clickListener, false);
+            } else {
+                this.agentDelete.hidden = true;
+            }
 
             if (this.agent) {
                 //Set up the host string
-                var address = this.agent.info.address;
-                if(address.match(/^http:/)) {
-                    this.agentHostString = address.substring(7); // Cut out "http://"
-                } else {
-                    this.agentHostString = address;
+                if (this.agent.info.type === "webdriver") {
+                    var address = this.agent.info.address;
+                    if(address.match(/^http:/)) {
+                        this.agentHostString = address.substring(7); // Cut out "http://"
+                    } else {
+                        this.agentHostString = address;
+                    }
+                } else if (this.agent.info.type === "socket") {
+                    this.agentHostString = "socket";
                 }
 
                 this.agentHostElement.title = this.agentHostString;
