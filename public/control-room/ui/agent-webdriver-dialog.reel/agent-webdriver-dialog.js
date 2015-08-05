@@ -59,7 +59,6 @@ exports.AgentWebdriverDialog = Component.specialize({
                 url: self.url,
                 browserName: self.browserName.contentController.selection[0].value
             };
-            console.log(self.browserName);
 
             var dispatchAndHide = function() {
                 var anEvent = document.createEvent("CustomEvent");
