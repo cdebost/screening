@@ -28,10 +28,12 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var WebDriverAgent = require("./webdriver-agent.js").WebDriverAgent;
+var WebDriverAgent = require("./webdriver-agent.js").WebDriverAgent,
+    SocketAgent = require("./socket-agent.js").SocketAgent;
 
 var agentTypes = exports.agentTypes = {
-    WEBDRIVER: "webdriver"
+    WEBDRIVER: "webdriver",
+    SOCKET: "socket"
 };
 
 var WEBDRIVER_HEARTBEAT_TIME = 30*1000; // 30s
@@ -80,22 +82,34 @@ var AgentPool = Object.create(Object, {
         value: function(caps, config) {
             var agent;
             var self = this;
-            if(config.type == this.agentTypes.WEBDRIVER) {
-                agent = Object.create(WebDriverAgent).init(caps, config.url, this.io);
-                agent.type = config.type;
-                this.agents[agent.friendlyName] = agent;
-                // removing a webdriver agent when it is not available anymore
-                var heartbeatInterval = setInterval(function(){
-                    self.io.sockets.in("drivers").emit("heartBeat");
-                    agent.isAvailable(function(success){
-                        if(!success) {
-                            clearInterval(heartbeatInterval);
-                            console.log('Agent ' + agent.id + ' is no longer available. Removing.');
-                            self.removeAgent(agent.id);
-                        }
-                    });
-                }, WEBDRIVER_HEARTBEAT_TIME);
+
+            switch (config.type) {
+                case this.agentTypes.WEBDRIVER:
+                    agent = Object.create(WebDriverAgent).init(caps, config.url, this.io);
+
+                    // removing a webdriver agent when it is not available anymore
+                    var heartbeatInterval = setInterval(function(){
+                        self.io.sockets.in("drivers").emit("heartBeat");
+                        agent.isAvailable(function(success){
+                            if(!success) {
+                                clearInterval(heartbeatInterval);
+                                console.log('Agent ' + agent.id + ' is no longer available. Removing.');
+                                self.removeAgent(agent.id);
+                            }
+                        });
+                    }, WEBDRIVER_HEARTBEAT_TIME);
+                    break;
+                case this.agentTypes.SOCKET:
+                    agent = Object.create(SocketAgent).init(caps, config.socket, this.io);
+                    break;
+                default:
+                    throw new Error("Unrecognized agent type " + config.type);
+                    break;
             }
+
+            agent.type = config.type;
+            this.agents[agent.friendlyName] = agent;
+
             return agent;
         }
     },

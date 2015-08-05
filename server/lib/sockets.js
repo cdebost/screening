@@ -46,9 +46,10 @@ exports.setupSocketIO = function(httpServer, agentPool, screeningVersion) {
     }
 
 	io.sockets.on("connection", function(socket) {
-		console.log("Client Connected");
-
+        // Control room
 		socket.on("initDriver", function(callback) {
+            console.log("Client Connected");
+
 			/*if(socket.manager.rooms["/drivers"] == null ||
                 socket.manager.rooms["/drivers"].indexOf(socket.id) == -1) {
                 socket.join("drivers");
@@ -65,6 +66,24 @@ exports.setupSocketIO = function(httpServer, agentPool, screeningVersion) {
 		socket.on("initRecorder", function(id) {
             var agent = agentPool.getAgentById(id);
             agent.recorderReady(socket);
+        });
+
+        socket.on("initSocketAgent", function(callback) {
+            console.log("Received a websocket connection from a socket agent");
+
+            var agent = agentPool.addAgent({
+                browserName: "chrome"
+            }, {
+                type: agentPool.agentTypes.SOCKET,
+                socket: socket
+            });
+
+            socket.on("disconnect", function() {
+                console.log("Socket agent", agent.id, "is no longer available. Removing.");
+                agentPool.removeAgent(agent.id);
+            });
+
+            callback(agent.id);
         });
 	});
 
