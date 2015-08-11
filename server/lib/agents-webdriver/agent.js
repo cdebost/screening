@@ -40,20 +40,21 @@ var Q = require("q"),
     resultFilter = require('./util').resultFilter,
     WebDriverComponent = require("./component").WebDriverComponent,
     WebdriverElement = require("./element").WebdriverElement,
-    WebdriverElementArray = require("./element").WebdriverElementArray,
-    Warning = require('../testcase/warning').Warning;
+    WebdriverElementArray = require("../agents/element").ElementArray,
+    Warning = require('../testcase/warning').Warning,
+    Agent = require("../agents/agent").Agent;
 /**
-    @class module:screening/agent.WebDriverAgent
+ * @class WebDriverAgent
+ * @extends Agent
 */
 var WebDriverAgent = exports.WebDriverAgent = function(session, sync, scriptObject, result){
+    Agent.call(this, sync, scriptObject, result);
     this.session = session;
     this.browserName = session.session.value.browserName;
-    this.sync = sync;
-    this.scriptObject = scriptObject;
-    this.result = result;
-    this.firstNavigate = true;
-    this.rootElement = null;
 };
+
+// Inherit from Agent
+WebDriverAgent.prototype = Object.create(Agent.prototype);
 
 /**
  * Get the session capabilities object. Can include properties like: browserName, version, platform, javascriptEnabled,
@@ -81,11 +82,6 @@ WebDriverAgent.prototype.getSession = function() {
     });
 };
 
-/**
- * Explicitly end the current test case with the given message.
- * @function module:screening/agent.WebDriverAgent#endTest
- * @param {String} message Message to log about why the test was ended.
- */
 WebDriverAgent.prototype.endTest = function(){
     var self = this;
     return this.sync.promise(function() {
@@ -95,10 +91,6 @@ WebDriverAgent.prototype.endTest = function(){
     );
 };
 
-/**
- * Close the browser.
- * @function module:screening/agent.WebDriverAgent#close
- */
 WebDriverAgent.prototype.close = function(){
     var self = this;
     return this.sync.promise(function() {
@@ -108,14 +100,6 @@ WebDriverAgent.prototype.close = function(){
     });
 };
 
-/**
- * Executes a javascript string on the agent.
- * @function module:screening/agent.WebDriverAgent#executeScript
- * @param {String} script The script to execute
- * @param {Array} args Array of arguments to pass to the script
- * @param {Function} resultCallback Optional callback to transform the result of the script before returning
- * @return {Object} Return value of the script evaluated
- */
 WebDriverAgent.prototype.executeScript = function(script, args, resultCallback){
     var self = this;
     return this.sync.promise(function() {
@@ -128,28 +112,6 @@ WebDriverAgent.prototype.executeScript = function(script, args, resultCallback){
     });
 };
 
-/**
- * @private
- */
-WebDriverAgent.prototype.debugger = function(){
-    var self = this;
-    return this.executeScript("debugger;", [],
-    function() { return self; } // Allow Chaining
-    );
-};
-
-/**
- * Return a reference to ONE node.<br>
- * The return value.<br>
- * @function module:screening/agent.WebDriverAgent#element
- * @param {String} selector The CSS query selector or XPath by which to reach a node.
- * @return {Element} An element
- * @example
- * var node = agent.element('#nodeId'); // Select a node using it's ID, which triggers a CSS query.
- * var node = agent.element('#nodeId .className'); // Select a node using any kind of CSS query.
- *
- * var node = agent.element('//*[@id='search']'); // Select a node using an XPath query.
-*/
 WebDriverAgent.prototype.element = function(selector){
     var self = this;
     return this.sync.promise(function() {
@@ -171,17 +133,6 @@ WebDriverAgent.prototype.element = function(selector){
     });
 };
 
-/**
- * Return a reference to ONE component.
- * @function module:screening/agent.WebDriverAgent#component
- * @param {String} selector The CSS query selector or XPath by which to reach a node.
- * @return {WebDriverComponent} returns the component if found, otherwise null
- * @example
- * var node = agent.component('#nodeId'); // Select a node using it's ID, which triggers a CSS query.
- * var node = agent.component('#nodeId .className'); // Select a node using any kind of CSS query.
- *
- * var node = agent.component('//*[@id='search']'); // Select a node using an XPath query.
- */
 WebDriverAgent.prototype.component = function(selector){
     var self = this;
     var component = this.sync.promise(function() {
@@ -216,12 +167,6 @@ WebDriverAgent.prototype.component = function(selector){
     return component;
 };
 
-/**
- * Return a chainable instance that refers to a set of elements.
- * @function module:screening/agent.WebDriverAgent#elements
- * @param {String} selector The XPath or CSS selector which is used to find elements, that the reference is returned for.
- * @return {Elements} An instance of Elements to allow chaining various functions on it.
- */
 WebDriverAgent.prototype.elements = function(selector){
     var self = this;
     return this.sync.promise(function() {
@@ -243,13 +188,6 @@ WebDriverAgent.prototype.elements = function(selector){
     });
 };
 
-/**
- * Test if the element defined by the selector does exist.
- * @function module:screening/agent.WebDriverAgent#doesElementExist
- * @returns {Boolean} True if the element exists on the page
- * @example
- * agent.doesElementExist(".className") => true
- */
 WebDriverAgent.prototype.doesElementExist = function(selector){
     var self = this;
     return this.sync.promise(function() {
@@ -265,14 +203,6 @@ WebDriverAgent.prototype.doesElementExist = function(selector){
     });
 };
 
-/**
- * Wait for the element defined by the selector waiting no longer than timeout.<br>
- * If no timeout is given, the option "timeout" is used.
- * @function module:screening/agent.WebDriverAgent#waitForElement
- * @param {String} selector Either an XPath expression or CSS selector.
- * @param {Integer} timeout The max time that this function shall wait.
- * @returns {Agent} A reference to this, to allow chaining.
- */
 WebDriverAgent.prototype.waitForElement = function(selector, timeout){
     var self = this;
     return this.sync.promise(function() {
@@ -292,11 +222,6 @@ WebDriverAgent.prototype.waitForElement = function(selector, timeout){
     });
 };
 
-/**
- * Navigate the browser to the given URL.
- * @function module:screening/agent.WebDriverAgent#gotoUrl
- * @param {String} url The URL to go to.
- */
 WebDriverAgent.prototype.gotoUrl = function(url){
     var self = this;
     // Navigate to the given URL
@@ -344,11 +269,6 @@ WebDriverAgent.prototype.gotoUrl = function(url){
     return self;
 };
 
-/**
- * Refreshes the current page. All the webpage elements are reloaded by the browser.
- * @function module:screening/agent.WebDriverAgent#refresh
- * @return null, this operation does not return a value
- */
 WebDriverAgent.prototype.refresh = function() {
     var self = this;
 
@@ -373,27 +293,6 @@ WebDriverAgent.prototype.refresh = function() {
     return self;
 };
 
-/**
- * Make the execution wait for the given number of milliseconds.
- * @function module:screening/agent.WebDriverAgent#wait
- * @param {integer} ms The given number of milliseconds to wait
- */
-WebDriverAgent.prototype.wait = function(ms){
-    var self = this;
-    return this.sync.promise(function() {
-        var defer = Q.defer();
-        setTimeout(function() {
-            defer.resolve(self); // Return self to allow chaining
-        }, ms ? ms : 0);
-        return defer.promise;
-    });
-};
-
-/**
- * Return the title of the page from the client.
- * @function module:screening/agent.WebDriverAgent#getTitle
- * @returns {String} The title as defined (or modified) in the HTML site.
- */
 WebDriverAgent.prototype.getTitle = function(){
     var self = this;
     return this.sync.promise(function() {
@@ -401,13 +300,6 @@ WebDriverAgent.prototype.getTitle = function(){
     }, resultFilter);
 };
 
-/**
- * Return the source code of the page from the client.<br>
- * The source code at the current time is returned, this allows<br>
- * to verify certain DOM content (pieces) if necessary.
- * @function module:screening/agent.WebDriverAgent#getSource
- * @returns {String} The current source code of the site.
- */
 WebDriverAgent.prototype.getSource = function(){
     var self = this;
     return this.sync.promise(function() {
@@ -415,45 +307,17 @@ WebDriverAgent.prototype.getSource = function(){
     }, resultFilter);
 };
 
-/**
- * Get the scroll offset of the page.
- * @function module:screening/agent.WebDriverAgent#getScroll
- * @returns {Array} An array of the scroll offset, the array contains x,y, like so: [x, y].
- * @example
- * agent.getScroll() => [100, 2]
- */
 WebDriverAgent.prototype.getScroll = function(){
     return this.executeScript("return [window.pageXOffset, window.pageYOffset];");
 };
 
-/**
- * Set the scroll offset of the page to a certain position.<br>
- * The page scrolls only as far as possible, so be careful when scrolling to 1000,1000<br>
- * that you don't try to check for exactly that position.
- * @function module:screening/agent.WebDriverAgent#setScroll
- * @param {int} x The x position to scroll to.
- * @param {int} y The y position to scroll to.
- * @returns {Agent} A reference to this, to allow chaining.
- */
 WebDriverAgent.prototype.setScroll = function(x, y){
     var self = this;
     return this.executeScript("window.scrollTo(arguments[0], arguments[1]);", [x, y],
     function() { return self; } // Allow Chaining
     );
 };
-// Old API compatibility, remove soon
-WebDriverAgent.prototype.setScrollTo = WebDriverAgent.prototype.setScroll;
 
-/**
- * Scrolls the page by the given offset.<br>
- * If the current scroll is at 1,1 and you scroll down 1,1 it tries to scroll to position 2,2.<br>
- * Note that the page's max scroll position depends on the page's size and the browser<br>
- * window dimensions.
- * @function module:screening/agent.WebDriverAgent#setScrollBy
- * @param {int} x The x offset by how many pixels to scroll.
- * @param {int} y The y offset by how many pixels to scroll.
- * @returns {Agent} A reference to this, to allow chaining.
- */
 WebDriverAgent.prototype.setScrollBy = Warning.deprecateApi(function(x, y){
     var self = this;
     return this.executeScript("window.scrollBy(arguments[0], arguments[1]);", [x, y],
@@ -462,26 +326,10 @@ WebDriverAgent.prototype.setScrollBy = Warning.deprecateApi(function(x, y){
 }, "setScrollBy");
 
 
-/**
- * Get the available window inner-size of the browser window.
- * @function module:screening/agent.WebDriverAgent#getWindowSize
- * @returns {Array} An array of the current screen size: [width, height]
- * @example
- * agent.getWindowSize() => [640, 480]
- */
 WebDriverAgent.prototype.getWindowSize = function(){
     return this.executeScript("return [window.innerWidth, window.innerHeight];");
 };
 
-/**
- * Sizes the visible area of the window to the passed width/height
- * @function module:screening/agent.WebDriverAgent#setWindowSize
- * @param {int} width The width in pixels of the visible area
- * @param {int} height The height in pixels of the visible area
- * @returns {Agent} A reference to this, to allow chaining.
- * @example
- * agent.setWindowSize(width, height)
- */
 WebDriverAgent.prototype.setWindowSize = function(width, height){
     var self = this;
     return this.executeScript(
@@ -493,13 +341,6 @@ WebDriverAgent.prototype.setWindowSize = function(width, height){
     );
 };
 
-/**
- * Press down the left mouse button at the given coordinate.
- * @function module:screening/agent.WebDriverAgent#mouseDown
- * @param {Number} x X coordinate
- * @param {Number} y Y coordinate
- * @return {Agent} A reference to this, to allow chaining.
- */
 WebDriverAgent.prototype.mouseDown = function(x, y){
     if(typeof x !== "number") {
         throw Error("Invalid argument. Function only accepts a numeric X and Y coordinate.");
@@ -514,13 +355,6 @@ WebDriverAgent.prototype.mouseDown = function(x, y){
     );
 };
 
-/**
- * Release the left mouse button at the given coordinate.
- * @function module:screening/agent.WebDriverAgent#mouseUp
- * @param {Number} x X coordinate
- * @param {Number} y Y coordinate
- * @return {Agent} A reference to this, to allow chaining.
- */
 WebDriverAgent.prototype.mouseUp = function(x, y){
     if(typeof x !== "number") {
         throw Error("Invalid argument. Function only accepts a numeric X and Y coordinate.");
@@ -535,13 +369,6 @@ WebDriverAgent.prototype.mouseUp = function(x, y){
     );
 };
 
-/**
- * Perform a mouse move or series of mouse moves
- * @function module:screening/agent.WebDriverAgent#mouseMove
- * @param {Number or Array} x X coordinate or An array of points to move the moust between
- * @param {Number} y Y coordinate
- * @return {Agent} A reference to this, to allow chaining.
- */
 WebDriverAgent.prototype.mouseMove = function(x, y){
     var self = this;
     if(!x.length) {
@@ -585,14 +412,6 @@ WebDriverAgent.prototype.mouseMove = function(x, y){
     }
 };
 
-/**
- * Perform a click at the given coordinate.
- * @function module:screening/agent.WebDriverAgent#click
- * @param {Number} button Optional Mouse button
- * @param {Number} x Optional X coordinate
- * @param {Number} y Optional Y coordinate
- * @return {Agent} A reference to this, to allow chaining.
- */
 WebDriverAgent.prototype.click = function(button, x, y){
     var self = this;
     return this.sync.promise(function() {
@@ -604,13 +423,6 @@ WebDriverAgent.prototype.click = function(button, x, y){
     );
 };
 
-/**
- * Perform a double left-click at the given coordinate.
- * @function module:screening/agent.WebDriverAgent#doubleClick
- * @param {Number} x Optional X coordinate
- * @param {Number} y Optional Y coordinate
- * @return {Agent} A reference to this, to allow chaining.
- */
 WebDriverAgent.prototype.doubleClick = function(x, y){
     var self = this;
     return this.sync.promise(function() {
@@ -622,11 +434,6 @@ WebDriverAgent.prototype.doubleClick = function(x, y){
     );
 };
 
-/**
- * Gets the text of an alert, confirm, or prompt dialog
- * @function module:screening/agent.WebDriverAgent#getAlertText
- * @return {String} Text of the currently displayed model dialog.
- */
 WebDriverAgent.prototype.getAlertText = function(){
     var self = this;
     return this.sync.promise(function() {
@@ -634,12 +441,6 @@ WebDriverAgent.prototype.getAlertText = function(){
     }, resultFilter);
 };
 
-/**
- * Sets the input text of a prompt dialog.
- * @function module:screening/agent.WebDriverAgent#setPromptText
- * @param {String} text Text to input into the prompt
- * @return {Agent} A reference to this, to allow chaining.
- */
 WebDriverAgent.prototype.setPromptText = function(text){
     var self = this;
     return this.sync.promise(function() {
@@ -649,11 +450,6 @@ WebDriverAgent.prototype.setPromptText = function(text){
     );
 };
 
-/**
- * Clicks the "Ok" button of an alert, confirm, or prompt dialog.
- * @function module:screening/agent.WebDriverAgent#acceptAlert
- * @return {Agent} A reference to this, to allow chaining.
- */
 WebDriverAgent.prototype.acceptAlert = function(){
     var self = this;
     return this.sync.promise(function() {
@@ -663,17 +459,22 @@ WebDriverAgent.prototype.acceptAlert = function(){
     );
 };
 
-/**
- * Clicks the "Cancel" button of a confirm or prompt dialog.
- * @function module:screening/agent.WebDriverAgent#dismissAlert
- * @return {Agent} A reference to this, to allow chaining.
- */
 WebDriverAgent.prototype.dismissAlert = function(){
     var self = this;
     return this.sync.promise(function() {
         return self.session.dismissAlert();
     },
     function() { return self; } // Allow Chaining
+    );
+};
+
+/**
+ * @private
+ */
+WebDriverAgent.prototype.debugger = function(){
+    var self = this;
+    return this.executeScript("debugger;", [],
+        function() { return self; } // Allow Chaining
     );
 };
 
