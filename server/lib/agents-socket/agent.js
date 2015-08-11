@@ -29,7 +29,8 @@
  POSSIBILITY OF SUCH DAMAGE.
  </copyright> */
 var Q = require("q"),
-    Agent = require("../agents/agent").Agent;
+    Agent = require("../agents/agent").Agent,
+    SocketElement = require("./element").SocketElement;
 
 /**
  * @class SocketAgent
@@ -51,15 +52,38 @@ SocketAgent.prototype.executeScript = function(script, args, callback) {
         var defer = Q.defer();
 
         self._emit("executeScript", script, args, function(err, ret) {
-            console.log("Agent executeScript", ret, err);
-            if (callback) {
-                callback(ret);
+
+            if (err) {
+                defer.reject(err);
+            } else {
+                if (callback) {
+                    callback(ret);
+                }
+                defer.resolve(ret);
             }
-            defer.resolve(ret);
         });
 
         return defer.promise;
     });
+};
+
+SocketAgent.prototype.element = function(selector) {
+    var self = this;
+
+    return this.sync.promise(function() {
+        var defer = Q.defer();
+
+        // TODO: Timeout
+        self._emit("element", selector, function(err, ret) {
+            if (err) {
+                defer.reject(selector + ": " + err.value.message);
+            } else {
+                defer.resolve(new SocketElement(self, ret));
+            }
+        });
+
+        return defer.promise;
+    })
 };
 
 SocketAgent.prototype.gotoUrl = function(url) {
@@ -73,13 +97,10 @@ SocketAgent.prototype.gotoUrl = function(url) {
             url = self.scriptObject.getOption("global._requestOrigin") + url;
         }
 
-        self._emit("gotoUrl", url, function cb(err) {
-            if (err) {
-                defer.reject();
-            } else {
-                defer.resolve();
-            }
-        });
+        self._emit("gotoUrl", url);
+
+        // TODO: Since the url has changed, we need to pass control to the next agent
+        defer.resolve();
 
         return defer.promise;
     });
@@ -91,6 +112,11 @@ SocketAgent.prototype.gotoUrl = function(url) {
     //});
 
     return self;
+};
+
+SocketAgent.prototype.setWindowSize = function() {
+    // Ignore, it doesn't make sense to resize an iFrame
+    // TODO: Maybe raise a warning if this is called?
 };
 
 /**
