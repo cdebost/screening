@@ -31,12 +31,12 @@ POSSIBILITY OF SUCH DAMAGE.
 /**
 	@module screening/element
  */
-var Element = require("../agents/element"),
+var Element = require("../agents/element").Element,
     Q = require("q"),
     when = Q.when,
     by = require("../webdriver/util").By,
     css2xpath = require("../webdriver/css2xpath"),
-    resultFilter = require('./util').resultFilter,
+    resultFilter = require('../agents/util').resultFilter,
     Warning = require('../testcase/warning').Warning;
 /**
  * @class module:screening/element.WebdriverElement
@@ -269,12 +269,6 @@ WebdriverElement.prototype.isFocused = function(){
         });
     }, resultFilter);
 };
-
-WebdriverElement.prototype.getChecked = function() {
-    return !!this.getAttribute("checked"); // Force to boolean
-};
-
-WebdriverElement.prototype.isChecked = Warning.deprecateApi(WebdriverElement.prototype.getChecked, "isChecked", "Please use getChecked instead.");
 
 WebdriverElement.prototype.focus = function(){
     var self = this;

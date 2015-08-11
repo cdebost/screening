@@ -67,6 +67,16 @@ Element.prototype.getInnerHtml = function(){
     return this.getAttribute("innerHTML");
 };
 
+/**
+ * Gets the checked state of checkbox elements.
+ * @abstract
+ * @function module:screening/element.Element#getChecked
+ * @return {Boolean} True if the element's "checked" attribute is true.
+ */
+Element.prototype.getChecked = function() {
+    return !!this.getAttribute("checked"); // Force to boolean
+};
+
 //
 // Abstract Members
 //
@@ -218,7 +228,7 @@ Element.prototype.getInnerHtml = function(){
  */
 
 /**
- * Gets wether or not the element is enabled.
+ * Gets whether or not the element is enabled.
  * @abstract
  * @function module:screening/element.Element#isEnabled
  * @return {Boolean} True if the element is enabled.
@@ -229,13 +239,6 @@ Element.prototype.getInnerHtml = function(){
  * @abstract
  * @function module:screening/element.Element#isFocused
  * @return {Boolean} True if the element has keyboard focus.
- */
-
-/**
- * Gets the checked state of checkbox elements.
- * @abstract
- * @function module:screening/element.Element#getChecked
- * @return {Boolean} True if the element's "checked" attribute is true.
  */
 
 /**
@@ -364,7 +367,10 @@ Element.prototype.getInnerHtml = function(){
 //
 // Deprecated Members
 // TODO: Old API compatibility, remove
-// 
+
+Element.prototype.isChecked = Warning.deprecateApi(Element.prototype.getChecked, "isChecked", "Please use getChecked instead.");
+
+//
 /**
  * @deprecated
  * @abstract

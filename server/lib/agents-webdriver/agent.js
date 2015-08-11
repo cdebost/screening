@@ -40,7 +40,7 @@ var Q = require("q"),
     resultFilter = require('./util').resultFilter,
     WebDriverComponent = require("./component").WebDriverComponent,
     WebdriverElement = require("./element").WebdriverElement,
-    WebdriverElementArray = require("./element").WebdriverElementArray,
+    WebdriverElementArray = require("../agents/element").ElementArray,
     Warning = require('../testcase/warning').Warning,
     Agent = require("../agents/agent").Agent;
 /**

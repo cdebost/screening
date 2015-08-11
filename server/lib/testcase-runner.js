@@ -42,11 +42,12 @@ var fs = require("fs"),
     Q = require("q"),
     when = Q.when,
 
+    mouseEnum = require('./agents/util.js').Mouse,
+    keyEnum = require('./agents/util.js').Key,
+
     // Webdriver Agent
     WebDriverAgent = require('./agents-webdriver/agent.js').WebDriverAgent,
     createWebdriverSession = require('./agents-webdriver/util.js').createWebdriverSession,
-    mouseEnum = require('./agents-webdriver/util.js').Mouse,
-    keyEnum = require('./agents-webdriver/util.js').Key,
 
     // Socket Agent
     SocketAgent = require('./agents-socket/agent.js').SocketAgent,
