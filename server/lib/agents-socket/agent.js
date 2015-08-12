@@ -30,7 +30,8 @@
  </copyright> */
 var Q = require("q"),
     Agent = require("../agents/agent").Agent,
-    SocketElement = require("./element").SocketElement;
+    SocketElement = require("./element").SocketElement,
+    SocketComponent = require("./component").SocketComponent;
 
 /**
  * @class SocketAgent
@@ -74,16 +75,34 @@ SocketAgent.prototype.element = function(selector) {
         var defer = Q.defer();
 
         // TODO: Timeout
-        self._emit("element", selector, function(err, ret) {
+        self._emit("element", selector, function(err) {
             if (err) {
                 defer.reject(selector + ": " + err.value.message);
             } else {
-                defer.resolve(new SocketElement(self, ret));
+                defer.resolve(new SocketElement(self, selector));
             }
         });
 
         return defer.promise;
     })
+};
+
+SocketAgent.prototype.component = function(selector) {
+    var self = this;
+
+    return this.sync.promise(function() {
+        var defer = Q.defer();
+
+        self._emit("component", selector, function(err, ret) {
+            if (err) {
+                defer.reject(selector + ": " + err.value.message);
+            } else {
+                defer.resolve(new SocketComponent(self, selector));
+            }
+        });
+
+        return defer.promise;
+    });
 };
 
 SocketAgent.prototype.gotoUrl = function(url) {
