@@ -34,71 +34,35 @@ POSSIBILITY OF SUCH DAMAGE.
 var Q = require("q"),
     when = Q.when,
     by = require("../webdriver/util").By,
-    css2xpath = require("../webdriver/css2xpath"),
     Session = require("../webdriver/session.js").Session,
-    resultFilter = require('./util').resultFilter,
-    Warning = require('../testcase/warning').Warning;
+    Warning = require('../testcase/warning').Warning,
+    Component = require("../agents/component.js").Component;
 
-/**
- * @class module:screening/component.WebDriverComponent
- * @classdesc This class provides all methods that can be executed on a selected component.
-*/
 var WebDriverComponent = exports.WebDriverComponent = function(agent, element){
-    this.agent = agent;
-    this.element = element;
+    Component.call(this, agent, element);
     this.session = (agent ? agent.session : null);
-    this.sync = (agent ? agent.sync : null);
-    this.result = (agent ? agent.result : null);
 };
 
-/**
- * Return the component's object name
- * @function module:screening/component.WebDriverComponent#getObjectName
- * @return {String} The component's object name.
- */
+WebDriverComponent.prototype = Component.prototype;
+
 WebDriverComponent.prototype.getObjectName = function(){
     return this.agent.executeScript("return arguments[0].controller._montage_metadata.objectName;", [this.element]);
 };
 
-/**
- * Return the component's module ID
- * @function module:screening/component.WebDriverComponent#getModuleId
- * @return {String} The component's module ID
- */
 WebDriverComponent.prototype.getModuleId = function(){
     return this.agent.executeScript("return arguments[0].controller._montage_metadata.moduleId;", [this.element]);
 };
 
-/**
- * Return the value of the specified component property.
- * @function module:screening/component.WebDriverComponent#getProperty
- * @param {String} attrName The attribute name to query.
- * @return {String} The attribute value.
- */
 WebDriverComponent.prototype.getProperty = function(propName){
     return this.agent.executeScript("return arguments[0].controller[arguments[1]];", [this.element, propName]);
 };
 
-/**
- * Set the value of the specified component property.
- * @function module:screening/component.WebDriverAgent#setProperty
- * @param {String} attrName The attribute name to query.
- * @para, value Value to set the attribute to.
- * @return {Component} A reference to this, to allow chaining.
- */
 WebDriverComponent.prototype.setProperty = function(propName, value){
     var self = this;
     return this.agent.executeScript("arguments[0].controller[arguments[1]] = arguments[2];", [this.element, propName, value],
         function() {return self;});
 };
 
-/**
- * Call a function on the component.
- * @function module:screening/component.WebDriverAgent#callMethod
- * @param {String} func Function name to call.
- * @para, {Array} args Array of values to pass to the function as arguments.
- * @return The return value of the called function.
- */
 WebDriverComponent.prototype.callMethod = function(func, args){
     return this.agent.executeScript("var c = arguments[0].controller; return c[arguments[1]].apply(c, arguments[2]);", [this.element, func, args]);
 };
