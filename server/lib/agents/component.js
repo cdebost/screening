@@ -32,14 +32,6 @@
  * @module screening/component
  */
 
-var Q = require("q"),
-    when = Q.when,
-    by = require("../webdriver/util").By,
-    css2xpath = require("../webdriver/css2xpath"),
-    Session = require("../webdriver/session.js").Session,
-    resultFilter = require('./util').resultFilter,
-    Warning = require('../testcase/warning').Warning;
-
 /**
  * @class module:screening/component.Component
  * @classdesc Provides all methods that can be executed on a selected component.
