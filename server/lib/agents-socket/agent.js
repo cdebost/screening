@@ -31,7 +31,6 @@
 var Q = require("q"),
     Agent = require("../agents/agent").Agent,
     SocketElement = require("./element").SocketElement,
-    SocketComponent = require("./component").SocketComponent;
 
 /**
  * @class SocketAgent
@@ -75,11 +74,11 @@ SocketAgent.prototype.element = function(selector) {
         var defer = Q.defer();
 
         // TODO: Timeout
-        self._emit("element", selector, function(err) {
+        self._emit("element", selector, function(err, id) {
             if (err) {
-                defer.reject(selector + ": " + err.value.message);
+                defer.reject(selector + ": " + err);
             } else {
-                defer.resolve(new SocketElement(self, selector));
+                defer.resolve(new SocketElement(self, id));
             }
         });
 
@@ -95,7 +94,7 @@ SocketAgent.prototype.component = function(selector) {
 
         self._emit("component", selector, function(err, ret) {
             if (err) {
-                defer.reject(selector + ": " + err.value.message);
+                defer.reject(selector + ": " + err);
             } else {
                 defer.resolve(new SocketComponent(self, selector));
             }
