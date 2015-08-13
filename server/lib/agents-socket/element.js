@@ -42,8 +42,8 @@ var Element = require("../agents/element").Element,
  * @class module:screening/element.SocketElement
  * @extends module:screening/element.Element
  */
-var SocketElement = exports.SocketElement = function(agent, element){
-    Element.call(this, agent, element);
+var SocketElement = exports.SocketElement = function(agent, id){
+    Element.call(this, agent, id);
     this.socket = (agent ? agent.socket : null);
 };
 
