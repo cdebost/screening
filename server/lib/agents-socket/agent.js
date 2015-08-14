@@ -31,6 +31,8 @@
 var Q = require("q"),
     Agent = require("../agents/agent").Agent,
     SocketElement = require("./element").SocketElement,
+    SocketComponent = require("./component").SocketComponent,
+    ElementArray = require("../agents/element").ElementArray;
 
 /**
  * @class SocketAgent
@@ -104,6 +106,60 @@ SocketAgent.prototype.component = function(selector) {
     });
 };
 
+SocketAgent.prototype.elements = function(selector) {
+    var self = this;
+    return this.sync.promise(function() {
+        var defer = Q.defer();
+        var waitTimeout = parseInt(self.scriptObject.getOption("timeout"));
+
+        self._emit("elements", selector, function(err, ids) {
+            if (err) {
+                defer.reject(new Error(selector + ": " + err));
+            } else {
+                defer.resolve(new ElementArray(self, ids));
+            }
+        });
+
+        return defer.promise;
+    });
+};
+
+SocketAgent.prototype.doesElementExist = function(selector) {
+    var self = this;
+    return this.sync.promise(function() {
+        var defer = Q.defer();
+
+        self._emit("doesElementExist", selector, function(err, doesExist) {
+            if (err) {
+                defer.reject(new Error(selector + ": " + err));
+            } else {
+                defer.resolve(doesExist);
+            }
+        });
+
+        return defer.promise;
+    });
+};
+
+SocketAgent.prototype.waitForElement = function(selector, timeout){
+    var self = this;
+    return this.sync.promise(function() {
+        var defer = Q.defer();
+        var waitTimeout = timeout ? timeout : parseInt(self.scriptObject.getOption("timeout"));
+
+        self._emit("waitForElement", selector, waitTimeout, function(err, id) {
+            if (err) {
+                defer.reject(err);
+            } else {
+                defer.resolve(new SocketElement(self, id));
+            }
+        });
+
+        return defer.promise;
+    });
+};
+
+// TODO: Notify the server and expect a connection from an agent on the given url
 SocketAgent.prototype.gotoUrl = function(url) {
     var self = this;
     // Navigate to the given URL
@@ -117,7 +173,6 @@ SocketAgent.prototype.gotoUrl = function(url) {
 
         self._emit("gotoUrl", url);
 
-        // TODO: Since the url has changed, we need to pass control to the next agent
         defer.resolve();
 
         return defer.promise;
@@ -132,9 +187,259 @@ SocketAgent.prototype.gotoUrl = function(url) {
     return self;
 };
 
+// TODO: Notify the server and expect a connection from an agent on the same url
+SocketAgent.prototype.refresh = function() {
+    var self = this;
+
+    this.sync.promise(function() {
+        var defer = Q.defer();
+
+        self._emit("refresh");
+
+        defer.resolve();
+
+        return defer.promise;
+    });
+};
+
+SocketAgent.prototype.getTitle = function() {
+    var self = this;
+
+    this.sync.promise(function() {
+        var defer = Q.defer();
+
+        self._emit("getTitle", function(err, title) {
+            if (err) {
+                defer.reject(new Error(err));
+            } else {
+                defer.resolve(title);
+            }
+        });
+
+        return defer.promise;
+    });
+};
+
+SocketAgent.prototype.getSource = function() {
+    var self = this;
+
+    this.sync.promise(function() {
+        var defer = Q.defer();
+
+        self._emit("getSource", function(err, source) {
+            if (err) {
+                defer.reject(new Error(err));
+            } else {
+                defer.resolve(source);
+            }
+        });
+
+        return defer.promise;
+    });
+};
+
+SocketAgent.prototype.getScroll = function() {
+    var self = this;
+
+    this.sync.promise(function() {
+        var defer = Q.defer();
+
+        self._emit("getScroll", function(err, coords) {
+            if (err) {
+                defer.reject(new Error(err));
+            } else {
+                defer.resolve(coords);
+            }
+        });
+
+        return defer.promise;
+    });
+};
+
+SocketAgent.prototype.getScroll = function(x, y) {
+    var self = this;
+
+    this.sync.promise(function() {
+        var defer = Q.defer();
+
+        self._emit("setScroll", x, y, function(err) {
+            if (err) {
+                defer.reject(new Error(err));
+            } else {
+                defer.resolve(self);
+            }
+        });
+
+        return defer.promise;
+    });
+};
+
+SocketAgent.prototype.getWindowSize = function() {
+    var self = this;
+
+    this.sync.promise(function() {
+        var defer = Q.defer();
+
+        self._emit("getWindowSize", function(err, dimensions) {
+            if (err) {
+                defer.reject(new Error(err));
+            } else {
+                defer.resolve(dimensions);
+            }
+        });
+
+        return defer.promise;
+    });
+};
+
 SocketAgent.prototype.setWindowSize = function() {
     // Ignore, it doesn't make sense to resize an iFrame
     // TODO: Maybe raise a warning if this is called?
+};
+
+SocketAgent.prototype.mouseDown = function(x, y) {
+    var self = this;
+
+    this.sync.promise(function() {
+        var defer = Q.defer();
+
+        self._emit("mouseDown", x, y, function(err) {
+            if (err) {
+                defer.reject(new Error(err));
+            } else {
+                defer.resolve(self);
+            }
+        });
+
+        return defer.promise;
+    });
+};
+
+SocketAgent.prototype.mouseUp = function(x, y) {
+    var self = this;
+
+    this.sync.promise(function() {
+        var defer = Q.defer();
+
+        self._emit("mouseUp", x, y, function(err) {
+            if (err) {
+                defer.reject(new Error(err));
+            } else {
+                defer.resolve(self);
+            }
+        });
+
+        return defer.promise;
+    });
+};
+
+SocketAgent.prototype.mouseMove = function(x, y){
+    var self = this;
+
+    if (!x.length) {
+        if(typeof x !== "number") {
+            throw Error("Invalid argument. Function only accepts a numeric X and Y coordinates or an array of coordinates");
+        }
+        return this.sync.promise(function() {
+            var defer = Q.defer();
+
+            self._emit("mouseMove", x, y, function(err) {
+                if (err) {
+                    defer.reject(new Error(err));
+                } else {
+                    defer.resolve();
+                }
+            });
+
+            return defer.promise;
+        });
+    } else {
+        // If the first argument is an array, treat this as a series of mouse moves
+        var points = x;
+        return this.sync.promise(function() {
+            var defer = Q.defer();
+            var pointId = 0;
+
+            // Loop through all the points
+            // TODO: Time-based interpolation?
+            function nextMove() {
+                var point = points[pointId],
+                    defer = Q.defer();
+
+                self._emit("mouseMove", point.x, point.y, function(err) {
+                    if (err) {
+                        defer.reject(new Error(err));
+                    } else {
+                        pointId++;
+                        // End of list? Exit
+                        if(pointId >= points.length) {
+                            defer.resolve(self);
+                            return;
+                        }
+                        var nextPoint = points[pointId];
+                        setTimeout(nextMove, nextPoint.duration); //TODO: Timing is going to be off on this, can we improve it?
+                    }
+                });
+
+                return defer.promise;
+            }
+            nextMove();
+
+            return defer.promise;
+        });
+    }
+};
+
+SocketAgent.prototype.click = function(button, x, y) {
+    var self = this;
+
+    return this.sync.promise(function() {
+        var defer = Q.defer();
+
+        self._emit("click", button, x, y, function(err) {
+            if (err) {
+                defer.reject(new Error(err));
+            } else {
+                defer.resolve(self);
+            }
+        });
+
+        return defer.promise;
+    });
+};
+
+SocketAgent.prototype.doubleClick = function(x, y) {
+    var self = this;
+
+    return this.sync.promise(function() {
+        var defer = Q.defer();
+
+        self._emit("doubleClick", x, y, function(err) {
+            if (err) {
+                defer.reject(new Error(err));
+            } else {
+                defer.resolve(self);
+            }
+        });
+
+        return defer.promise;
+    });
+};
+
+SocketAgent.prototype.getAlertText = function() {
+    throw new Error("Forbidden on socket agents");
+};
+
+SocketAgent.prototype.setPromptText = function() {
+    throw new Error("Forbidden on socket agents");
+};
+
+SocketAgent.prototype.acceptAlert = function() {
+    throw new Error("Forbidden on socket agents");
+};
+
+SocketAgent.prototype.dismissAlert = function() {
+    throw new Error("Forbidden on socket agents");
 };
 
 /**
