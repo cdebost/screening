@@ -60,7 +60,8 @@ exports.SocketAgent = Object.create(BaseAgent, {
 
     endTest: {
         value: function(result) {
-            throw "Not Implemented";
+            this.io.sockets.emit("testCompleted", this.id, result);
+            BaseAgent.endTest.apply(this, arguments);
         }
     },
 
