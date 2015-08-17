@@ -42,3 +42,7 @@ exports.createWebdriverSession = function(url) {
     };
     return session;
 };
+
+exports.resultFilter = function(ret) {
+    return ret.value;
+};

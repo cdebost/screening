@@ -207,6 +207,7 @@ Agent.prototype.wait = function(ms) {
  * agent.getWindowSize() => [640, 480]
  */
 
+// TODO: Return boolean depending on whether the operation was successful
 /**
  * Sizes the visible area of the window to the passed width/height, if possible.
  * @abstract
@@ -256,6 +257,7 @@ Agent.prototype.wait = function(ms) {
  * @param {Number} y Optional Y coordinate
  */
 
+// TODO: Deprecate, not feasible on socket agents
 /**
  * Gets the text of an alert, confirm, or prompt dialog.
  * @abstract
@@ -263,6 +265,7 @@ Agent.prototype.wait = function(ms) {
  * @return {String} Text of the currently displayed model dialog.
  */
 
+// TODO: Deprecate, not feasible on socket agents
 /**
  * Sets the input text of a prompt dialog.
  * @abstract
@@ -270,12 +273,14 @@ Agent.prototype.wait = function(ms) {
  * @param {String} text Text to input into the prompt
  */
 
+// TODO: Deprecate, not feasible on socket agents
 /**
  * Clicks the "Ok" button of an alert, confirm, or prompt dialog.
  * @abstract
  * @function Agent#acceptAlert
  */
 
+// TODO: Deprecate, not feasible on socket agents
 /**
  * Clicks the "Cancel" button of a confirm or prompt dialog.
  * @abstract
