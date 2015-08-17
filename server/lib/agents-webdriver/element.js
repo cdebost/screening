@@ -36,7 +36,7 @@ var Element = require("../agents/element").Element,
     when = Q.when,
     by = require("../webdriver/util").By,
     css2xpath = require("../webdriver/css2xpath"),
-    resultFilter = require('../agents/util').resultFilter,
+    resultFilter = require('./util').resultFilter,
     Warning = require('../testcase/warning').Warning;
 /**
  * @class module:screening/element.WebdriverElement
