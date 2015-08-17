@@ -363,8 +363,7 @@ SocketAgent.prototype.mouseMove = function(x, y){
             // Loop through all the points
             // TODO: Time-based interpolation?
             function nextMove() {
-                var point = points[pointId],
-                    defer = Q.defer();
+                var point = points[pointId];
 
                 self._emit("mouseMove", point.x, point.y, function(err) {
                     if (err) {
@@ -380,8 +379,6 @@ SocketAgent.prototype.mouseMove = function(x, y){
                         setTimeout(nextMove, nextPoint.duration); //TODO: Timing is going to be off on this, can we improve it?
                     }
                 });
-
-                return defer.promise;
             }
             nextMove();
 
