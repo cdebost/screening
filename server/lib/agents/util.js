@@ -29,10 +29,6 @@
  POSSIBILITY OF SUCH DAMAGE.
  </copyright> */
 
-exports.resultFilter = function(ret) {
-    return ret.value;
-};
-
 /**
  * Enumerated values for mouse buttons
  */

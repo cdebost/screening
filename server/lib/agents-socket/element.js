@@ -36,7 +36,6 @@ var Element = require("../agents/element").Element,
     when = Q.when,
     by = require("../webdriver/util").By,
     css2xpath = require("../webdriver/css2xpath"),
-    resultFilter = require('../agents/util').resultFilter,
     Warning = require('../testcase/warning').Warning;
 /**
  * @class module:screening/element.SocketElement
@@ -70,7 +69,7 @@ SocketElement.prototype.getAttribute = function(attrName){
         });
 
         return defer.promise;
-    }, resultFilter);
+    });
 };
 
 SocketElement.prototype.getInnerText = function(){
@@ -87,7 +86,7 @@ SocketElement.prototype.getInnerText = function(){
         });
 
         return defer.promise;
-    }, resultFilter);
+    });
 };
 
 SocketElement.prototype.hasAttributeValue = Warning.deprecateApi(function(attrib, expectedValue){
@@ -318,7 +317,7 @@ SocketElement.prototype.getText = function(){
         });
 
         return defer.promise;
-    }, resultFilter);
+    });
 };
 
 SocketElement.prototype.getComputedStyle = function(styleProp){
@@ -335,7 +334,7 @@ SocketElement.prototype.getComputedStyle = function(styleProp){
         });
 
         return defer.promise;
-    }, resultFilter);
+    });
 };
 
 SocketElement.prototype.isVisible = function(){
@@ -353,7 +352,7 @@ SocketElement.prototype.isVisible = function(){
         });
 
         return defer.promise;
-    }, resultFilter);
+    });
 };
 
 SocketElement.prototype.isEnabled = function(){
@@ -370,7 +369,7 @@ SocketElement.prototype.isEnabled = function(){
         });
 
         return defer.promise;
-    }, resultFilter);
+    });
 };
 
 SocketElement.prototype.isFocused = function(){
@@ -387,7 +386,7 @@ SocketElement.prototype.isFocused = function(){
         });
 
         return defer.promise;
-    }, resultFilter);
+    });
 };
 
 SocketElement.prototype.focus = function(){
