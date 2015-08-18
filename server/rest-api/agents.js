@@ -151,7 +151,9 @@ module.exports = function(agentPool, testcaseRunner, scriptsProvider, batchesPro
                 }
 
                 try {
-                    testcaseId = testcaseRunner.executeTest(script, {id: agentId}, options);
+                    testcaseId = testcaseRunner.executeTest(script, {id: agentId}, options, null, function(result) {
+                        testcaseRunner.finalize(agentId, result);
+                    });
                 } catch(ex) {
                     console.log("Exception thrown while attempting to run test: " + ex, ex.stack);
                     res.statusCode = 404;
@@ -233,8 +235,7 @@ module.exports = function(agentPool, testcaseRunner, scriptsProvider, batchesPro
                 scriptCheck.then(function() {
                     var result = testcaseRunner.createResult(agentId, "Sample batch", " ");
                     (function queueTest(index) {
-                        testcaseRunner.executeTestAsync(scriptObjects[index], {id: agentId}, options, result)
-                            .then(function() {
+                        testcaseRunner.executeTest(scriptObjects[index], {id: agentId}, options, result, function() {
                                 if (index === scriptObjects.length - 1) {
                                     testcaseRunner.finalize(agentId, result);
 
