@@ -90,26 +90,61 @@ TestcaseRunner.prototype.executeTestFile = function(testFile, desiredCaps) {
 };
 
 /**
+ * Writes results to the database and notifies the control-room
+ */
+TestcaseRunner.prototype.finalize = function(agentId, result) {
+    // Write the results to the DB
+    result.finalize();
+
+    this.resultsProv.upsert(result.get(), function(err) {
+        if (err) throw err;
+    });
+
+    // Show the notification to the control room
+    var agent = this.agentPool.getAgentById(agentId);
+    agent.endTest(result.get());
+};
+
+TestcaseRunner.prototype.createResult = function(agentId, name, code) {
+    var agent = this.agentPool.getAgentById(agentId);
+    return new Result(agent, {
+        id: this.resultsProv.generateId(),
+        name: name,
+        code: code
+    });
+};
+
+/**
  * Executes a script string.
  *
  * @param {String} testScript a complete test script object, contains the code and name
  * @param {Object} desiredCaps which capabilities should the agent support
  * @param {Object} options will describe preferences during this run of the code (they do not persist)
+ * @param {Object=} result the result object to use with the test. Will be created if null or undefined is passed in
+ * @param {Function=} completeCb the callback to call once the test has finished executing. If undefined or null,
+ * will simply finalize the results.
  * @return {Number} test case id
  */
-TestcaseRunner.prototype.executeTest = function(testScript, desiredCaps, options) {
+TestcaseRunner.prototype.executeTest = function(testScript, desiredCaps, options, result, completeCb) {
     // TODO: extract the agents from the testscript
     var agent = this.agentPool.getAgentByCaps(desiredCaps);
     agent.startTest();
 
-    var result;
+    // Create the result object if it doesn't exist
+    result = result || this.createResult(agent.id, testScript.name, testScript.code);
+
+    // If the callback parameter is not specified, finalize the result by default.
+    var self = this;
+    completeCb = completeCb || function(result) {
+            self.finalize(agent.id, result);
+        };
 
     switch (agent.type) {
         case agentTypes.WEBDRIVER:
-            result = this._executeWebdriverTest(testScript, agent, options);
+            this._executeWebdriverTest(testScript, agent, options, result, completeCb);
             break;
         case agentTypes.SOCKET:
-            result = this._executeSocketTest(testScript, agent, options);
+            this._executeSocketTest(testScript, agent, options, result, completeCb);
             break;
         default:
             throw new Error("Unrecognized agent type", agent.type);
@@ -122,16 +157,13 @@ TestcaseRunner.prototype.executeTest = function(testScript, desiredCaps, options
     return result.testcase.id;
 };
 
-TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, options) {
+TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, options, result, completeCb) {
     var self = this;
     var session = createWebdriverSession(agent.url);
     var sync = Object.create(Sync).init();
 
     // Validate that the passed testScript object contains code and name
     if(!testScript.code || !testScript.name) throw new Error("testScript must be an object with code and name properties.");
-
-    // Create the result object
-    var result = this.createResult(agent.id, testScript.name, testScript.code);
 
     // the options object can be manipulated in the test script
     var scriptObject = new ScriptClass();
@@ -160,11 +192,15 @@ TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, opt
             if (session.sessionUrl) {
                 session.quit().then(function successCb() {
                     result.reportException(err);
-                    self.finalize(agent.id, result);
+                    if (completeCb) {
+                        completeCb(result);
+                    }
                 });
             } else {
                 result.reportException(err);
-                self.finalize(agent.id, result);
+                if (completeCb) {
+                    completeCb(result);
+                }
             }
         } else {
             // The session succeeded. Execute the test, using our code synchronization system
@@ -172,7 +208,11 @@ TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, opt
                 scriptObject, sync), function() {
                 // kill the webdriver session
                 session.quit().then(function() {
-                    self.finalize(agent.id, result);
+                    console.log("done, callback");
+                    console.log(completeCb);
+                    if (completeCb) {
+                        completeCb(result);
+                    }
                 });
             });
         }
@@ -181,15 +221,12 @@ TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, opt
     return result;
 };
 
-TestcaseRunner.prototype._executeSocketTest = function (testScript, agent, options) {
+TestcaseRunner.prototype._executeSocketTest = function (testScript, agent, options, result, completeCb) {
     var self = this;
     var sync = Object.create(Sync).init();
 
     // Validate that the passed testScript object contains code and name
     if(!testScript.code || !testScript.name) throw new Error("testScript must be an object with code and name properties.");
-
-    // Create the result object
-    var result = this.createResult(agent.id, testScript.name, testScript.code);
 
     // the options object can be manipulated in the test script
     var scriptObject = new ScriptClass();
@@ -207,84 +244,13 @@ TestcaseRunner.prototype._executeSocketTest = function (testScript, agent, optio
             // Socket.io hack -- for some reason the endTest message does not pass unless we first emit another message
             agent.socket.emit("");
             agent.socket.emit("endTest");
-            self.finalize(agent.id, result);
+            if (completeCb) {
+                completeCb();
+            }
         }
     );
 
     return result;
-};
-
-// TODO: Merge with executeTest
-TestcaseRunner.prototype.executeTestAsync = function(testScript, desiredCaps, options, result) {
-    // TODO: extract the agents from the testscript
-    var agent = this.agentPool.getAgentByCaps(desiredCaps);
-    agent.startTest();
-
-    // If we are a webdriver agent, use the new backend
-    if(agent.type == agentTypes.WEBDRIVER) {
-        return this._executeWebdriverTestAsync(testScript, agent, options, result);
-    }
-};
-
-TestcaseRunner.prototype._executeWebdriverTestAsync = function(testScript, agent, options, result) {
-    var self = this;
-    var session = createWebdriverSession(agent.url);
-    var sync = Object.create(Sync).init();
-
-    // Validate that the passed testScript object contains code and name
-    if(!testScript.code || !testScript.name) throw new Error("testScript must be an object with code and name properties.");
-
-    // Create the result object if it doesn't exist
-    result = result || this.createResult(agent, testScript.name, testScript.code);
-
-    // the options object can be manipulated in the test script
-    var scriptObject = new ScriptClass();
-    scriptObject.sync = sync;
-    for(var i in testScript.preferences) {
-        var pref = testScript.preferences[i];
-        scriptObject.setOption(pref.shortName, pref.value);
-    }
-    for(var i in options){
-        scriptObject.setOption(i, options[i]);
-    }
-
-    var defer = Q.defer();
-
-    // Start the webdriver session
-    session.init(agent.capabilities, function(err) {
-        if(!err.sessionId) {
-            // Wrap error message inside Error object if required
-            if (!(err instanceof Error)) {
-                if (err.value && err.value.message) {
-                    err = new Error(err.value.message);
-                } else {
-                    err = new Error(err);
-                }
-            }
-
-            // If we have a valid session quit
-            if (session.sessionUrl) {
-                session.quit().then(function successCb() {
-                    result.reportException(err);
-                    defer.resolve();
-                });
-            } else {
-                result.reportException(err);
-                defer.resolve();
-            }
-        } else {
-            // The session succeeded. Execute the test, using our code synchronization system
-            when(self._executeTestInVm(testScript.code, testScript.variables, result, new WebDriverAgent(session, sync, scriptObject, result),
-                scriptObject, sync), function() {
-                // kill the webdriver session
-                session.quit().then(function() {
-                    defer.resolve(result);
-                });
-            });
-        }
-    });
-
-    return defer.promise;
 };
 
 /**
@@ -342,29 +308,4 @@ TestcaseRunner.prototype._executeTestInVm = function(source, variables, result, 
     });
 
     return defer.promise;
-};
-
-/**
- * Writes results to the database and notifies the control-room
- */
-TestcaseRunner.prototype.finalize = function(agentId, result) {
-    // Write the results to the DB
-    result.finalize();
-
-    this.resultsProv.upsert(result.get(), function(err) {
-        if (err) throw err;
-    });
-
-    // Show the notification to the control room
-    var agent = this.agentPool.getAgentById(agentId);
-    agent.endTest(result.get());
-};
-
-TestcaseRunner.prototype.createResult = function(agentId, name, code) {
-    var agent = this.agentPool.getAgentById(agentId);
-    return new Result(agent, {
-        id: this.resultsProv.generateId(),
-        name: name,
-        code: code
-    });
 };
