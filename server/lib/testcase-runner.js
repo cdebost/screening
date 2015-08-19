@@ -208,8 +208,6 @@ TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, opt
                 scriptObject, sync), function() {
                 // kill the webdriver session
                 session.quit().then(function() {
-                    console.log("done, callback");
-                    console.log(completeCb);
                     if (completeCb) {
                         completeCb(result);
                     }
