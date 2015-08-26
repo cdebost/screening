@@ -44,6 +44,15 @@ POSSIBILITY OF SUCH DAMAGE.
                     "agentHostElement": {"#": "agentHost"}
                 }
             },
+            "checkBox": {
+                "prototype": "digit/ui/checkbox.reel",
+                "properties": {
+                    "element": {"#": "checkBox"}
+                },
+                "bindings": {
+                    "checked": {"<->": "@owner.agent.selected"}
+                }
+            },
             "agentNameText": {
                 "prototype": "montage/ui/text.reel",
                 "properties": {
@@ -61,16 +70,29 @@ POSSIBILITY OF SUCH DAMAGE.
                 "bindings": {
                     "value": {"<-": "@owner.agentHostString"}
                 }
+            },
+            "agentVersionText": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "agentVersionText"}
+                },
+                "bindings": {
+                    "value": {"<-": "@owner.agentVersionString"}
+                }
             }
         }
         </script>
     </head>
     <body>
         <div data-montage-id="agentView" class="agentView">
-            <button data-montage-id="agentDelete" title="Remove Agent" class="agentDelete">×</button>
+            <div data-montage-id="checkBox" class="checkBox"></div>
             <div data-montage-id="agentIcon" class="agentIcon"></div>
-            <div data-montage-id="agentName" class="agentName"></div>
-            <div data-montage-id="agentHost" class="agentHost"></div>
+            <div class="agentText">
+                <span data-montage-id="agentName" class="agentName"></span> @ <span data-montage-id="agentHost" class="agentHost"></span>
+                <div data-montage-id="agentVersionText" class="agentDevice">device 0.0.x</div>
+            </div>
+
+            <button data-montage-id="agentDelete" title="Remove Agent" class="agentDelete">×</button>
         </div>
     </body>
 </html>

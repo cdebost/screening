@@ -100,7 +100,7 @@ var AgentPool = Object.create(Object, {
                     }, WEBDRIVER_HEARTBEAT_TIME);
                     break;
                 case this.agentTypes.SOCKET:
-                    agent = Object.create(SocketAgent).init(caps, config.socket, this.io);
+                    agent = Object.create(SocketAgent).init(caps, config.socket, config.url, this.io);
                     break;
                 default:
                     throw new Error("Unrecognized agent type " + config.type);

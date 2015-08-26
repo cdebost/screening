@@ -67,6 +67,10 @@ exports.AgentView = Component.specialize({
         value: ""
     },
 
+    agentVersionString: {
+        value: ""
+    },
+
     draw: {
         value: function() {
             var self = this;
@@ -98,24 +102,6 @@ exports.AgentView = Component.specialize({
                 this.agentDelete.hidden = true;
             }
 
-            if (this.agent) {
-                //Set up the host string
-                if (this.agent.info.type === "webdriver") {
-                    var address = this.agent.info.address;
-                    if(address.match(/^http:/)) {
-                        this.agentHostString = address.substring(7); // Cut out "http://"
-                    } else {
-                        this.agentHostString = address;
-                    }
-                } else if (this.agent.info.type === "socket") {
-                    this.agentHostString = "socket";
-                }
-
-                this.agentHostElement.title = this.agentHostString;
-            }
-        }
-    },
-
             if(this.agent.info.capabilities){
                 var capabilities = this.agent.info.capabilities;
                 if(capabilities.browserName) {
@@ -144,6 +130,17 @@ exports.AgentView = Component.specialize({
                 }
 
                 this.agentHostElement.title = this.agentHostString;
+
+                //Set up the version string
+                if (this.agent.info.type === "webdriver") {
+                    this.agentVersionString = this.agent.info.capabilities.browserName;
+                } else if (this.agent.info.type === "socket") {
+                    this.agentVersionString =
+                        this.agent.info.capabilities.browserName + " " +
+                        this.agent.info.capabilities.browserVersion + ". " +
+                        this.agent.info.capabilities.osName + " " +
+                        this.agent.info.capabilities.osVersion;
+                }
             }
         }
     }

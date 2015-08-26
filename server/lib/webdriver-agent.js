@@ -41,6 +41,7 @@ exports.WebDriverAgent = Object.create(BaseAgent, {
         value: function(capabilities, url, io) {
             this.io = io;
             BaseAgent.init.apply(this, arguments);
+            this.type = "webdriver";
             this.id = this.friendlyName;
             this.address = url;
             this.capabilities = capabilities;

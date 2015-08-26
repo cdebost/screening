@@ -37,12 +37,14 @@ var BaseAgent = require("./base-agent.js").BaseAgent,
 exports.SocketAgent = Object.create(BaseAgent, {
 
     init: {
-        value: function(capabilities, socket, io) {
+        value: function(capabilities, socket, url, io) {
             this.io = io;
             BaseAgent.init.apply(this, arguments);
+            this.type = "socket";
             this.id = this.friendlyName;
             this.capabilities = capabilities;
             this.socket = socket;
+            this.address = this.url = url;
             this.io.sockets.in("drivers").emit("agentConnected", this.getSummary());
 
             this.recordingSession = null;
