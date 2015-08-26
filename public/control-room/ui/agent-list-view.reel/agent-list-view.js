@@ -37,6 +37,10 @@ exports.AgentListView = Component.specialize({
         value: null
     },
 
+    sortingSelect: {
+        value: null
+    },
+
     webdriverDialog: {
         value: null,
         serializable: true

@@ -62,7 +62,11 @@ body {
 }
 
 .scriptManager .agentList {
-    height: 180px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30%;
 }
 
 /* Docked panel implementation */
@@ -137,7 +141,7 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
+    height: 70%;
 }
 
 .scriptManager .editorView {
