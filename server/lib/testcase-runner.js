@@ -243,7 +243,7 @@ TestcaseRunner.prototype._executeSocketTest = function (testScript, agent, optio
             agent.socket.emit("");
             agent.socket.emit("endTest");
             if (completeCb) {
-                completeCb();
+                completeCb(result);
             }
         }
     );
