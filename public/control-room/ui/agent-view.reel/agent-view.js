@@ -67,9 +67,19 @@ exports.AgentView = Component.specialize({
         value: ""
     },
 
-    templateDidLoad: {
+    draw: {
         value: function() {
             var self = this;
+
+            // Clear out existing embeddedAgent icons
+            // TODO: someday we could actually make this a switch component and we
+            //      wouldn't need this entire method.
+            var childElements = this.agentIcon.querySelectorAll('.embeddedAgent');
+            if(childElements.length > 0) {
+                for(var i = 0; i < childElements.length; ++i) {
+                    this.agentIcon.removeChild(childElements[i]);
+                }
+            }
 
             if (this.agent && this.agent.info.type === "webdriver") {
                 var clickListener = function(){
@@ -82,6 +92,8 @@ exports.AgentView = Component.specialize({
                     self.agentDelete.removeEventListener("click", clickListener, false);
                 };
                 this.agentDelete.addEventListener("click", clickListener, false);
+
+                this.agentDelete.hidden = false;
             } else {
                 this.agentDelete.hidden = true;
             }
@@ -104,24 +116,13 @@ exports.AgentView = Component.specialize({
         }
     },
 
-    draw: {
-        value: function() {
-            // Clear out existing embeddedAgent icons
-            // TODO: someday we could actually make this a switch component and we
-            //      wouldn't need this entire method.
-            var childElements = this.agentIcon.querySelectorAll('.embeddedAgent');
-            if(childElements.length > 0) {
-                for(var i = 0; i < childElements.length; ++i) {
-                    this.agentIcon.removeChild(childElements[i]);
-                }
-            }
-
             if(this.agent.info.capabilities){
                 var capabilities = this.agent.info.capabilities;
                 if(capabilities.browserName) {
                    var browserName = this.agent.info.capabilities.browserName;
                     browserName = browserName.replace(/\s/g, ""); // Remove spaces. "internet explorer" => "internetexplorer"
-                    this.agentIcon.classList.add(browserName);
+                    this.agentIcon.className = "agentIcon";
+                    this.agentIcon.classList.add(browserName.toLowerCase());
                 }
 
                 if(capabilities["chrome.extensions"] && capabilities["chrome.extensions"].length > 0) {
@@ -131,6 +132,18 @@ exports.AgentView = Component.specialize({
 
                     this.agentIcon.title = capabilities["chrome.extensionName"];
                 }
+            }
+
+            if (this.agent) {
+                //Set up the host string
+                var address = this.agent.info.address;
+                if(address.match(/^http:/) || address.match(/^::ffff:/)) {
+                    this.agentHostString = address.substring(7); // Cut out address prefixes
+                } else {
+                    this.agentHostString = address;
+                }
+
+                this.agentHostElement.title = this.agentHostString;
             }
         }
     }
