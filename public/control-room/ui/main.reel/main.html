@@ -122,6 +122,9 @@ POSSIBILITY OF SUCH DAMAGE.
                 "properties": {
                     "automaticallyOrganizeObjects": true,
                     "multiSelect": true
+                },
+                "bindings": {
+                    "sortPath": {"<-": "@agentListView.sortPath"}
                 }
             },
 
@@ -151,8 +154,8 @@ POSSIBILITY OF SUCH DAMAGE.
                 "bindings": {
                     "scriptSource": {"<-": "@owner.scripts.selection[0]"},
                     "batchSource": {"<-": "@owner.batches.selection[0] || null"},
-                    "activeAgents": {"<-": "@owner.agents.selection"},
-                    "selectedAgent": {"<-": "@owner.agents.selection.0"},
+                    "activeAgents": {"<-": "@owner.agents.content.filter{selected}"},
+                    "selectedAgent": {"<-": "@owner.agents.content.filter{selected}[0]"},
 
                     "selectedPanel": {"<-": "@listViewSwitch.selectedPanel"}
                 }
@@ -190,6 +193,7 @@ POSSIBILITY OF SUCH DAMAGE.
         <section id="middleDockArea" class="dockHorizontalPanel flexFill">
             <section id="leftDockArea" class="dockPanel dockVerticalPanel">
                 <div data-montage-id="listViewSwitch" class="switchListView"></div>
+                <div id="agentList" data-montage-id="agentList" class="agentList"></div>
             </section>
 
             <section id="centralDockArea" class="dockPanel dockVerticalPanel flexFill">
@@ -202,7 +206,7 @@ POSSIBILITY OF SUCH DAMAGE.
         </section>
         
         <section id="bottomDockArea" class="dockPanel dockHorizontalPanel">
-            <div id="agentList" data-montage-id="agentList" class="agentList flexFill"></div>
+
         </section>
     </div>
 </body>

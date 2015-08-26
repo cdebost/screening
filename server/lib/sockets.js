@@ -68,14 +68,20 @@ exports.setupSocketIO = function(httpServer, agentPool, screeningVersion) {
             agent.recorderReady(socket);
         });
 
-        socket.on("initSocketAgent", function(callback) {
+        socket.on("initSocketAgent", function(userAgent, callback) {
             console.log("Received a websocket connection from a socket agent");
 
+            var userInfo = parseUserAgent(userAgent);
+
             var agent = agentPool.addAgent({
-                browserName: "chrome"
+                browserName: userInfo.browser.name,
+                browserVersion: userInfo.browser.version,
+                osName: userInfo.os.name,
+                osVersion: userInfo.os.version
             }, {
                 type: agentPool.agentTypes.SOCKET,
-                socket: socket
+                socket: socket,
+                url: socket.request.connection.remoteAddress + ":" + socket.request.connection.remotePort
             });
 
             socket.on("disconnect", function() {
@@ -90,3 +96,96 @@ exports.setupSocketIO = function(httpServer, agentPool, screeningVersion) {
 	// attaching our socket.io port here for control-room communication
 	agentPool.io = io;
 };
+
+function parseUserAgent(userAgent) {
+    return {
+        os: parseOS(userAgent),
+        browser: parseBrowser(userAgent)
+    };
+}
+
+function parseOS(userAgent) {
+    var name, version;
+
+    if (userAgent.indexOf("iPad") !== -1) {
+        name = "iPad";
+        if (version = /iPad; CPU OS ([^;) ]+)/.exec(userAgent)) {
+            version = version[1].replace(/_/g, ".");
+        }
+    } else if (userAgent.indexOf("iPhone") !== -1) {
+        name = "iPhone";
+        if (version = /iPhone; CPU OS ([^;) ]+)/.exec(userAgent)) {
+            version = version[1].replace(/_/g, ".");
+        }
+    } else if (userAgent.indexOf("Macintosh") !== -1) {
+        name = "Mac OSX";
+        if (version = /Macintosh; Intel Mac OS X ([^;)]+)/.exec(userAgent)) {
+            version = version[1].replace(/_/g, ".");
+        }
+    } else if (userAgent.indexOf("Windows NT") !== -1) {
+        name = "Windows";
+
+        var ntVer = /Windows NT ([^)]+);/.exec(userAgent)[1];
+        var ntVerMappings = {
+            "6.0": "Vista",
+            "6.1": "7",
+            "6.2": "8",
+            "6.3": "8.1",
+            "10.0": "10"
+        };
+
+        version = ntVerMappings[ntVer];
+    } else if (userAgent.indexOf("Android") !== -1) {
+        name = "Android";
+        if (version = /Linux; Android ([^;)]+)/.exec(userAgent)) {
+            version = version[1];
+        }
+    } else {
+        name = "Unknown OS";
+        version = "";
+    }
+    // TODO: iPod support, Linux support?
+
+    return {
+        name:  name,
+        version: version || "(Version Unknown)"
+    };
+}
+
+function parseBrowser(userAgent) {
+    var name, version;
+
+    if (userAgent.indexOf("OPR") !== -1) {
+        name = "Opera";
+        if (version = /OPR\/([^ ]+)/.exec(userAgent)) {
+            version = version[1];
+        }
+    } else if (userAgent.indexOf("Firefox") !== -1) {
+        name = "Firefox";
+        if (version = /Firefox\/([^ ]+)/.exec(userAgent)) {
+            version = version[1];
+        }
+    } else if (userAgent.indexOf("Chrome") !== -1) {
+        name = "Chrome";
+        if (version = /Chrome\/([^ ]+)/.exec(userAgent)) {
+            version = version[1];
+        }
+    } else if (userAgent.indexOf("Safari") !== -1) {
+        name = "Safari";
+        if (version = /Version\/([^ ]+)/.exec(userAgent)) {
+            version = version[1];
+        }
+    } else if (userAgent.indexOf("Trident") !== -1) {
+        name = "Internet Explorer";
+        if (version = /rv:([^ )]+)/.exec(userAgent)) {
+            version = version[1];
+        }
+    } else {
+        name = "Unknown Browser";
+    }
+
+    return {
+        name: name,
+        version: version || "(Version Unknown)"
+    };
+}

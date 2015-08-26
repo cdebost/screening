@@ -67,9 +67,23 @@ exports.AgentView = Component.specialize({
         value: ""
     },
 
-    templateDidLoad: {
+    agentVersionString: {
+        value: ""
+    },
+
+    draw: {
         value: function() {
             var self = this;
+
+            // Clear out existing embeddedAgent icons
+            // TODO: someday we could actually make this a switch component and we
+            //      wouldn't need this entire method.
+            var childElements = this.agentIcon.querySelectorAll('.embeddedAgent');
+            if(childElements.length > 0) {
+                for(var i = 0; i < childElements.length; ++i) {
+                    this.agentIcon.removeChild(childElements[i]);
+                }
+            }
 
             if (this.agent && this.agent.info.type === "webdriver") {
                 var clickListener = function(){
@@ -82,38 +96,10 @@ exports.AgentView = Component.specialize({
                     self.agentDelete.removeEventListener("click", clickListener, false);
                 };
                 this.agentDelete.addEventListener("click", clickListener, false);
+
+                this.agentDelete.hidden = false;
             } else {
                 this.agentDelete.hidden = true;
-            }
-
-            if (this.agent) {
-                //Set up the host string
-                if (this.agent.info.type === "webdriver") {
-                    var address = this.agent.info.address;
-                    if(address.match(/^http:/)) {
-                        this.agentHostString = address.substring(7); // Cut out "http://"
-                    } else {
-                        this.agentHostString = address;
-                    }
-                } else if (this.agent.info.type === "socket") {
-                    this.agentHostString = "socket";
-                }
-
-                this.agentHostElement.title = this.agentHostString;
-            }
-        }
-    },
-
-    draw: {
-        value: function() {
-            // Clear out existing embeddedAgent icons
-            // TODO: someday we could actually make this a switch component and we
-            //      wouldn't need this entire method.
-            var childElements = this.agentIcon.querySelectorAll('.embeddedAgent');
-            if(childElements.length > 0) {
-                for(var i = 0; i < childElements.length; ++i) {
-                    this.agentIcon.removeChild(childElements[i]);
-                }
             }
 
             if(this.agent.info.capabilities){
@@ -121,7 +107,8 @@ exports.AgentView = Component.specialize({
                 if(capabilities.browserName) {
                    var browserName = this.agent.info.capabilities.browserName;
                     browserName = browserName.replace(/\s/g, ""); // Remove spaces. "internet explorer" => "internetexplorer"
-                    this.agentIcon.classList.add(browserName);
+                    this.agentIcon.className = "agentIcon";
+                    this.agentIcon.classList.add(browserName.toLowerCase());
                 }
 
                 if(capabilities["chrome.extensions"] && capabilities["chrome.extensions"].length > 0) {
@@ -130,6 +117,29 @@ exports.AgentView = Component.specialize({
                     this.agentIcon.appendChild(extensionBadge);
 
                     this.agentIcon.title = capabilities["chrome.extensionName"];
+                }
+            }
+
+            if (this.agent) {
+                //Set up the host string
+                var address = this.agent.info.address;
+                if(address.match(/^http:/) || address.match(/^::ffff:/)) {
+                    this.agentHostString = address.substring(7); // Cut out address prefixes
+                } else {
+                    this.agentHostString = address;
+                }
+
+                this.agentHostElement.title = this.agentHostString;
+
+                //Set up the version string
+                if (this.agent.info.type === "webdriver") {
+                    this.agentVersionString = this.agent.info.capabilities.browserName;
+                } else if (this.agent.info.type === "socket") {
+                    this.agentVersionString =
+                        this.agent.info.capabilities.browserName + " " +
+                        this.agent.info.capabilities.browserVersion + ". " +
+                        this.agent.info.capabilities.osName + " " +
+                        this.agent.info.capabilities.osVersion;
                 }
             }
         }
