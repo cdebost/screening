@@ -468,7 +468,9 @@ var RecordingCompiler = exports.RecordingCompiler = Object.create(Object, {
                 keypress: "sendKeys",
                 sendkeys: "sendKeys",
                 textinput: "sendKeys",
-                focus: "focus"
+                focus: "focus",
+                touchstart: "touchStart",
+                touchend: "touchEnd"
             };
 
             // Test to see if the next or previous actions are chained to this one.
@@ -554,6 +556,12 @@ var RecordingCompiler = exports.RecordingCompiler = Object.create(Object, {
                 case "setselectedindex":
                     source += ".setSelectedIndex";
                     funcArgs.push(event.arguments.selectedIndex);
+                    break;
+
+                case "touchstart":
+                case "touchend":
+                    source += "." + eventTable[typeKey];
+                    funcArgs.push(event.arguments.pageX, event.arguments.pageY);
                     break;
 
                 default:
