@@ -278,7 +278,11 @@ module.exports = function(agentPool, testcaseRunner, scriptsProvider, batchesPro
             return next(new Error('No app specified to record on'));
         }
 
-        agent.startRecording(body.url, options);
+        if (agent.type === "webdriver") {
+            agent.startRecording(body.url, options);
+        } else if (agent.type === "socket") {
+            agent.startRecording(options);
+        }
 
         res.statusCode = 201;
         res.send({status: "ok"});

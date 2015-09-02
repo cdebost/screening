@@ -239,9 +239,11 @@ exports.ScriptDetailView = Component.specialize({
                 self.scriptNameField.element.disabled = self.scriptTags.element.disabled = !self.scriptSource;
 
                 if (self.scriptSource) {
-                    // Only enable recording if the selected browser is Chrome
-                    if (self.selectedAgent && self.selectedAgent.info.capabilities.browserName === "chrome") {
-                        self.recordButton.disabled = false;
+                    // Only enable recording if the selected browser is Chrome, or the agent is a socket agent
+                    if (self.selectedAgent) {
+                        if (self.selectedAgent.info.type === "socket" || (self.selectedAgent.info.capabilities.browserName === "chrome")) {
+                            self.recordButton.disabled = false;
+                        }
                     }
                     self.runButton.disabled = false;
                     self.saveButton.disabled = false;
@@ -330,7 +332,18 @@ exports.ScriptDetailView = Component.specialize({
 
     selectedAgentChanged: {
         value: function(newAgent) {
-            this.recordButton.element.disabled = (newAgent && newAgent.info.capabilities.browserName !== "chrome");
+            if (!newAgent) {
+                // If no agent is selected, allow the user to press the record button, which will prompt them to select an agent
+                this.recordButton.element.disabled = false;
+            } else if (newAgent.info.type === "socket") {
+                // If the agent is a socket agent, then we can record regardless of platform/browser
+                this.recordButton.element.disabled = false;
+            } else if (newAgent.info.type === "webdriver" && newAgent.info.type.capabilities.browserName === "chrome") {
+                // If the agent is a webdriver, we can only record if it is running chrome
+                this.recordButton.element.disabled = false;
+            } else {
+                this.recordButton.element.disabled = true;
+            }
         }
     },
 

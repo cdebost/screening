@@ -110,14 +110,49 @@ var SocketAgent = exports.SocketAgent = Object.create(BaseAgent, {
      * @param {string} url Address of app the agent will be recording
      */
     startRecording: {
-        value: function(recordingUrl, options) {
-            throw "Not Implemented";
+        value: function(options) {
+            var self = this;
+
+            this.compiler.clearActions();
+
+            this.isBusy = true;
+
+            self.socket.emit("startRecording", self.id, function(res, err) {
+                if (err) {
+                    console.log("Record Script Failed", err);
+                } else {
+                    console.log("Waiting for recording socket connection");
+                    // When the socket is instantiated recorderReady will be called.
+                }
+            });
         }
     },
 
     recorderReady: {
         value: function(socket) {
-            throw "Not Implemented";
+            var self = this;
+            console.log("Recording socket connected! Starting recording.");
+            this.socket = socket;
+
+            socket.on("logMessage", function (log) {
+                self.processLog(log);
+            });
+
+            // Raised when the agent captures an event while recording. Should be compiled into a script
+            socket.on("eventCaptured", function (event) {
+                self.compiler.pushEvent(event);
+            });
+
+            socket.on("navigateCaptured", function (url) {
+                self.compiler.pushNavigate(url);
+            });
+
+            socket.on("resizeCaptured", function (width, height) {
+                self.compiler.pushResize(width, height);
+            });
+
+            socket.emit("startRecord");
+            socket.broadcast.to("drivers").emit("recordingStarted", socket.id);
         }
     },
 
@@ -127,7 +162,16 @@ var SocketAgent = exports.SocketAgent = Object.create(BaseAgent, {
      */
     stopRecording: {
         value: function(callback) {
-            throw "Not Implemented";
+            var socket = this.socket;
+
+            if(socket) {
+                socket.emit("stopRecord", callback);
+                socket.broadcast.to("drivers").emit("recordingCompleted", socket.id);
+            }
+
+            this.isBusy = false;
+
+            return this.compiler.compile();
         }
     },
 
