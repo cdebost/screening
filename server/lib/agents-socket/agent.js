@@ -40,6 +40,7 @@ var Q = require("q"),
  */
 var SocketAgent = exports.SocketAgent = function(agent, sync, scriptObject, result) {
     Agent.call(this, sync, scriptObject, result);
+    this.agent = agent;
     this.socket = agent.socket;
     this.browserName = agent.capabilities.browserName;
 };
@@ -187,16 +188,24 @@ SocketAgent.prototype.gotoUrl = function(url) {
     return self;
 };
 
-// TODO: Notify the server and expect a connection from an agent on the same url
 SocketAgent.prototype.refresh = function() {
     var self = this;
 
-    this.sync.promise(function() {
+    return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self._emit("refresh");
+        self.agent.reconnecting = true;
+        self._emit("refresh", self.agent.id);
 
-        defer.resolve();
+        self.agent.on("socketReconnected", function(socket) {
+            self.socket = self.agent.socket = socket;
+            self.agent.setDisconnectListener();
+            defer.resolve();
+        }, false);
+
+        self.agent.on("socketDisconnected", function() {
+            defer.reject(new Error("SocketAgent " + self.agent.id + " did not reconnect within the allotted time"));
+        });
 
         return defer.promise;
     });
