@@ -32,12 +32,18 @@ var BaseAgent = require("./base-agent.js").BaseAgent,
     RecordingCompiler = require("./recording-compiler.js").RecordingCompiler,
     simpleRequest = require("request"),
     fs = require("fs"),
-    Q = require("q");
+    Q = require("q"),
+    EventEmitter = require("events").EventEmitter;
 
-exports.SocketAgent = Object.create(BaseAgent, {
+// TODO: Move to preferences
+var MAX_WAIT_FOR_SOCKET_RECONNECT = 10000;
+var WAIT_FOR_SOCKET_INTERVAL = 1000;
+
+var SocketAgent = exports.SocketAgent = Object.create(BaseAgent, {
 
     init: {
         value: function(capabilities, socket, url, io) {
+            EventEmitter.call(this);
             this.io = io;
             BaseAgent.init.apply(this, arguments);
             this.type = "socket";
@@ -50,7 +56,38 @@ exports.SocketAgent = Object.create(BaseAgent, {
             this.recordingSession = null;
             this.compiler = Object.create(RecordingCompiler).init();
 
+            this.setDisconnectListener();
+
             return this;
+        }
+    },
+
+    setDisconnectListener: {
+        value: function() {
+            var self = this;
+            this.socket.once("disconnect", function() {
+                // Wait for a reconnect if we know the socket is temporarily closed
+                // (e.g. when the page is refreshed)
+                if (self.reconnecting) {
+                    var timer = 0;
+
+                    function waitForReconnect() {
+                        if (self.reconnecting) {
+                            if (timer >= MAX_WAIT_FOR_SOCKET_RECONNECT) {
+                                self.emit("socketDisconnected");
+                            } else {
+                                setTimeout(waitForReconnect,
+                                    Math.min(WAIT_FOR_SOCKET_INTERVAL, MAX_WAIT_FOR_SOCKET_RECONNECT-timer));
+                            }
+                        } else {
+                            self.emit("socketReconnected", self.socket);
+                        }
+                    }
+                    waitForReconnect();
+                } else {
+                    self.emit("socketDisconnected");
+                }
+            });
         }
     },
 
@@ -114,3 +151,10 @@ exports.SocketAgent = Object.create(BaseAgent, {
         }
     }
 });
+
+// Fake inheritance from an EventEmitter
+var prop,
+    emitterProto = EventEmitter.prototype;
+for (prop in emitterProto) {
+    SocketAgent[prop] = emitterProto[prop];
+}

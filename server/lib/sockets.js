@@ -84,12 +84,18 @@ exports.setupSocketIO = function(httpServer, agentPool, screeningVersion) {
                 url: socket.request.connection.remoteAddress + ":" + socket.request.connection.remotePort
             });
 
-            socket.on("disconnect", function() {
+            agent.once("socketDisconnected", function() {
                 console.log("Socket agent", agent.id, "is no longer available. Removing.");
                 agentPool.removeAgent(agent.id);
             });
 
             callback(agent.id);
+        });
+
+        socket.on("socketReconnected", function(id) {
+            var agent = agentPool.getAgentById(id);
+            agent.socket = socket;
+            agent.reconnecting = false;
         });
 	});
 
