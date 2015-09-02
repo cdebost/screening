@@ -60,7 +60,7 @@ SocketElement.prototype.getAttribute = function(attrName){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::getAttribute", self.element, attrName, function(err, val) {
+        self._emit("element::getAttribute", self.element, attrName, function(err, val) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -77,7 +77,7 @@ SocketElement.prototype.getInnerText = function(){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::getInnerText", self.element, function(err, val) {
+        self._emit("element::getInnerText", self.element, function(err, val) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -110,7 +110,7 @@ SocketElement.prototype.waitForAttributeValue = function(attributeName, expected
         var testValue = function(){
             var defer = Q.defer();
 
-            self.socket.emit("element::getAttribute", self.element, attributeName, function(err, ret) {
+            self._emit("element::getAttribute", self.element, attributeName, function(err, ret) {
                 if (err) {
                     defer.reject(err);
                 } else {
@@ -143,7 +143,7 @@ SocketElement.prototype.waitForAttributeChange = function(attributeName, maxTime
 
         var defer = Q.defer();
 
-        self.socket.emit("element::getAttribute", self.element, attributeName, function(err, ret){
+        self._emit("element::getAttribute", self.element, attributeName, function(err, ret){
             if (err) {
                 defer.reject(err);
                 return;
@@ -152,7 +152,7 @@ SocketElement.prototype.waitForAttributeChange = function(attributeName, maxTime
             var originalValue = ret.value; // Cache the original value so we can detect when it changes
 
             var testValue = function(){
-                self.socket.emit("element::getAttribute", self.element, attributeName, function(err, ret){
+                self._emit("element::getAttribute", self.element, attributeName, function(err, ret){
                     if (err) {
                         defer.reject(err);
                         return;
@@ -183,7 +183,7 @@ SocketElement.prototype.getScroll = function() {
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::getScroll", self.element, function(err, scrollLeft, scrollTop) {
+        self._emit("element::getScroll", self.element, function(err, scrollLeft, scrollTop) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -200,7 +200,7 @@ SocketElement.prototype.setScroll = function(x, y){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::setScroll", self.element, x, y, function(err) {
+        self._emit("element::setScroll", self.element, x, y, function(err) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -223,7 +223,7 @@ SocketElement.prototype.setAttribute = function(attrName, attrValue){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::setAttribute", self.element, attrName, attrValue, function(err) {
+        self._emit("element::setAttribute", self.element, attrName, attrValue, function(err) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -240,7 +240,7 @@ SocketElement.prototype.getSelectedIndex = function(){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::getSelectedIndex", self.element, function(err, val) {
+        self._emit("element::getSelectedIndex", self.element, function(err, val) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -257,7 +257,7 @@ SocketElement.prototype.setSelectedIndex = function(selectedIndex){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::setSelectedIndex", self.element, selectedIndex, function(err) {
+        self._emit("element::setSelectedIndex", self.element, selectedIndex, function(err) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -274,7 +274,7 @@ SocketElement.prototype.getSelectedValue = function(){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::getSelectedValue", self.element, function(err, val) {
+        self._emit("element::getSelectedValue", self.element, function(err, val) {
              if (err) {
                  defer.reject(err);
              } else {
@@ -291,7 +291,7 @@ SocketElement.prototype.setSelectedValue = function(selectedValue){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::setSelectedValue", self.element, selectedValue, function(err) {
+        self._emit("element::setSelectedValue", self.element, selectedValue, function(err) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -308,7 +308,7 @@ SocketElement.prototype.getText = function(){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::getText", self.element, function(err, val) {
+        self._emit("element::getText", self.element, function(err, val) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -325,7 +325,7 @@ SocketElement.prototype.getComputedStyle = function(styleProp){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::getComputedStyle", self.element, styleProp, function(err, val) {
+        self._emit("element::getComputedStyle", self.element, styleProp, function(err, val) {
              if (err) {
                  defer.reject(err);
              } else {
@@ -343,7 +343,7 @@ SocketElement.prototype.isVisible = function(){
         var defer = Q.defer();
 
         // TODO: EXTREMELY slow. Better implementation?
-        self.socket.emit("element::getComputedStyle", self.element, "display", function(err, val) {
+        self._emit("element::getComputedStyle", self.element, "display", function(err, val) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -360,7 +360,7 @@ SocketElement.prototype.isEnabled = function(){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::isEnabled", self.element, function(err, val) {
+        self._emit("element::isEnabled", self.element, function(err, val) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -377,7 +377,7 @@ SocketElement.prototype.isFocused = function(){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::isFocused", self.element, function(err, val) {
+        self._emit("element::isFocused", self.element, function(err, val) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -394,7 +394,7 @@ SocketElement.prototype.focus = function(){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::focus", self.element, function(err) {
+        self._emit("element::focus", self.element, function(err) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -415,7 +415,7 @@ SocketElement.prototype.mouseDown = function(x, y){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::mouseDown", self.element, x, y, function(err) {
+        self._emit("element::mouseDown", self.element, x, y, function(err) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -438,7 +438,7 @@ SocketElement.prototype.mouseUp = function(x, y){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::mouseUp", self.element, x, y, function(err) {
+        self._emit("element::mouseUp", self.element, x, y, function(err) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -461,7 +461,7 @@ SocketElement.prototype.mouseMove = function(x, y){
         return this.sync.promise(function() {
             var defer = Q.defer();
 
-            self.socket.emit("element::mouseMove", x, y, function(err) {
+            self._emit("element::mouseMove", self.element, x, y, function(err) {
                 if (err) {
                     defer.reject(err);
                 } else {
@@ -484,7 +484,7 @@ SocketElement.prototype.mouseMove = function(x, y){
             function nextMove() {
                 var point = points[pointId];
 
-                self.socket.emit("element::mouseMove", point.x, point.y, function(err) {
+                self._emit("element::mouseMove", self.element, point.x, point.y, function(err) {
                     if (err) {
                         defer.reject(err);
                     } else {
@@ -514,7 +514,7 @@ SocketElement.prototype.click = function(button, x, y){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::click", self.element, button, x, y, function(err) {
+        self._emit("element::click", self.element, button, x, y, function(err) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -532,7 +532,7 @@ SocketElement.prototype.doubleClick = function(x, y){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::dblclick", self.element, x, y, function(err) {
+        self._emit("element::dblclick", self.element, x, y, function(err) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -553,7 +553,7 @@ SocketElement.prototype.sendKeys = function(inputString){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::setValue", self.element, inputString, function(err) {
+        self._emit("element::setValue", self.element, inputString, function(err) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -574,7 +574,7 @@ SocketElement.prototype.touchStart = function(x, y){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::touchDown", self.element, x, y, function(err) {
+        self._emit("element::touchDown", self.element, x, y, function(err) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -593,7 +593,7 @@ SocketElement.prototype.touchEnd = function(x, y){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::touchUp", self.element, x, y, function(err) {
+        self._emit("element::touchUp", self.element, x, y, function(err) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -612,7 +612,7 @@ SocketElement.prototype.touchMove = function(x, y){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::touchMove", self.element, x, y, function(err) {
+        self._emit("element::touchMove", self.element, x, y, function(err) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -631,7 +631,7 @@ SocketElement.prototype.touchClick = function(){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::touchClick", self.element, function(err) {
+        self._emit("element::touchClick", self.element, function(err) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -648,7 +648,7 @@ SocketElement.prototype.touchDoubleClick = function(){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::touchDoubleClick", self.element, x, y, function(err) {
+        self._emit("element::touchDoubleClick", self.element, x, y, function(err) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -665,7 +665,7 @@ SocketElement.prototype.touchLongClick = function(){
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        self.socket.emit("element::touchLongClick", self.element, x, y, function(err) {
+        self._emit("element::touchLongClick", self.element, x, y, function(err) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -690,3 +690,16 @@ SocketElement.prototype.keyUp = Warning.deprecateApi(function(keys){
 }, "keyUp", "Please use sendKeys instead.");
 // Old API compatibility, remove soon.
 SocketElement.prototype.keyup = Warning.deprecateApi(SocketElement.prototype.keyUp, "keyup", "Please use sendKeys instead.");
+
+/**
+ * Wrapper to work around a broadcast issue with socket.io and callbacks. Use the same way as socket's emit.
+ * @private
+ * @function emit
+ */
+SocketElement.prototype._emit = function() {
+    // Hack for socket.io
+    this.socket.flags = this.socket.flags || {};
+    this.socket.flags.broadcast = false;
+
+    this.socket.emit.apply(this.socket, arguments);
+};
