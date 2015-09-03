@@ -71,6 +71,34 @@ exports.AgentView = Component.specialize({
         value: ""
     },
 
+    clickListener: {
+        value: function(){
+            var xhr = new XMLHttpRequest();
+            var removeAgentUrl = "/screening/api/v1/agents/" + encodeURIComponent(this.agent.info.id) + "?api_key=5150";
+            xhr.open("DELETE", removeAgentUrl);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send();
+            this.needsDraw = false;
+            this.agentDelete.removeEventListener("click", this.clickListener, false);
+        }
+    },
+
+    templateDidLoad: {
+        value: function() {
+            var self = this;
+            var clickListener = function(){
+                var xhr = new XMLHttpRequest();
+                var removeAgentUrl = "/screening/api/v1/agents/" + encodeURIComponent(self.agent.info.id) + "?api_key=5150";
+                xhr.open("DELETE", removeAgentUrl);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send();
+                self.needsDraw = false;
+                self.agentDelete.removeEventListener("click", clickListener, false);
+            };
+            this.agentDelete.addEventListener("click", clickListener, false);
+        }
+    },
+
     draw: {
         value: function() {
             var self = this;
@@ -85,22 +113,7 @@ exports.AgentView = Component.specialize({
                 }
             }
 
-            if (this.agent && this.agent.info.type === "webdriver") {
-                var clickListener = function(){
-                    var xhr = new XMLHttpRequest();
-                    var removeAgentUrl = "/screening/api/v1/agents/" + encodeURIComponent(self.agent.info.id) + "?api_key=5150";
-                    xhr.open("DELETE", removeAgentUrl);
-                    xhr.setRequestHeader("Content-Type", "application/json");
-                    xhr.send();
-                    self.needsDraw = false;
-                    self.agentDelete.removeEventListener("click", clickListener, false);
-                };
-                this.agentDelete.addEventListener("click", clickListener, false);
-
-                this.agentDelete.hidden = false;
-            } else {
-                this.agentDelete.hidden = true;
-            }
+            this.agentDelete.hidden = !(this.agent && this.agent.info.type === "webdriver");
 
             if(this.agent.info.capabilities){
                 var capabilities = this.agent.info.capabilities;
