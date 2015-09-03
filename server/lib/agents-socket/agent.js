@@ -164,7 +164,7 @@ SocketAgent.prototype.waitForElement = function(selector, timeout){
 SocketAgent.prototype.gotoUrl = function(url) {
     var self = this;
     // Navigate to the given URL
-    this.sync.promise(function() {
+    return this.sync.promise(function() {
         var defer = Q.defer();
 
         if(url.indexOf("http") != 0 && url.indexOf("chrome-extension") != 0) {
@@ -174,18 +174,10 @@ SocketAgent.prototype.gotoUrl = function(url) {
 
         self._emit("gotoUrl", url);
 
-        defer.resolve();
+        defer.resolve(self);
 
         return defer.promise;
     });
-
-
-    //// Query the root element for mouse operations
-    //this.rootElement = this.sync.promise(function() {
-    //    return self.session.findElement(by.xpath("//html"));
-    //});
-
-    return self;
 };
 
 SocketAgent.prototype.refresh = function() {
@@ -214,7 +206,7 @@ SocketAgent.prototype.refresh = function() {
 SocketAgent.prototype.getTitle = function() {
     var self = this;
 
-    this.sync.promise(function() {
+    return this.sync.promise(function() {
         var defer = Q.defer();
 
         self._emit("getTitle", function(err, title) {
@@ -232,7 +224,7 @@ SocketAgent.prototype.getTitle = function() {
 SocketAgent.prototype.getSource = function() {
     var self = this;
 
-    this.sync.promise(function() {
+    return this.sync.promise(function() {
         var defer = Q.defer();
 
         self._emit("getSource", function(err, source) {
@@ -250,7 +242,7 @@ SocketAgent.prototype.getSource = function() {
 SocketAgent.prototype.getScroll = function() {
     var self = this;
 
-    this.sync.promise(function() {
+    return this.sync.promise(function() {
         var defer = Q.defer();
 
         self._emit("getScroll", function(err, coords) {
@@ -268,7 +260,7 @@ SocketAgent.prototype.getScroll = function() {
 SocketAgent.prototype.getScroll = function(x, y) {
     var self = this;
 
-    this.sync.promise(function() {
+    return this.sync.promise(function() {
         var defer = Q.defer();
 
         self._emit("setScroll", x, y, function(err) {
@@ -286,7 +278,7 @@ SocketAgent.prototype.getScroll = function(x, y) {
 SocketAgent.prototype.getWindowSize = function() {
     var self = this;
 
-    this.sync.promise(function() {
+    return this.sync.promise(function() {
         var defer = Q.defer();
 
         self._emit("getWindowSize", function(err, dimensions) {
@@ -309,7 +301,7 @@ SocketAgent.prototype.setWindowSize = function() {
 SocketAgent.prototype.mouseDown = function(x, y) {
     var self = this;
 
-    this.sync.promise(function() {
+    return this.sync.promise(function() {
         var defer = Q.defer();
 
         self._emit("mouseDown", x, y, function(err) {
@@ -327,7 +319,7 @@ SocketAgent.prototype.mouseDown = function(x, y) {
 SocketAgent.prototype.mouseUp = function(x, y) {
     var self = this;
 
-    this.sync.promise(function() {
+    return this.sync.promise(function() {
         var defer = Q.defer();
 
         self._emit("mouseUp", x, y, function(err) {
