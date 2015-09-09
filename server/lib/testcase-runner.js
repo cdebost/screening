@@ -118,16 +118,16 @@ TestcaseRunner.prototype.createResult = function(agentId, name, code) {
  * Executes a script string.
  *
  * @param {String} testScript a complete test script object, contains the code and name
- * @param {Object} desiredCaps which capabilities should the agent support
+ * @param {String} agentId
  * @param {Object} options will describe preferences during this run of the code (they do not persist)
  * @param {Object=} result the result object to use with the test. Will be created if null or undefined is passed in
  * @param {Function=} completeCb the callback to call once the test has finished executing. If undefined or null,
  * will simply finalize the results.
  * @return {Number} test case id
  */
-TestcaseRunner.prototype.executeTest = function(testScript, desiredCaps, options, result, completeCb) {
+TestcaseRunner.prototype.executeTest = function(testScript, agentId, options, result, completeCb) {
     // TODO: extract the agents from the testscript
-    var agent = this.agentPool.getAgentByCaps(desiredCaps);
+    var agent = this.agentPool.getAgentById(agentId);
     agent.startTest();
 
     // Create the result object if it doesn't exist

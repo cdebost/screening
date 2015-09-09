@@ -42,6 +42,12 @@ var SocketAgent = exports.SocketAgent = function(agent, sync, scriptObject, resu
     Agent.call(this, sync, scriptObject, result);
     this.agent = agent;
     this.socket = agent.socket;
+
+    var self = this;
+    agent.on("newSocket", function(socket) {
+         self.socket = socket;
+    });
+
     this.browserName = agent.capabilities.browserName;
 };
 
@@ -160,47 +166,34 @@ SocketAgent.prototype.waitForElement = function(selector, timeout){
     });
 };
 
-// TODO: Notify the server and expect a connection from an agent on the given url
 SocketAgent.prototype.gotoUrl = function(url) {
     var self = this;
     // Navigate to the given URL
     return this.sync.promise(function() {
         var defer = Q.defer();
 
-        if(url.indexOf("http") != 0 && url.indexOf("chrome-extension") != 0) {
+        if(url && url.indexOf("http") != 0 && url.indexOf("chrome-extension") != 0) {
             // prefix the url with the request origin if it is just relative
             url = self.scriptObject.getOption("global._requestOrigin") + url;
         }
 
         self._emit("gotoUrl", url);
+        self.agent.reconnecting = true;
 
-        defer.resolve(self);
+        self.agent.once("newSocket", function() {
+            defer.resolve(self);
+        });
+
+        self.agent.once("socketDied", function() {
+            defer.reject(new Error("SocketAgent " + self.agent.friendlyName + " failed to reconnect after navigating to a new url"));
+        });
 
         return defer.promise;
     });
 };
 
 SocketAgent.prototype.refresh = function() {
-    var self = this;
-
-    return this.sync.promise(function() {
-        var defer = Q.defer();
-
-        self.agent.reconnecting = true;
-        self._emit("refresh", self.agent.id);
-
-        self.agent.on("socketReconnected", function(socket) {
-            self.socket = self.agent.socket = socket;
-            self.agent.setDisconnectListener();
-            defer.resolve();
-        }, false);
-
-        self.agent.on("socketDisconnected", function() {
-            defer.reject(new Error("SocketAgent " + self.agent.id + " did not reconnect within the allotted time"));
-        });
-
-        return defer.promise;
-    });
+    return this.gotoUrl();
 };
 
 SocketAgent.prototype.getTitle = function() {

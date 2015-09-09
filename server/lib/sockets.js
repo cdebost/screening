@@ -30,6 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var fs = require('fs');
 
+var SOCKETAGENT_TIMEOUT = 10000;
 
 exports.setupSocketIO = function(httpServer, agentPool, screeningVersion) {
 	var io = require('socket.io').listen(httpServer);
@@ -69,33 +70,52 @@ exports.setupSocketIO = function(httpServer, agentPool, screeningVersion) {
         });
 
         socket.on("initSocketAgent", function(userAgent, callback) {
-            console.log("Received a websocket connection from a socket agent");
-
             var userInfo = parseUserAgent(userAgent);
-
-            var agent = agentPool.addAgent({
+            var agentCapabilities = {
                 browserName: userInfo.browser.name,
                 browserVersion: userInfo.browser.version,
                 osName: userInfo.os.name,
                 osVersion: userInfo.os.version
-            }, {
-                type: agentPool.agentTypes.SOCKET,
-                socket: socket,
-                url: socket.request.connection.remoteAddress + ":" + socket.request.connection.remotePort
-            });
+            };
 
-            agent.once("socketDisconnected", function() {
-                console.log("Socket agent", agent.id, "is no longer available. Removing.");
-                agentPool.removeAgent(agent.id);
+            // If there is already an agent with the same user agent and address,
+            // we should just substitute the new socket for the agent's old socket
+            // instead of creating a new agent
+            var agent = agentPool.getAgentByCaps(agentCapabilities);
+
+            if (agent && agent.reconnecting) {
+                agent.socket = socket;
+                agent.reconnecting = false;
+                agent.emit("newSocket", socket);
+            } else {
+                console.log("Received a websocket connection from a socket agent");
+
+                agent = agentPool.addAgent(agentCapabilities, {
+                    type: agentPool.agentTypes.SOCKET,
+                    socket: socket,
+                    url: socket.request.connection.remoteAddress + ":" + socket.request.connection.remotePort
+                });
+            }
+
+            socket.once("disconnected", function() {
+                function removeAgent() {
+                    console.log("Socket agent", agent.id, "is no longer available. Removing.");
+                    agent.emit("socketDied");
+                    agentPool.removeAgent(agent.id);
+                }
+
+                if (!agent.reconnecting) {
+                    removeAgent();
+                } else {
+                    setTimeout(function() {
+                        if (agent.reconnecting) {
+                            removeAgent();
+                        }
+                    }, SOCKETAGENT_TIMEOUT);
+                }
             });
 
             callback(agent.id);
-        });
-
-        socket.on("socketReconnected", function(id) {
-            var agent = agentPool.getAgentById(id);
-            agent.socket = socket;
-            agent.reconnecting = false;
         });
 	});
 

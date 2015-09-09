@@ -161,8 +161,17 @@ var AgentPool = Object.create(Object, {
      */
     getAgentByCaps: {
         value: function(desiredCaps) {
-            // TODO: implement a more sophisticated selection process
-            return this.agents[desiredCaps.id];
+            var i,
+                keys = Object.keys(this.agents),
+                len = keys.length;
+            for (i = 0; i < len; i++) {
+                var agent = this.agents[keys[i]];
+                if (JSON.stringify(agent.capabilities) === JSON.stringify(desiredCaps)) {
+                    return agent;
+                }
+            }
+
+            return null;
         }
     },
 

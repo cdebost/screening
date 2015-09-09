@@ -56,38 +56,7 @@ var SocketAgent = exports.SocketAgent = Object.create(BaseAgent, {
             this.recordingSession = null;
             this.compiler = Object.create(RecordingCompiler).init();
 
-            this.setDisconnectListener();
-
             return this;
-        }
-    },
-
-    setDisconnectListener: {
-        value: function() {
-            var self = this;
-            this.socket.once("disconnect", function() {
-                // Wait for a reconnect if we know the socket is temporarily closed
-                // (e.g. when the page is refreshed)
-                if (self.reconnecting) {
-                    var timer = 0;
-
-                    function waitForReconnect() {
-                        if (self.reconnecting) {
-                            if (timer >= MAX_WAIT_FOR_SOCKET_RECONNECT) {
-                                self.emit("socketDisconnected");
-                            } else {
-                                setTimeout(waitForReconnect,
-                                    Math.min(WAIT_FOR_SOCKET_INTERVAL, MAX_WAIT_FOR_SOCKET_RECONNECT-timer));
-                            }
-                        } else {
-                            self.emit("socketReconnected", self.socket);
-                        }
-                    }
-                    waitForReconnect();
-                } else {
-                    self.emit("socketDisconnected");
-                }
-            });
         }
     },
 

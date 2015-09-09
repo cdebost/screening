@@ -110,7 +110,7 @@ module.exports = function(agentPool, testcaseRunner, scriptsProvider, batchesPro
         }
 
         try {
-            testcaseId = testcaseRunner.executeTest(body, {id: req.params.id}, options);
+            testcaseId = testcaseRunner.executeTest(body, req.params.id, options);
         } catch(ex) {
             console.log("Exception thrown while attempting to run test: " + ex, ex.stack);
             res.statusCode = 404;
@@ -151,9 +151,7 @@ module.exports = function(agentPool, testcaseRunner, scriptsProvider, batchesPro
                 }
 
                 try {
-                    testcaseId = testcaseRunner.executeTest(script, {id: agentId}, options, null, function(result) {
-                        testcaseRunner.finalize(agentId, result);
-                    });
+                    testcaseId = testcaseRunner.executeTest(script, req.params.id, options, null);
                 } catch(ex) {
                     console.log("Exception thrown while attempting to run test: " + ex, ex.stack);
                     res.statusCode = 404;
