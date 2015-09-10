@@ -97,7 +97,7 @@ exports.setupSocketIO = function(httpServer, agentPool, screeningVersion) {
                 });
             }
 
-            socket.once("disconnected", function() {
+            socket.once("disconnect", function() {
                 function removeAgent() {
                     console.log("Socket agent", agent.id, "is no longer available. Removing.");
                     agent.emit("socketDied");
