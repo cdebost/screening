@@ -79,6 +79,8 @@ exports.createServer = function(customMongoDbProvider) {
     var testResultsApi = require("./rest-api/test-results.js")(testcaseResultsProvider);
     var batchesApi = require("./rest-api/batches.js")(batchesProvider);
 
+    // Expose the runner so that it can be given a reference to the socket manager
+    exports.testcaseRunner = testcaseRunner;
 
 	const SCREENING_PATH = path.join(__dirname, "../public");
 

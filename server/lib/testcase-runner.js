@@ -120,12 +120,13 @@ TestcaseRunner.prototype.createResult = function(agentId, name, code) {
  * @param {String} testScript a complete test script object, contains the code and name
  * @param {String} agentId
  * @param {Object} options will describe preferences during this run of the code (they do not persist)
+ * @param {Object} scriptsProvider object to retrieve scripts by the server. Used to link scripts together
  * @param {Object=} result the result object to use with the test. Will be created if null or undefined is passed in
  * @param {Function=} completeCb the callback to call once the test has finished executing. If undefined or null,
  * will simply finalize the results.
  * @return {Number} test case id
  */
-TestcaseRunner.prototype.executeTest = function(testScript, agentId, options, result, completeCb) {
+TestcaseRunner.prototype.executeTest = function(testScript, agentId, options, scriptsProvider, result, completeCb) {
     // TODO: extract the agents from the testscript
     var agent = this.agentPool.getAgentById(agentId);
     agent.startTest();
@@ -139,27 +140,6 @@ TestcaseRunner.prototype.executeTest = function(testScript, agentId, options, re
             self.finalize(agent.id, result);
         };
 
-    switch (agent.type) {
-        case agentTypes.WEBDRIVER:
-            this._executeWebdriverTest(testScript, agent, options, result, completeCb);
-            break;
-        case agentTypes.SOCKET:
-            this._executeSocketTest(testScript, agent, options, result, completeCb);
-            break;
-        default:
-            throw new Error("Unrecognized agent type", agent.type);
-    }
-
-    // add the result to our central repository
-    this.resultsProv.upsert(result.get(), function(err) {
-        if (err) throw err;
-    });
-    return result.testcase.id;
-};
-
-TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, options, result, completeCb) {
-    var self = this;
-    var session = createWebdriverSession(agent.url);
     var sync = Object.create(Sync).init();
 
     // Validate that the passed testScript object contains code and name
@@ -175,6 +155,72 @@ TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, opt
     for(var i in options){
         scriptObject.setOption(i, options[i]);
     }
+
+    this._linkScripts(testScript, scriptsProvider).then(function() {
+        switch (agent.type) {
+            case agentTypes.WEBDRIVER:
+                self._executeWebdriverTest(testScript, agent, scriptObject, options, sync, result, completeCb);
+                break;
+            case agentTypes.SOCKET:
+                self._executeSocketTest(testScript, agent, scriptObject, options, sync, result, completeCb);
+                break;
+            default:
+                throw new Error("Unrecognized agent type", agent.type);
+        }
+    }, function(err) {
+        throw err;
+    });
+
+    // add the result to our central repository
+    this.resultsProv.upsert(result.get(), function(err) {
+        if (err) throw err;
+    });
+    return result.testcase.id;
+};
+
+TestcaseRunner.prototype._linkScripts = function(testScript, scriptsProvider) {
+    var defer = Q.defer();
+
+    // Scan the script for require statements and get the script names
+    var searchResult,
+        scriptNames = [],
+        re = /(?:^|\W)require\((.*?)\)/g;
+    while (searchResult = re.exec(testScript.code)) {
+        var name = searchResult[1] || searchResult[2];
+
+        if (name.length > 2 && name[0] === '"' && name[name.length-1] === '"') {
+            name = name.substring(1, name.length-1);
+            scriptNames.push(name);
+        }
+    }
+
+    // Get the actual script objects from the script names
+    if (scriptNames.length === 0) {
+        defer.resolve();
+    } else {
+        var scripts = {};
+        scriptNames.forEach(function(name, index) {
+            scriptsProvider.findByName(name, function(err, results) {
+                if (err || results.length < 1) {
+                    defer.reject(new Error("Unable to find script " + name));
+                } else {
+                    scripts[name] = results[0];
+
+                    if (index === scriptNames.length-1) {
+                        testScript.linkedScripts = scripts;
+                        defer.resolve();
+                    }
+                }
+            });
+        });
+    }
+
+    return defer.promise;
+};
+
+TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, scriptObject, options, sync, result, completeCb) {
+    var self = this;
+    var session = createWebdriverSession(agent.url);
 
     // Start the webdriver session
     session.init(agent.capabilities, function(err) {
@@ -219,23 +265,45 @@ TestcaseRunner.prototype._executeWebdriverTest = function(testScript, agent, opt
     return result;
 };
 
-TestcaseRunner.prototype._executeSocketTest = function (testScript, agent, options, result, completeCb) {
+TestcaseRunner.prototype._executeSocketTest = function (testScript, agent, scriptObject, options, sync, result, completeCb) {
     var self = this;
-    var sync = Object.create(Sync).init();
 
-    // Validate that the passed testScript object contains code and name
-    if(!testScript.code || !testScript.name) throw new Error("testScript must be an object with code and name properties.");
+    scriptObject.globalObjects = {
+        require: function(scriptName) {
+            var script = testScript.linkedScripts[scriptName];
+            if (!script) {
+                throw new Error("Could not require script with name " + scriptName + ". Script not found");
+            }
+            return function(scriptVariables) {
+                //!!! Not working due to nested synchronous promises
+                return;
 
-    // the options object can be manipulated in the test script
-    var scriptObject = new ScriptClass();
-    scriptObject.sync = sync;
-    for(var i in testScript.preferences) {
-        var pref = testScript.preferences[i];
-        scriptObject.setOption(pref.shortName, pref.value);
-    }
-    for(var i in options){
-        scriptObject.setOption(i, options[i]);
-    }
+                scriptVariables = scriptVariables || {};
+                return sync.promise(function() {
+                    var defer = Q.defer();
+
+                    // Socket.io hack -- for some reason the openNewWindow message does not pass unless we first emit another message
+                    agent.socket.emit("");
+                    agent.socket.emit("openNewWindow");
+
+                    var address = agent.address;
+                    if(address.match(/^http:/) || address.match(/^::ffff:/)) {
+                        address = address.substring(7); // Cut out address prefixes
+                    }
+
+                    self.socketApi.onNewAgent(address.split(':')[0], agent.capabilities, function(newAgent) {
+                        when(self._executeTestInVm(script.code, scriptVariables, result,
+                            new SocketAgent(newAgent, sync, scriptObject, result), scriptObject, sync), function() {
+                                defer.resolve();
+                            }
+                        );
+                    });
+
+                    return defer.promise;
+                });
+            };
+        }
+    };
 
     when(self._executeTestInVm(testScript.code, testScript.variables, result, new SocketAgent(agent, sync, scriptObject, result),
         scriptObject, sync), function() {
@@ -269,15 +337,23 @@ TestcaseRunner.prototype._executeTestInVm = function(source, variables, result, 
             Mouse: mouseEnum,
             Key: keyEnum,
             console: console,
-            variables: {}
+            variables: {},
+            require: scriptObject.globalObjects.require
         };
 
         //Add variables to the script context
-        variables.forEach(function(variable) {
-            scriptContext.variables[variable.name] = variable.value;
-        });
+        if (variables.constructor === Array) {
+            variables.forEach(function(variable) {
+                scriptContext.variables[variable.name] = variable.value;
+            });
+        } else {
+            scriptContext.variables = variables;
+        }
 
-        scriptObject.globalObjects = {agent: agent, script: scriptObject, variables: scriptContext.variables};
+        scriptObject.globalObjects = scriptObject.globalObjects || {};
+        scriptObject.globalObjects["agent"] = agent;
+        scriptObject.globalObjects["script"] = scriptObject;
+        scriptObject.globalObjects["variables"] = scriptContext.variables;
         // Add all asserts to the script context that we are passing into the test scripts env.
         for (var f in decoratedAsserts) {
             if (f.substr(0, 6)=="assert") { // We ONLY want the assert functions.

@@ -86,6 +86,8 @@ if (process.env.NODE_ENV = "development") {
 var socketApi = require("./lib/sockets.js");
 socketApi.setupSocketIO(server, screening.agentPool, screening.SCREENING_VERSION);
 
+screening.testcaseRunner.socketApi = socketApi;
+
 server.listen(PORT);
 console.log("Environment: Node.js -", process.version, "Platform -", process.platform);
 console.log("Screening Server running on port " + PORT + " [" + process.env.NODE_ENV + "]");

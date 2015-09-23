@@ -30,6 +30,8 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var fs = require('fs');
 
+var expectedAgents = {};
+
 var SOCKETAGENT_TIMEOUT = 10000;
 
 exports.setupSocketIO = function(httpServer, agentPool, screeningVersion) {
@@ -88,13 +90,21 @@ exports.setupSocketIO = function(httpServer, agentPool, screeningVersion) {
                 agent.reconnecting = false;
                 agent.emit("newSocket", socket);
             } else {
-                console.log("Received a websocket connection from a socket agent");
-
                 agent = agentPool.addAgent(agentCapabilities, {
                     type: agentPool.agentTypes.SOCKET,
                     socket: socket,
                     url: socket.request.connection.remoteAddress + ":" + socket.request.connection.remotePort
                 });
+
+                var agentCb = expectedAgents[{
+                    ip: socket.request.connection.remoteAddress,
+                    capabilities: agentCapabilities
+                }];
+                if (agentCb) {
+                    agentCb(agent);
+                } else {
+                    console.log("Received a websocket connection from a socket agent");
+                }
             }
 
             socket.once("disconnect", function() {
@@ -121,6 +131,20 @@ exports.setupSocketIO = function(httpServer, agentPool, screeningVersion) {
 
 	// attaching our socket.io port here for control-room communication
 	agentPool.io = io;
+};
+
+/**
+ * @param ip {String} the expected device ip (without port number)
+ * @param capabilities {Object} an object containing info about expected browser and os
+ * @param capabilities.browserName {String}
+ * @param capabilities.browserVersion {String}
+ * @param capabilities.osName {String}
+ * @param capabilities.osVersion {String}
+ * @param callback {Function} the function to call once a new agent has connected with the right ip and userInfo
+ *  takes an agent parameter
+ */
+exports.onNewAgent = function(ip, capabilities, callback) {
+    expectedAgents[{ip: ip, capabilities: capabilities}] = callback;
 };
 
 function parseUserAgent(userAgent) {
