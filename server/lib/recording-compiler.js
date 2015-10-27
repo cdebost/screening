@@ -561,7 +561,9 @@ var RecordingCompiler = exports.RecordingCompiler = Object.create(Object, {
                 case "touchstart":
                 case "touchend":
                     source += "." + eventTable[typeKey];
-                    funcArgs.push(event.arguments.pageX, event.arguments.pageY);
+
+                    var changedTouch = event.arguments.changedTouches[0];
+                    funcArgs.push(changedTouch.pageX, changedTouch.pageY);
                     break;
 
                 default:
